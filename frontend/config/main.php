@@ -10,7 +10,7 @@ return [
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
     'name' => 'Jaringan Dokumentasi dan Informasi Hukum',
-    'bootstrap' => ['log', 'userCounter'],
+    'bootstrap' => ['log', 'userCounter', 'visitorCounter'],
     'controllerNamespace' => 'frontend\controllers',
     'modules' => [
         'gridview' =>  [
@@ -31,6 +31,12 @@ return [
             'onlineTime' => 10, // min
         ],
 
+        'visitorCounter' => [
+            'class' => 'common\components\VisitorCounter',
+            'deduplicateWindowMinutes' => 30,
+            'cookieName' => '__visitor_id',
+            'cookieExpiryDays' => 180,
+        ],
 
         'view' => [
             'class' => 'daxslab\taggedview\View',
