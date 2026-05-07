@@ -84,21 +84,41 @@ $cleanEmail = $email ? trim(strip_tags($email->isi_konfig)) : 'humas@bphn.go.id 
     <!-- Divider -->
     <hr style="border-color: rgba(255, 255, 255, 0.1); margin: 0 0 25px 0;">
 
+    <!-- Analytics Strip -->
+    <div class="footer-analytics">
+      <div class="container">
+        <div class="analytics-strip">
+          <div class="analytics-item">
+            <i class="bi bi-calendar-day"></i>
+            <span class="analytics-label">Hari Ini</span>
+            <span class="analytics-value"><?= $todayVisits ?></span>
+          </div>
+          <div class="analytics-divider"></div>
+          <div class="analytics-item">
+            <i class="bi bi-calendar-week"></i>
+            <span class="analytics-label">Minggu Ini</span>
+            <span class="analytics-value"><?= $weekVisits ?></span>
+          </div>
+          <div class="analytics-divider"></div>
+          <div class="analytics-item">
+            <i class="bi bi-calendar-month"></i>
+            <span class="analytics-label">Bulan Ini</span>
+            <span class="analytics-value"><?= $monthVisits ?></span>
+          </div>
+          <div class="analytics-divider"></div>
+          <div class="analytics-item">
+            <i class="bi bi-calendar-event"></i>
+            <span class="analytics-label">Tahun Ini</span>
+            <span class="analytics-value"><?= $yearVisits ?></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Bottom Section -->
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center" style="font-size: 0.75rem;">
       <div class="d-flex flex-wrap justify-content-center justify-content-lg-start align-items-center gap-3 mb-3 mb-lg-0" style="color: #64748b;">
         <span class="text-white">&copy; 2026 BPHN</span>
-        <span style="color: #475569; font-weight: bold;">&middot;</span>
-        <span style="color: #728aad; font-size: 0.75rem;">
-          <i class="bi bi-people me-1"></i>
-          <span title="Kunjungan hari ini">Hari: <strong style="color: #a5b4cc;"><?= $todayVisits ?></strong></span>
-          <span style="color: #475569;">&middot;</span>
-          <span title="Kunjungan minggu ini">Minggu: <strong style="color: #a5b4cc;"><?= $weekVisits ?></strong></span>
-          <span style="color: #475569;">&middot;</span>
-          <span title="Kunjungan bulan ini">Bulan: <strong style="color: #a5b4cc;"><?= $monthVisits ?></strong></span>
-          <span style="color: #475569;">&middot;</span>
-          <span title="Kunjungan tahun ini">Tahun: <strong style="color: #a5b4cc;"><?= $yearVisits ?></strong></span>
-        </span>
         <span style="color: #475569; font-weight: bold;">&middot;</span>
         <a href="#" class="footer-link-muted">Prasyarat Penggunaan</a>
         <span style="color: #475569; font-weight: bold;">&middot;</span>
@@ -167,6 +187,85 @@ $cleanEmail = $email ? trim(strip_tags($email->isi_konfig)) : 'humas@bphn.go.id 
     .footer-social svg {
       vertical-align: middle;
       transform: translateY(-2px);
+    }
+
+    /* Analytics Strip */
+    .footer-analytics {
+      background: rgba(255, 255, 255, 0.03);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 16px 0;
+      margin-bottom: 20px;
+    }
+
+    .analytics-strip {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+
+    .analytics-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 0 24px;
+      min-width: 100px;
+    }
+
+    .analytics-item i {
+      font-size: 1.1rem;
+      color: #ffc107;
+      opacity: 0.8;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .analytics-item:hover i {
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+
+    .analytics-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #728aad;
+      font-weight: 500;
+    }
+
+    .analytics-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .analytics-divider {
+      width: 1px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 0 12px;
+    }
+
+    @media (max-width: 768px) {
+      .analytics-strip {
+        flex-direction: column;
+        gap: 16px;
+      }
+      
+      .analytics-item {
+        padding: 0 16px;
+        min-width: auto;
+      }
+      
+      .analytics-divider {
+        width: 40px;
+        height: 1px;
+        margin: 8px 0;
+      }
     }
   </style>
 </footer>
