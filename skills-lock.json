@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "analyze-yii2-project": {
+      "source": "pearlthoughts/codecompass",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/analyze-yii2-project/SKILL.md",
+      "computedHash": "4794bfb36e016622b662b9634248db20198725b208d69b4391182eff7a96cf10"
+    }
+  }
+}
