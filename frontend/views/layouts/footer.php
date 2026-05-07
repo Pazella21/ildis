@@ -2,6 +2,23 @@
 
 use yii\helpers\Html;
 use backend\models\FrontendConfig;
+use common\models\VisitorStats;
+
+// Fetch visitor stats
+$today = date('Y-m-d');
+$thisWeek = date('Y-m-d', strtotime('monday this week'));
+$thisMonth = date('Y-m-01');
+$thisYear = date('Y-01-01');
+
+$todayStat = VisitorStats::find()->where(['stat_type' => VisitorStats::TYPE_DAILY, 'stat_date' => $today, 'document_id' => null])->one();
+$weekStat = VisitorStats::find()->where(['stat_type' => VisitorStats::TYPE_WEEKLY, 'stat_date' => $thisWeek, 'document_id' => null])->one();
+$monthStat = VisitorStats::find()->where(['stat_type' => VisitorStats::TYPE_MONTHLY, 'stat_date' => $thisMonth, 'document_id' => null])->one();
+$yearStat = VisitorStats::find()->where(['stat_type' => VisitorStats::TYPE_YEARLY, 'stat_date' => $thisYear, 'document_id' => null])->one();
+
+$todayVisits = $todayStat ? (int)$todayStat->unique_visits : 0;
+$weekVisits = $weekStat ? (int)$weekStat->unique_visits : 0;
+$monthVisits = $monthStat ? (int)$monthStat->unique_visits : 0;
+$yearVisits = $yearStat ? (int)$yearStat->unique_visits : 0;
 
 $logo = FrontendConfig::findOne(3);
 $fb = FrontendConfig::findOne(13);
@@ -71,6 +88,17 @@ $cleanEmail = $email ? trim(strip_tags($email->isi_konfig)) : 'humas@bphn.go.id 
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center" style="font-size: 0.75rem;">
       <div class="d-flex flex-wrap justify-content-center justify-content-lg-start align-items-center gap-3 mb-3 mb-lg-0" style="color: #64748b;">
         <span class="text-white">&copy; 2026 BPHN</span>
+        <span style="color: #475569; font-weight: bold;">&middot;</span>
+        <span style="color: #728aad; font-size: 0.75rem;">
+          <i class="bi bi-people me-1"></i>
+          <span title="Kunjungan hari ini">Hari: <strong style="color: #a5b4cc;"><?= $todayVisits ?></strong></span>
+          <span style="color: #475569;">&middot;</span>
+          <span title="Kunjungan minggu ini">Minggu: <strong style="color: #a5b4cc;"><?= $weekVisits ?></strong></span>
+          <span style="color: #475569;">&middot;</span>
+          <span title="Kunjungan bulan ini">Bulan: <strong style="color: #a5b4cc;"><?= $monthVisits ?></strong></span>
+          <span style="color: #475569;">&middot;</span>
+          <span title="Kunjungan tahun ini">Tahun: <strong style="color: #a5b4cc;"><?= $yearVisits ?></strong></span>
+        </span>
         <span style="color: #475569; font-weight: bold;">&middot;</span>
         <a href="#" class="footer-link-muted">Prasyarat Penggunaan</a>
         <span style="color: #475569; font-weight: bold;">&middot;</span>
