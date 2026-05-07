@@ -1,6 +1,4 @@
 <?php
-$dir = 'assets/';
-array_map('unlink', glob("{$dir}*.*"));
 
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
@@ -16,11 +14,17 @@ AppAsset::register($this);
 use backend\models\FrontendConfig;
 
 $logo = FrontendConfig::findOne(1);
+$siteName = 'JDIH - Jaringan Dokumentasi dan Informasi Hukum';
+$canonicalUrl = Url::canonical();
+
+if (empty($this->params['description'])) {
+    $this->registerMetaTag(['name' => 'description', 'content' => 'Jaringan Dokumentasi dan Informasi Hukum - Portal hukum terlengkap untuk peraturan, monografi, putusan, dan artikel hukum.']);
+}
 
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
-<html lang="<?= Yii::$app->language ?>">
+<html lang="id">
 
 <head>
 
@@ -28,7 +32,8 @@ $logo = FrontendConfig::findOne(1);
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?= Html::csrfMetaTags() ?>
-    <title><?= Html::encode($this->title) ?></title>
+    <title><?= Html::encode($this->title) ?> - <?= Html::encode($siteName) ?></title>
+    <link rel="canonical" href="<?= Html::encode($canonicalUrl) ?>" />
     <?php $this->head() ?>
 
     <!-- Favicons -->
@@ -36,9 +41,9 @@ $logo = FrontendConfig::findOne(1);
     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-
-    <?php $this->head() ?>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i&display=swap" rel="stylesheet">
 
 </head>
 
@@ -53,10 +58,7 @@ $logo = FrontendConfig::findOne(1);
         <div class="container d-flex justify-content-between align-items-center">
 
             <div class="logo">
-                <?= Html::a(Html::img('@web/common/dokumen/' . $logo->isi_konfig, ['id' => 'logo']), ['/'], ['class' => 'navbar-brand width-200px sm-width-180px xs-width-150px']); ?>
-                <h1><a href=""></a></h1>
-                <!-- Uncomment below if you prefer to use an image logo -->
-                <!-- <a href="index.html"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+                <?= Html::a(Html::img('@web/common/dokumen/' . $logo->isi_konfig, ['id' => 'logo', 'alt' => Html::encode($siteName)]), ['/'], ['class' => 'navbar-brand width-200px sm-width-180px xs-width-150px']); ?>
             </div>
 
             <nav id="navbar" class="navbar">

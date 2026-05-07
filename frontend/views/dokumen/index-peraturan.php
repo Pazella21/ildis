@@ -4,12 +4,16 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ListView;
 
-$this->title = 'Dokumen Peraturan';
+$this->title = 'Peraturan - JDIH';
+$this->registerMetaTag(['name' => 'description', 'content' => 'Koleksi peraturan hukum Indonesia. Cari undang-undang, peraturan pemerintah, peraturan daerah, dan peraturan lainnya.']);
+$this->registerMetaTag(['name' => 'robots', 'content' => 'index, follow']);
+$this->params['breadcrumbs'][] = ['label' => 'Peraturan'];
 ?>
 
 <div class="dokumen-index-wrapper" style="background-color: #f8fafc; min-height: 100vh; padding-top: 80px;">
     <!-- Main Content -->
     <div class="container py-5">
+        <h1 class="sr-only">Peraturan Hukum Indonesia</h1>
         <div class="row">
             <!-- Sidebar (Search Filters) -->
             <div class="col-lg-3 mb-4">

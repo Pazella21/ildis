@@ -12,18 +12,19 @@ use frontend\models\DataSubyek;
 /* @var $this yii\web\View */
 /* @var $model frontend\models\Dokumen */
 
-$this->title = $model->id;
+$this->title = $model->judul ?? $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Dokumens', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+$this->registerMetaTag(['name' => 'description', 'content' => mb_strimwidth(strip_tags($model->abstrak ?? $model->judul ?? ''), 0, 160, '...')]);
 ?>
 
 <section class="page-title-section bg-img cover-background" data-overlay-dark="7" data-background="img/banner/bg1.jpg">
     <div class="container">
-        <h1>Blog Details</h1>
+        <h1><?= Html::encode($model->judul ?? 'Detail Dokumen') ?></h1>
         <ul class="text-center">
             <li><?= Html::a('Home', ['/']); ?></li>
             <li>
-                <span class="active">Blog Details</span>
+                <span class="active"><?= Html::encode($model->judul ?? 'Detail') ?></span>
             </li>
         </ul>
     </div>

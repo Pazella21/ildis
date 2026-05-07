@@ -1,3 +1,12 @@
+<?php
+
+use yii\helpers\Html;
+
+$this->title = 'Statistik Pengunjung ILDIS';
+$this->registerMetaTag(['name' => 'description', 'content' => 'Statistik pengunjung ILDIS - Indonesian Law Documentation Information System.']);
+$this->registerMetaTag(['name' => 'robots', 'content' => 'index, follow']);
+?>
+<h1 class="sr-only">Statistik Pengunjung ILDIS</h1>
 <br><br><br><br><br><br><br><br>
 <div class="container">
         <div class="text-center">

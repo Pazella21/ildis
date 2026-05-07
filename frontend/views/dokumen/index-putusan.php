@@ -4,9 +4,12 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ListView;
 
-$this->title = 'Dokumen Putusan';
+$this->title = 'Dokumen Putusan Pengadilan';
+$this->registerMetaTag(['name' => 'description', 'content' => 'Koleksi putusan pengadilan Indonesia - cari dan telusuri putusan MA, pengadilan banding, dan pengadilan negeri di ILDIS.']);
+$this->registerMetaTag(['name' => 'robots', 'content' => 'index, follow']);
 ?>
 
+<h1 class="sr-only">Putusan Pengadilan Indonesia</h1>
 <div class="dokumen-index-wrapper" style="background-color: #f8fafc; min-height: 100vh; padding-top: 80px;">
     <!-- Main Content -->
     <div class="container py-5">

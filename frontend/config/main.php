@@ -70,6 +70,7 @@ return [
             'rules' => [
                 '/' => 'site/index',
                 'kontak' => 'site/kontak',
+                'sitemap.xml' => 'sitemap/index',
                 '/rancangan' => 'rancangan/index',
             ],
         ],
