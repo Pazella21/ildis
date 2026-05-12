@@ -43,7 +43,8 @@ class BeritaSearch extends Berita
     {
         $query = Berita::find();
 
-        // add conditions that should always apply here
+        //hanya berita terbit (1); NULL dianggap data lama sebelum kolom status ada
+        $query->andWhere(['or', ['status' => 1], ['is', 'status', null]]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

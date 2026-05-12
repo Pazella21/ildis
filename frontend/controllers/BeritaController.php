@@ -38,10 +38,15 @@ class BeritaController extends Controller
 
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+        if ($model->status !== null && (int) $model->status === 0) {
+            throw new NotFoundHttpException('Berita tidak ditemukan atau belum dipublikasikan.');
+        }
+
         $searchModel = new BeritaSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
             'dataProvider' => $dataProvider,
             'model2' => $searchModel
         ]);
