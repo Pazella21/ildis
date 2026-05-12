@@ -22,7 +22,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.3",
         "yiisoft/yii2": "~2.0.54",
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-symfonymailer": "~2.0.3",
@@ -57,8 +57,10 @@
         "yiisoft/yii2-debug": "~2.0.0",
         "yiisoft/yii2-gii": "~2.0.0",
         "yiisoft/yii2-faker": "~2.0.0",
-        "codeception/base": "^2.2.3",
-        "codeception/verify": "~0.3.1",
+        "codeception/codeception": "^5.1",
+        "codeception/module-yii2": "^2.0",
+        "codeception/module-asserts": "^3.0",
+        "codeception/verify": "^3.0",
         "bizley/migration": "^4.0"
     },
     "config": {

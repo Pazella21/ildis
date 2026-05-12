@@ -1,5 +1,4 @@
 <?php
-namespace _next;
 
 use yii\db\Migration;
 

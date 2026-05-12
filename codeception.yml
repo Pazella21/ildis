@@ -4,6 +4,7 @@ include:
     - frontend
     - backend
 paths:
+    output: console/runtime/logs
     log: console/runtime/logs
 settings:
     colors: true

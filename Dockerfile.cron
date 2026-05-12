@@ -14,7 +14,7 @@ COPY . .
 # ============================================
 # Stage 2: Cron runtime
 # ============================================
-FROM php:8.2-cli-alpine AS production
+FROM php:8.3-cli-alpine AS production
 
 WORKDIR /var/www
 

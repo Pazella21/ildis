@@ -12,8 +12,8 @@ function info {
 
 info "Provision-script user: $(whoami)"
 
-# Ganti ke versi PHP sesuai yang di-install dari Ondřej
-PHP_VERSION="7.4"  # atau "8.0", tergantung yang kamu install
+# Ganti ke versi PHP sesuai yang di-install dari Ondřej (lihat once-as-root.sh)
+PHP_VERSION="8.3"
 
 info "Restart web stack"
 systemctl restart php${PHP_VERSION}-fpm

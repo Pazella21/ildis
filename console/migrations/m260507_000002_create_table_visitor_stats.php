@@ -1,4 +1,4 @@
-namespace _next;
+<?php
 
 use yii\db\Migration;
 

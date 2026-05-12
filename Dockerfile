@@ -14,7 +14,7 @@ COPY . .
 # ============================================
 # Stage 2: Production runtime
 # ============================================
-FROM php:8.2-fpm-alpine AS production
+FROM php:8.3-fpm-alpine AS production
 
 WORKDIR /var/www
 
