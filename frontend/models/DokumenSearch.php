@@ -132,7 +132,7 @@ class DokumenSearch extends DokumenDataSubyek
             ->andFilterWhere(['like', 'amar_status', $this->amar_status])
             ->andFilterWhere(['like', 'berkekuatan_hukum_tetap', $this->berkekuatan_hukum_tetap])
             ->andFilterWhere(['like', 'urusan_pemerintahan', $this->urusan_pemerintahan])
-            ->andFilterWhere(['like', 'is_publish', 1])
+            ->andFilterWhere(['is_publish' => 1])
             ->andFilterWhere(['like', 'catatan_status_peraturan', $this->catatan_status_peraturan]);
 
         return $dataProvider;
