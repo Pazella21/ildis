@@ -1,3 +1,9 @@
+## [4.1.1](https://github.com/bphndigitalservice/ildis/compare/v4.1.0...v4.1.1) (2026-05-12)
+
+### Bug Fixes
+
+* use exact match for is_publish filter instead of LIKE ([88ed241](https://github.com/bphndigitalservice/ildis/commit/88ed241c661e78d96988528538b5b5bd65733d78))
+
 ## [4.1.0](https://github.com/bphndigitalservice/ildis/compare/v4.0.0...v4.1.0) (2026-03-15)
 
 ### Features
