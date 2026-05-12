@@ -1,3 +1,9 @@
+## [4.1.2](https://github.com/bphndigitalservice/ildis/compare/v4.1.1...v4.1.2) (2026-05-12)
+
+### Bug Fixes
+
+* berita update status dropdown value and update portal text to JDIH ([7e0522d](https://github.com/bphndigitalservice/ildis/commit/7e0522d8738cc9119fdc090ceb09787dca35b173))
+
 ## [4.1.1](https://github.com/bphndigitalservice/ildis/compare/v4.1.0...v4.1.1) (2026-05-12)
 
 ### Bug Fixes
