@@ -46,3 +46,6 @@ phpstan.neon
 # OS
 .DS_Store
 Thumbs.db
+
+# Backups (database dumps)
+backups/
