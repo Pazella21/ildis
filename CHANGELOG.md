@@ -1,3 +1,10 @@
+## [4.1.3](https://github.com/bphndigitalservice/ildis/compare/v4.1.2...v4.1.3) (2026-05-13)
+
+### Bug Fixes
+
+* **berita:** filter published news on OPAC list and block draft detail URLs ([ee3aba7](https://github.com/bphndigitalservice/ildis/commit/ee3aba7f2c3bd63a64ce8301568417bccc66deaa))
+* **berita:** filter published news on OPAC list and block draft detail URLs ([#36](https://github.com/bphndigitalservice/ildis/issues/36)) ([61c7354](https://github.com/bphndigitalservice/ildis/commit/61c735484ad6d67eebb6b323061b79b7d77884c8))
+
 ## [4.1.2](https://github.com/bphndigitalservice/ildis/compare/v4.1.1...v4.1.2) (2026-05-12)
 
 ### Bug Fixes
