@@ -3,14 +3,23 @@ namespace common\components;
 
 use Yii;
 use yii\base\Component;
+use yii\base\BootstrapInterface;
 use common\models\VisitorLog;
 use common\models\VisitorStats;
 
-class VisitorCounter extends Component
+class VisitorCounter extends Component implements BootstrapInterface
 {
     public $deduplicateWindowMinutes = 30;
     public $cookieName = '__visitor_id';
     public $cookieExpiryDays = 180;
+
+    public function bootstrap($app)
+    {
+        // Track only on web frontend requests
+        if ($app instanceof \yii\web\Application && $app->id === 'app-frontend') {
+            $this->trackVisit();
+        }
+    }
 
     public function generateFingerprint($ip, $userAgent)
     {
