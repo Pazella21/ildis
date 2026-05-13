@@ -68,13 +68,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image (app)
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: ./Dockerfile
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.release.outputs.new_release_version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Docker image (cron)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.cron
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-cron:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-cron:${{ needs.release.outputs.new_release_version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
