@@ -79,6 +79,10 @@
     }
     window.addEventListener('load', toggleBacktotop)
     onscroll(document, toggleBacktotop)
+    on('click', '.back-to-top', function(e) {
+      e.preventDefault()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    })
   }
 
   /**

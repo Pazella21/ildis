@@ -77,7 +77,7 @@ if (empty($this->params['description'])) {
     <!-- end main-wrapper section -->
 
     <!-- start scroll to top -->
-    <a href="javascript:void(0)" class="scroll-to-top"><i class="fas fa-angle-up" aria-hidden="true"></i></a>
+    <a href="#" class="back-to-top" aria-label="Kembali ke atas"><i class="bi bi-chevron-up" aria-hidden="true"></i></a>
     <!-- end scroll to top -->
 
     <!-- all js include start -->

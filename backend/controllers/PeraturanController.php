@@ -232,7 +232,7 @@ class PeraturanController extends Controller
             $model->tahun_terbit = htmlentities($model->tahun_terbit);
             $model->tempat_terbit = htmlentities($model->tempat_terbit);
             $model->tanggal_penetapan = htmlentities($model->tanggal_penetapan);
-            $model->penandatanganan_txt = htmlentities($model->penandatanganan);
+            $model->penandatanganan = htmlentities($model->penandatanganan);
             $model->tanggal_pengundangan = htmlentities($model->tanggal_pengundangan);
             $model->pemrakarsa = htmlentities($model->pemrakarsa);
             $model->sumber = htmlentities($model->sumber);
@@ -313,7 +313,7 @@ class PeraturanController extends Controller
             $model->tahun_terbit = htmlentities($model->tahun_terbit);
             $model->tempat_terbit = htmlentities($model->tempat_terbit);
             $model->tanggal_penetapan = htmlentities($model->tanggal_penetapan);
-            $model->penandatanganan_txt = htmlentities($model->penandatanganan);
+            $model->penandatanganan = htmlentities($model->penandatanganan);
             $model->tanggal_pengundangan = htmlentities($model->tanggal_pengundangan);
             $model->pemrakarsa = htmlentities($model->pemrakarsa);
             $model->sumber = htmlentities($model->sumber);
@@ -1220,35 +1220,34 @@ class PeraturanController extends Controller
 
     public function actionJenis($id)
     {
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        Yii::$app->response->format = \yii\web\Response::FORMAT_RAW;
         $dokumen = JenisPeraturan::find()->where(['id' => $id])->one();
         $rows = JenisPeraturan::find()->where(['parent_id' => $id])->all();
-        $result = [];
         if (count($rows) > 0) {
             foreach ($rows as $branch) {
-                $result[] = ['id' => $branch->name, 'text' => $branch->singkatan];
+                echo '<option value="' . Html::encode($branch->name) . '">' . Html::encode($branch->singkatan) . '</option>';
             }
-        } else {
-            $result[] = ['id' => $dokumen->name, 'text' => $dokumen->singkatan];
+        } elseif ($dokumen !== null) {
+            echo '<option value="' . Html::encode($dokumen->name) . '">' . Html::encode($dokumen->singkatan) . '</option>';
         }
-        return $result;
     }
 
 
     public function actionJenis2($id)
     {
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        Yii::$app->response->format = \yii\web\Response::FORMAT_RAW;
         $dokumen = JenisPeraturan::find()->where(['name' => $id])->one();
+        if ($dokumen === null) {
+            return;
+        }
         $rows = JenisPeraturan::find()->where(['parent_id' => $dokumen->id])->all();
-        $result = [];
         if (count($rows) > 0) {
             foreach ($rows as $branch) {
-                $result[] = ['id' => $branch->name, 'text' => $branch->singkatan];
+                echo '<option value="' . Html::encode($branch->name) . '">' . Html::encode($branch->singkatan) . '</option>';
             }
         } else {
-            $result[] = ['id' => $dokumen->name, 'text' => $dokumen->singkatan];
+            echo '<option value="' . Html::encode($dokumen->name) . '">' . Html::encode($dokumen->singkatan) . '</option>';
         }
-        return $result;
     }
 
     public function actionGetPeraturan($zipId)
