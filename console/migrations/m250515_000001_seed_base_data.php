@@ -27,6 +27,8 @@ class m250515_000001_seed_base_data extends Migration
             }
         );
 
+        $errors = [];
+
         foreach ($statements as $statement) {
             $statement = rtrim($statement, ';');
             if (empty($statement)) {
@@ -35,12 +37,22 @@ class m250515_000001_seed_base_data extends Migration
             try {
                 $this->execute($statement);
             } catch (\Exception $e) {
-                echo "    > Warning: Seeding failed for statement: " . substr($statement, 0, 80) . "...\n";
+                $errors[] = [
+                    'statement' => substr($statement, 0, 120),
+                    'error' => $e->getMessage(),
+                ];
+                echo "    > Warning: Seeding failed for: " . substr($statement, 0, 80) . "...\n";
                 echo "    > Error: " . $e->getMessage() . "\n";
             }
         }
 
-        echo "    > Seed data loaded.\n";
+        if (count($errors) > 0) {
+            echo "    > Seed data loaded with " . count($errors) . " errors.\n";
+            echo "    > Some data may not have been inserted. Check the warnings above.\n";
+        } else {
+            echo "    > Seed data loaded successfully.\n";
+        }
+
         return true;
     }
 

@@ -55,7 +55,8 @@ fail_with_rollback() {
     echo "     docker compose down"
     echo ""
     echo "  2. Restore the database from backup:"
-    echo "     gunzip -c ${backup_file} | docker compose exec -T mysql mysql -u\${DB_USER} -p\${DB_PASSWORD} \${DB_DATABASE}"
+    echo "     source .env"
+    echo "     gunzip -c ${backup_file} | docker compose exec -T -e MYSQL_PWD=\${DB_PASSWORD} mysql mysql -u\${DB_USER:-root} \${DB_DATABASE:-ildis_v4}"
     echo ""
     echo "  3. If needed, revert to the previous Docker image:"
     echo "     Edit .env or docker-compose.yml to set the old image tag"
@@ -158,7 +159,7 @@ if [ "$ACTION" = "rollback" ]; then
     echo ""
     echo "3. Wait for MySQL to be ready, then restore:"
     echo "   source .env"
-    echo "   gunzip -c ${ROLLBACK_FILE} | docker compose exec -T mysql mysql -u\${DB_USER:-root} -p\${DB_PASSWORD} \${DB_DATABASE:-ildis_v4}"
+    echo "   gunzip -c ${ROLLBACK_FILE} | docker compose exec -T -e MYSQL_PWD=\${DB_PASSWORD} mysql mysql -u\${DB_USER:-root} \${DB_DATABASE:-ildis_v4}"
     echo ""
     echo "4. Revert the Docker image to the previous version:"
     echo "   Edit COMPOSE_FILE or .env and set the old image tag"
@@ -189,7 +190,13 @@ if [ ! -f ".env" ]; then
     fail ".env file not found. Copy .env.example and configure it first."
 fi
 
-set -a; source .env; set +a
+# Parse .env safely — only export KEY=VALUE pairs, skip comments and empty lines
+while IFS='=' read -r key value; do
+  case "$key" in
+    ''|\#*) continue ;;
+  esac
+  [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] && export "$key=$value"
+done < .env
 
 available_kb=$(df -k . | awk 'NR==2 {print $4}')
 available_mb=$((available_kb / 1024))
@@ -323,38 +330,24 @@ DB_PORT_VAL="${DB_DATABASE_PORT:-3306}"
 
 BACKUP_SUCCESS=false
 
-# Method 1: mysqldump via docker compose exec
-if docker compose exec -T mysql mysqldump \
-    -h "${DB_HOST_VAL}" \
-    -u "${DB_USER_VAL}" \
-    -p"${DB_PASS_VAL}" \
-    -P "${DB_PORT_VAL}" \
-    --single-transaction \
-    --routines \
-    --triggers \
-    "${DB_NAME_VAL}" 2>/dev/null | gzip > "${BACKUP_FILE}"; then
+# Use MYSQL_PWD env var to avoid exposing password in process list
+if docker compose exec -T -e MYSQL_PWD="${DB_PASS_VAL}" mysql sh -c \
+    "mysqldump -h \"${DB_HOST_VAL}\" -u \"${DB_USER_VAL}\" -P \"${DB_PORT_VAL}\" --single-transaction --routines --triggers \"${DB_NAME_VAL}\"" 2>/dev/null | gzip > "${BACKUP_FILE}"; then
     BACKUP_SUCCESS=true
 fi
 
 # Method 2: Try with localhost as host (inside docker network)
 if [ "${BACKUP_SUCCESS}" = false ]; then
     info "Retrying backup with container network..."
-    if docker compose exec -T mysql mysqldump \
-        -h localhost \
-        -u "${DB_USER_VAL}" \
-        -p"${DB_PASS_VAL}" \
-        -P "${DB_PORT_VAL}" \
-        --single-transaction \
-        --routines \
-        --triggers \
-        "${DB_NAME_VAL}" 2>/dev/null | gzip > "${BACKUP_FILE}"; then
+    if docker compose exec -T -e MYSQL_PWD="${DB_PASS_VAL}" mysql sh -c \
+        "mysqldump -h localhost -u \"${DB_USER_VAL}\" -P \"${DB_PORT_VAL}\" --single-transaction --routines --triggers \"${DB_NAME_VAL}\"" 2>/dev/null | gzip > "${BACKUP_FILE}"; then
         BACKUP_SUCCESS=true
     fi
 fi
 
-# Method 3: Try without -p flag on command line (use MYSQL_PWD env var)
+# Method 3: Fallback with explicit password in env (no -p on command line)
 if [ "${BACKUP_SUCCESS}" = false ]; then
-    info "Retrying backup with env var password..."
+    info "Retrying backup with explicit env var..."
     if docker compose exec -T mysql sh -c \
         "MYSQL_PWD=\"${DB_PASS_VAL}\" mysqldump -u \"${DB_USER_VAL}\" --single-transaction --routines --triggers \"${DB_NAME_VAL}\"" 2>/dev/null | gzip > "${BACKUP_FILE}"; then
         BACKUP_SUCCESS=true

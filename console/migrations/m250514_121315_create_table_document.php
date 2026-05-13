@@ -56,7 +56,7 @@ class m250514_121315_create_table_document extends Migration
                 'promosikan_ke_beranda' => $this->string()->defaultValue('Ya'),
                 'status_terakhir' => $this->string(),
                 'status' => $this->string()->defaultValue('Berlaku'),
-                'integrasi' => $this->string(11)->defaultValue(1),
+                'integrasi' => $this->integer()->defaultValue(1),
                 '_created_by' => $this->string(),
                 '_updated_by' => $this->string(),
                 'created_at' => $this->dateTime(),
