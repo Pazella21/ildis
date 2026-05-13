@@ -24,6 +24,10 @@ return [
 		'class' => 'bizley\migration\controllers\MigrationController',
 		'db' => 'db'
         ],
+        'migrate' => [
+            'class' => 'yii\console\controllers\MigrateController',
+            'migrationPath' => '@console/migrations',
+        ],
     ],
     'components' => [
         'log' => [
