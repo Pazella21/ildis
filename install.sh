@@ -515,3 +515,300 @@ EOF
 
     success "${COMPOSE_FILE} generated"
 }
+
+# ── Install ──────────────────────────────────────────────────────────────────
+do_install() {
+    mkdir -p "${INSTALL_DIR}"
+
+    generate_env
+    generate_compose
+
+    info "Pulling ILDIS Docker images..."
+    if ! docker compose -f "${INSTALL_DIR}/${COMPOSE_FILE}" --env-file "${INSTALL_DIR}/${ENV_FILE}" pull 2>&1; then
+        fail "Failed to pull Docker images. Check your network connection and that the images exist at ${GHCR_IMAGE}."
+    fi
+    success "Docker images pulled"
+
+    info "Starting ILDIS..."
+    if ! docker compose -f "${INSTALL_DIR}/${COMPOSE_FILE}" --env-file "${INSTALL_DIR}/${ENV_FILE}" up -d 2>&1; then
+        fail "Failed to start containers. Check logs: docker compose -f ${INSTALL_DIR}/${COMPOSE_FILE} logs"
+    fi
+
+    if [ "${DB_TYPE}" != "external" ]; then
+        info "Waiting for database to be ready..."
+        local db_ready=false
+        for i in $(seq 1 "${MYSQL_HEALTH_RETRIES}"); do
+            if docker compose -f "${INSTALL_DIR}/${COMPOSE_FILE}" --env-file "${INSTALL_DIR}/${ENV_FILE}" exec -T db healthcheck.sh --connect --innodb_initialized &>/dev/null 2>&1 || \
+               docker compose -f "${INSTALL_DIR}/${COMPOSE_FILE}" --env-file "${INSTALL_DIR}/${ENV_FILE}" exec -T db mysqladmin ping -h localhost -u root &>/dev/null 2>&1; then
+                db_ready=true
+                break
+            fi
+            info "Database not ready, retrying... ($i/${MYSQL_HEALTH_RETRIES})"
+            sleep "${MYSQL_HEALTH_INTERVAL}"
+        done
+        if [ "${db_ready}" = false ]; then
+            warn "Database did not become ready in time. Containers may need manual intervention."
+        else
+            success "Database is ready"
+        fi
+    fi
+
+    local app_port="${PORT:-${DEFAULT_PORT}}"
+    info "Waiting for ILDIS application on port ${app_port}..."
+    local app_ready=false
+    for i in $(seq 1 "${HEALTH_RETRIES}"); do
+        if curl -sf "http://localhost:${app_port}/" >/dev/null 2>&1; then
+            app_ready=true
+            break
+        fi
+        info "Application not ready, retrying... ($i/${HEALTH_RETRIES})"
+        sleep "${HEALTH_INTERVAL}"
+    done
+
+    if [ "${app_ready}" = false ]; then
+        echo ""
+        echo -e "${YELLOW}ILDIS containers are running but the app is not responding yet.${NC}"
+        echo "This may take a minute. Check status with:"
+        echo "  docker compose -f ${INSTALL_DIR}/${COMPOSE_FILE} logs app"
+        echo ""
+        echo "Once ready, visit: http://localhost:${app_port}"
+    else
+        success "ILDIS is responding"
+    fi
+
+    info "Running database migrations..."
+    if docker compose -f "${INSTALL_DIR}/${COMPOSE_FILE}" --env-file "${INSTALL_DIR}/${ENV_FILE}" exec -T app php yii migrate/up --interactive=0 --migrationPath=@console/migrations 2>&1; then
+        success "Database migrations applied"
+    else
+        warn "Migration command returned non-zero. This may be normal if no migrations are pending."
+    fi
+
+    echo ""
+    echo -e "${GREEN}╔══════════════════════════════════════════╗${NC}"
+    echo -e "${GREEN}║      ILDIS Installed Successfully!        ║${NC}"
+    echo -e "${GREEN}╚══════════════════════════════════════════╝${NC}"
+    echo ""
+    echo "  URL:         http://localhost:${app_port}"
+    echo "  Directory:   ${INSTALL_DIR}"
+    echo "  Config:      ${INSTALL_DIR}/${ENV_FILE}"
+    echo "  Compose:     ${INSTALL_DIR}/${COMPOSE_FILE}"
+    echo ""
+    echo "  Useful commands:"
+    echo "    docker compose -f ${INSTALL_DIR}/${COMPOSE_FILE} logs -f     # Follow logs"
+    echo "    docker compose -f ${INSTALL_DIR}/${COMPOSE_FILE} down        # Stop containers"
+    echo "    docker compose -f ${INSTALL_DIR}/${COMPOSE_FILE} pull        # Update images"
+    echo ""
+    echo -e "  ${CYAN}To update ILDIS later, run: ./install.sh --update${NC}"
+    echo ""
+}
+
+# ── Update ───────────────────────────────────────────────────────────────────
+do_update() {
+    local compose_file="${INSTALL_DIR}/${COMPOSE_FILE}"
+    local env_file="${INSTALL_DIR}/${ENV_FILE}"
+
+    if [ ! -f "${compose_file}" ] || [ ! -f "${env_file}" ]; then
+        fail "No existing ILDIS installation found in ${INSTALL_DIR}. Run ./install.sh without --update for a fresh install."
+    fi
+
+    info "Loading existing configuration..."
+    while IFS='=' read -r key value; do
+        case "$key" in
+            ''|\#*) continue ;;
+        esac
+        [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] && export "$key=$value"
+    done < "${env_file}"
+
+    local current_version="unknown"
+    if [ -f "${INSTALL_DIR}/${VERSION_FILE}" ]; then
+        current_version=$(tr -d '[:space:]' < "${INSTALL_DIR}/${VERSION_FILE}")
+    fi
+
+    local latest_version="${ILDIS_IMAGE_TAG:-latest}"
+    if [ "${latest_version}" = "latest" ]; then
+        info "Checking for latest version..."
+        if command -v curl &>/dev/null; then
+            local release_info
+            release_info=$(curl -sf "https://api.github.com/repos/${GITHUB_REPO}/releases/latest" 2>/dev/null || echo "{}")
+            latest_version=$(echo "${release_info}" | grep -o '"tag_name":"[^"]*"' | head -1 | sed 's/"tag_name":"//;s/"$//')
+            [ -z "${latest_version}" ] && latest_version="latest"
+        fi
+    fi
+
+    echo ""
+    echo -e "${BOLD}ILDIS Update${NC}"
+    echo "  Current version: ${current_version}"
+    echo "  Target version:  ${latest_version}"
+    echo ""
+
+    if [ "${NON_INTERACTIVE}" = false ]; then
+        if ! confirm "Proceed with update?" "y"; then
+            echo "Update cancelled."
+            exit 0
+        fi
+    fi
+
+    local timestamp
+    timestamp=$(date +%Y%m%d_%H%M%S)
+    local backup_file="${INSTALL_DIR}/${BACKUP_DIR}/ildis_${timestamp}.sql.gz"
+    mkdir -p "${INSTALL_DIR}/${BACKUP_DIR}"
+
+    info "Creating database backup..."
+    local db_host="${DB_HOST:-db}"
+    local db_user="${DB_USER:-root}"
+    local db_pass="${DB_PASSWORD:-}"
+    local db_name="${DB_DATABASE:-ildis_v4}"
+    local db_port="${DB_DATABASE_PORT:-3306}"
+
+    local backup_success=false
+    if [ "${DB_TYPE:-mariadb}" != "external" ]; then
+        if docker compose -f "${compose_file}" exec -T db sh -c \
+            "MYSQL_PWD=\"${db_pass}\" mysqldump -h localhost -u \"${db_user}\" -P \"${db_port}\" --single-transaction --routines --triggers \"${db_name}\"" 2>/dev/null | gzip > "${backup_file}"; then
+            backup_success=true
+        fi
+    else
+        warn "External database detected — skipping automatic backup."
+        warn "Ensure you have a backup before proceeding."
+    fi
+
+    if [ "${backup_success}" = true ]; then
+        success "Database backup saved: ${backup_file} ($(du -h "${backup_file}" | cut -f1))"
+    elif [ "${DB_TYPE:-mariadb}" != "external" ]; then
+        warn "Database backup failed. Continuing without backup."
+        warn "You can create a manual backup with:"
+        warn "  docker compose -f ${compose_file} exec -T db mysqldump ..."
+        if [ "${NON_INTERACTIVE}" = false ]; then
+            if ! confirm "Continue without backup?" "n"; then
+                echo "Update cancelled."
+                exit 0
+            fi
+        fi
+    fi
+
+    info "Pulling updated Docker images..."
+    if ! docker compose -f "${compose_file}" --env-file "${env_file}" pull 2>&1; then
+        fail "Failed to pull Docker images."
+    fi
+    success "Images updated"
+
+    info "Restarting ILDIS containers..."
+    if ! docker compose -f "${compose_file}" --env-file "${env_file}" up -d 2>&1; then
+        fail "Failed to restart containers."
+    fi
+
+    if [ "${DB_TYPE:-mariadb}" != "external" ]; then
+        info "Waiting for database..."
+        local db_ready=false
+        for i in $(seq 1 "${MYSQL_HEALTH_RETRIES}"); do
+            if docker compose -f "${compose_file}" exec -T db healthcheck.sh --connect --innodb_initialized &>/dev/null 2>&1 || \
+               docker compose -f "${compose_file}" exec -T db mysqladmin ping -h localhost &>/dev/null 2>&1; then
+                db_ready=true
+                break
+            fi
+            sleep "${MYSQL_HEALTH_INTERVAL}"
+        done
+        [ "${db_ready}" = true ] && success "Database is ready" || warn "Database not ready yet"
+    fi
+
+    local app_port="${PORT:-${DEFAULT_PORT}}"
+    info "Waiting for application on port ${app_port}..."
+
+    local app_ready=false
+    for i in $(seq 1 "${HEALTH_RETRIES}"); do
+        if curl -sf "http://localhost:${app_port}/" >/dev/null 2>&1; then
+            app_ready=true
+            break
+        fi
+        sleep "${HEALTH_INTERVAL}"
+    done
+
+    if [ "${app_ready}" = false ]; then
+        echo ""
+        echo -e "${YELLOW}Application not responding after update.${NC}"
+        echo "Check logs: docker compose -f ${compose_file} logs app"
+    else
+        success "Application is responding"
+    fi
+
+    info "Running database migrations..."
+    if docker compose -f "${compose_file}" exec -T app php yii migrate/up --interactive=0 --migrationPath=@console/migrations 2>&1; then
+        success "Migrations applied"
+    else
+        warn "Migration command returned non-zero. May be normal if none pending."
+    fi
+
+    echo "${latest_version}" > "${INSTALL_DIR}/${VERSION_FILE}"
+
+    echo ""
+    echo -e "${GREEN}╔══════════════════════════════════════════╗${NC}"
+    echo -e "${GREEN}║        ILDIS Updated Successfully!       ║${NC}"
+    echo -e "${GREEN}╚══════════════════════════════════════════╝${NC}"
+    echo ""
+    echo "  Previous version: ${current_version}"
+    echo "  New version:       ${latest_version}"
+    if [ "${backup_success}" = true ]; then
+        echo "  Backup file:       ${backup_file}"
+    fi
+    echo "  URL:                http://localhost:${app_port}"
+    echo ""
+}
+
+# ── Detect existing installation ─────────────────────────────────────────────
+detect_existing_install() {
+    local dir="${INSTALL_DIR:-${DEFAULT_INSTALL_DIR}}"
+    if [ -f "${dir}/${COMPOSE_FILE}" ] && [ -f "${dir}/${ENV_FILE}" ]; then
+        echo "${dir}"
+        return 0
+    fi
+    if [ -f "${COMPOSE_FILE}" ] && [ -f "${ENV_FILE}" ]; then
+        echo "$(pwd)"
+        return 0
+    fi
+    return 1
+}
+
+# ── Main ────────────────────────────────────────────────────────────────────
+main() {
+    echo ""
+    echo -e "${BOLD}ILDIS — Indonesian Law Documentation Information System${NC}"
+    echo ""
+
+    if [ "${ACTION}" = "update" ]; then
+        local existing_dir
+        existing_dir=$(detect_existing_install) || true
+        if [ -n "${existing_dir}" ]; then
+            INSTALL_DIR="${existing_dir}"
+        elif [ -z "${INSTALL_DIR}" ]; then
+            INSTALL_DIR="${DEFAULT_INSTALL_DIR}"
+        fi
+        info "Updating ILDIS in ${INSTALL_DIR}"
+        do_update
+        return
+    fi
+
+    check_prerequisites
+
+    if [ "${NON_INTERACTIVE}" = true ]; then
+        INSTALL_DIR="${INSTALL_DIR:-${DEFAULT_INSTALL_DIR}}"
+        PORT="${PORT:-${DEFAULT_PORT}}"
+        PUBLIC_DOMAIN="${PUBLIC_DOMAIN:-http://localhost:${PORT}}"
+        DB_TYPE="${DB_TYPE_OVERRIDE:-mariadb}"
+        DB_USER="${DB_USER:-ildis}"
+        DB_DATABASE="${DB_DATABASE:-ildis_v4}"
+        DB_DATABASE_PORT="${DB_DATABASE_PORT:-3306}"
+        DB_PASSWORD="${DB_PASSWORD:-$(generate_random_key)}"
+        DB_HOST="${DB_HOST:-mysql}"
+        YII_ENV="${YII_ENV:-prod}"
+        YII_DEBUG="${YII_DEBUG:-false}"
+        COOKIE_VALIDATION_KEY_BE="${COOKIE_VALIDATION_KEY_BE:-$(generate_random_key)}"
+        COOKIE_VALIDATION_KEY_FE="${COOKIE_VALIDATION_KEY_FE:-$(generate_random_key)}"
+        RECAPTCHA_SITE_KEY="${RECAPTCHA_SITE_KEY:-}"
+        RECAPTCHA_SECRET_KEY="${RECAPTCHA_SECRET_KEY:-}"
+    else
+        run_wizard
+    fi
+
+    do_install
+}
+
+main "$@"
