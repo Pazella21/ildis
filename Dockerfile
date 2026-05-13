@@ -66,6 +66,8 @@ RUN php init --env=Production --overwrite=n
 
 # Setup permissions - create directories first
 RUN mkdir -p /var/www/runtime \
+    && mkdir -p /var/www/console/runtime \
+    && mkdir -p /var/www/backups \
     && mkdir -p /var/www/backend/web/assets \
     && mkdir -p /var/www/backend/web/uploads \
     && mkdir -p /var/www/frontend/web/assets \
@@ -73,6 +75,8 @@ RUN mkdir -p /var/www/runtime \
     && chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www \
     && chmod -R 775 /var/www/runtime \
+    && chmod -R 775 /var/www/console/runtime \
+    && chmod -R 775 /var/www/backups \
     && chmod -R 775 /var/www/backend/web/assets \
     && chmod -R 775 /var/www/frontend/web/assets
 
