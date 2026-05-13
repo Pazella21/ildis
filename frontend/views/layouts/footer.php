@@ -118,15 +118,7 @@ $cleanEmail = $email ? trim(strip_tags($email->isi_konfig)) : 'humas@bphn.go.id 
     <!-- Bottom Section -->
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center" style="font-size: 0.75rem;">
       <div class="d-flex flex-wrap justify-content-center justify-content-lg-start align-items-center gap-3 mb-3 mb-lg-0" style="color: #64748b;">
-        <span class="text-white">&copy; 2026 BPHN</span>
-        <span style="color: #475569; font-weight: bold;">&middot;</span>
-        <a href="#" class="footer-link-muted">Prasyarat Penggunaan</a>
-        <span style="color: #475569; font-weight: bold;">&middot;</span>
-        <a href="#" class="footer-link-muted">Kebijakan Privasi</a>
-        <span style="color: #475569; font-weight: bold;">&middot;</span>
-        <a href="#" class="footer-link-muted">Status Sistem</a>
-        <span style="color: #475569; font-weight: bold;">&middot;</span>
-        <a href="#" class="footer-link-muted">Pengaturan Cookie</a>
+        <span class="text-white">&copy; <?= date('Y') ?> <?= Html::encode($cleanInstansi) ?> powered by <a href="https://ildis.bphn.go.id" target="_blank" style="color: #ffc107;">ILDIS</a></span>
       </div>
 
       <div class="d-flex align-items-center gap-4">
