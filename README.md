@@ -4,7 +4,7 @@
 
 ## Pasang Cepat
 
-Pasang ILDIS dengan satu perintah (memerlukan [Docker](https://docs.docker.com/engine/install/) dan [Docker Compose](https://docs.docker.com/compose/install/)):
+Pasang ILDIS dengan satu perintah (memerlukan [Docker](https://docs.docker.com/engine/install/) atau [Podman](https://podman.io/getting-started/installation)):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/bphndigitalservice/ildis/main/install.sh | bash
@@ -21,6 +21,8 @@ Untuk memperbarui instalasi yang ada:
 ```bash
 ./install.sh --update
 ```
+
+Skrip secara otomatis mendeteksi Docker Compose atau Podman Compose.
 
 ## 🔍 Apa itu ILDIS?
 

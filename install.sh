@@ -27,6 +27,9 @@ HEALTH_INTERVAL=5
 MYSQL_HEALTH_RETRIES=30
 MYSQL_HEALTH_INTERVAL=2
 
+COMPOSE_CMD=""
+CONTAINER_RUNTIME=""
+
 # ── Colors ──────────────────────────────────────────────────────────────────
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -89,6 +92,37 @@ prompt_value() {
     echo "$REPLY"
 }
 
+# ── Compose command wrapper ──────────────────────────────────────────────────
+# Normalizes differences between docker compose, podman compose, and podman-compose.
+run_compose() {
+    if [ "${COMPOSE_CMD}" = "podman-compose" ]; then
+        # podman-compose: load env manually, no --env-file flag
+        set -a
+        # shellcheck disable=SC1090
+        [ -f "${INSTALL_DIR}/${ENV_FILE}" ] && source "${INSTALL_DIR}/${ENV_FILE}" 2>/dev/null || true
+        set +a
+        podman-compose -f "${INSTALL_DIR}/${COMPOSE_FILE}" "$@"
+    else
+        # docker compose and podman compose: use --env-file flag
+        ${COMPOSE_CMD} -f "${INSTALL_DIR}/${COMPOSE_FILE}" --env-file "${INSTALL_DIR}/${ENV_FILE}" "$@"
+    fi
+}
+
+run_compose_update() {
+    local compose_file="${1}"
+    local env_file="${2}"
+    shift 2
+    if [ "${COMPOSE_CMD}" = "podman-compose" ]; then
+        set -a
+        # shellcheck disable=SC1090
+        [ -f "${env_file}" ] && source "${env_file}" 2>/dev/null || true
+        set +a
+        podman-compose -f "${compose_file}" "$@"
+    else
+        ${COMPOSE_CMD} -f "${compose_file}" --env-file "${env_file}" "$@"
+    fi
+}
+
 # ── Parse arguments ─────────────────────────────────────────────────────────
 INSTALL_DIR="${INSTALL_DIR:-}"
 ACTION="install"
@@ -127,7 +161,7 @@ done
 
 show_help() {
     cat <<'EOF'
-ILDIS Pasang Sekali Klik — Pasang ILDIS dengan Docker
+ILDIS Pasang Sekali Klik — Pasang ILDIS dengan Docker/Podman
 
 Penggunaan:
   ./install.sh                      Pasang interaktif
@@ -136,6 +170,11 @@ Penggunaan:
   ./install.sh --dir /opt/ildis    Tentukan direktori instalasi
   ./install.sh --db-type mariadb   Atur tipe DB (mariadb|mysql|external)
   ./install.sh --help               Tampilkan bantuan ini
+
+Container runtime:
+  Docker Compose (docker compose) — dideteksi otomatis
+  Podman Compose (podman compose) — dideteksi otomatis
+  podman-compose                   — dideteksi otomatis
 
 Variabel lingkungan (untuk --non-interactive):
   INSTALL_DIR        Direktori instalasi (bawaan: /opt/ildis)
@@ -166,20 +205,33 @@ fi
 check_prerequisites() {
     info "Memeriksa prasyarat..."
 
-    if ! command -v docker &>/dev/null; then
-        echo ""
-        echo -e "${RED}Docker belum terpasang.${NC}"
-        echo ""
-        echo "Pasang Docker: https://docs.docker.com/engine/install/"
-        fail "Docker diperlukan."
+    COMPOSE_CMD=""
+    CONTAINER_RUNTIME=""
+    if command -v docker &>/dev/null && docker compose version &>/dev/null 2>&1; then
+        COMPOSE_CMD="docker compose"
+        CONTAINER_RUNTIME="docker"
+        success "Docker Compose ditemukan"
+    elif command -v podman &>/dev/null; then
+        if podman compose version &>/dev/null 2>&1; then
+            COMPOSE_CMD="podman compose"
+            CONTAINER_RUNTIME="podman"
+            success "Podman Compose ditemukan"
+        elif command -v podman-compose &>/dev/null; then
+            COMPOSE_CMD="podman-compose"
+            CONTAINER_RUNTIME="podman"
+            success "podman-compose ditemukan"
+        fi
     fi
 
-    if ! docker compose version &>/dev/null 2>&1; then
+    if [ -z "${COMPOSE_CMD}" ]; then
         echo ""
-        echo -e "${RED}Docker Compose v2 tidak tersedia.${NC}"
+        echo -e "${RED}Tidak ditemukan Docker Compose maupun Podman Compose.${NC}"
         echo ""
-        echo "Pasang Docker Compose: https://docs.docker.com/compose/install/"
-        fail "Docker Compose v2 diperlukan."
+        echo "Pasang salah satu:"
+        echo "  Docker:       https://docs.docker.com/engine/install/"
+        echo "  Podman:       https://podman.io/getting-started/installation"
+        echo "  podman-compose: pip install podman-compose"
+        fail "Docker Compose atau Podman Compose diperlukan."
     fi
 
     local available_kb available_mb
@@ -202,7 +254,7 @@ check_prerequisites() {
         fi
     fi
 
-    success "Prasyarat OK"
+    success "Prasyarat OK (${CONTAINER_RUNTIME})"
 }
 
 # ── Interactive wizard ───────────────────────────────────────────────────────
@@ -336,7 +388,7 @@ COOKIE_VALIDATION_KEY_FE=${COOKIE_VALIDATION_KEY_FE}
 RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY:-}
 RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY:-}
 
-# ── Tag image Docker ──
+# ── Tag image kontainer ──
 ILDIS_IMAGE_TAG=${ILDIS_IMAGE_TAG:-latest}
 EOF
 
@@ -523,23 +575,23 @@ do_install() {
     generate_env
     generate_compose
 
-    info "Mengunduh image Docker ILDIS..."
-    if ! docker compose -f "${INSTALL_DIR}/${COMPOSE_FILE}" --env-file "${INSTALL_DIR}/${ENV_FILE}" pull 2>&1; then
-        fail "Gagal mengunduh image Docker. Periksa koneksi jaringan dan pastikan image tersedia di ${GHCR_IMAGE}."
+    info "Mengunduh image ILDIS..."
+    if ! run_compose pull 2>&1; then
+        fail "Gagal mengunduh image. Periksa koneksi jaringan dan pastikan image tersedia di ${GHCR_IMAGE}."
     fi
-    success "Image Docker berhasil diunduh"
+    success "Image berhasil diunduh"
 
     info "Memulai ILDIS..."
-    if ! docker compose -f "${INSTALL_DIR}/${COMPOSE_FILE}" --env-file "${INSTALL_DIR}/${ENV_FILE}" up -d 2>&1; then
-        fail "Gagal memulai container. Periksa log: docker compose -f ${INSTALL_DIR}/${COMPOSE_FILE} logs"
+    if ! run_compose up -d 2>&1; then
+        fail "Gagal memulai container. Periksa log: ${COMPOSE_CMD} -f ${INSTALL_DIR}/${COMPOSE_FILE} logs"
     fi
 
     if [ "${DB_TYPE}" != "external" ]; then
         info "Menunggu database siap..."
         local db_ready=false
         for i in $(seq 1 "${MYSQL_HEALTH_RETRIES}"); do
-            if docker compose -f "${INSTALL_DIR}/${COMPOSE_FILE}" --env-file "${INSTALL_DIR}/${ENV_FILE}" exec -T db healthcheck.sh --connect --innodb_initialized &>/dev/null 2>&1 || \
-               docker compose -f "${INSTALL_DIR}/${COMPOSE_FILE}" --env-file "${INSTALL_DIR}/${ENV_FILE}" exec -T db mysqladmin ping -h localhost -u root &>/dev/null 2>&1; then
+            if run_compose exec -T db healthcheck.sh --connect --innodb_initialized &>/dev/null 2>&1 || \
+               run_compose exec -T db mysqladmin ping -h localhost -u root &>/dev/null 2>&1; then
                 db_ready=true
                 break
             fi
@@ -569,7 +621,7 @@ do_install() {
         echo ""
         echo -e "${YELLOW}Container ILDIS berjalan tetapi aplikasi belum merespons.${NC}"
         echo "Ini mungkin membutuhkan beberapa saat. Periksa status dengan:"
-        echo "  docker compose -f ${INSTALL_DIR}/${COMPOSE_FILE} logs app"
+        echo "  ${COMPOSE_CMD} -f ${INSTALL_DIR}/${COMPOSE_FILE} logs app"
         echo ""
         echo "Jika sudah siap, kunjungi: http://localhost:${app_port}"
     else
@@ -577,7 +629,7 @@ do_install() {
     fi
 
     info "Menjalankan migrasi database..."
-    if docker compose -f "${INSTALL_DIR}/${COMPOSE_FILE}" --env-file "${INSTALL_DIR}/${ENV_FILE}" exec -T app php yii migrate/up --interactive=0 --migrationPath=@console/migrations 2>&1; then
+    if run_compose exec -T app php yii migrate/up --interactive=0 --migrationPath=@console/migrations 2>&1; then
         success "Migrasi database berhasil diterapkan"
     else
         warn "Perintah migrasi mengembalikan non-zero. Ini mungkin normal jika tidak ada migrasi tertunda."
@@ -594,9 +646,9 @@ do_install() {
     echo "  Compose:        ${INSTALL_DIR}/${COMPOSE_FILE}"
     echo ""
     echo "  Perintah berguna:"
-    echo "    docker compose -f ${INSTALL_DIR}/${COMPOSE_FILE} logs -f     # Ikuti log"
-    echo "    docker compose -f ${INSTALL_DIR}/${COMPOSE_FILE} down        # Hentikan container"
-    echo "    docker compose -f ${INSTALL_DIR}/${COMPOSE_FILE} pull        # Perbarui image"
+    echo "    ${COMPOSE_CMD} -f ${INSTALL_DIR}/${COMPOSE_FILE} logs -f       # Ikuti log"
+    echo "    ${COMPOSE_CMD} -f ${INSTALL_DIR}/${COMPOSE_FILE} down          # Hentikan container"
+    echo "    ${COMPOSE_CMD} -f ${INSTALL_DIR}/${COMPOSE_FILE} pull          # Perbarui image"
     echo ""
     echo -e "  ${CYAN}Untuk memperbarui ILDIS, jalankan: ./install.sh --update${NC}"
     echo ""
@@ -662,7 +714,7 @@ do_update() {
 
     local backup_success=false
     if [ "${DB_TYPE:-mariadb}" != "external" ]; then
-        if docker compose -f "${compose_file}" exec -T db sh -c \
+        if ${COMPOSE_CMD} -f "${compose_file}" exec -T db sh -c \
             "MYSQL_PWD=\"${db_pass}\" mysqldump -h localhost -u \"${db_user}\" -P \"${db_port}\" --single-transaction --routines --triggers \"${db_name}\"" 2>/dev/null | gzip > "${backup_file}"; then
             backup_success=true
         fi
@@ -676,7 +728,7 @@ do_update() {
     elif [ "${DB_TYPE:-mariadb}" != "external" ]; then
         warn "Cadangan database gagal. Melanjutkan tanpa cadangan."
         warn "Anda dapat membuat cadangan manual dengan:"
-        warn "  docker compose -f ${compose_file} exec -T db mysqldump ..."
+        warn "  ${COMPOSE_CMD} -f ${compose_file} exec -T db mysqldump ..."
         if [ "${NON_INTERACTIVE}" = false ]; then
             if ! confirm "Lanjutkan tanpa cadangan?" "n"; then
                 echo "Pembaruan dibatalkan."
@@ -685,14 +737,14 @@ do_update() {
         fi
     fi
 
-    info "Mengunduh image Docker terbaru..."
-    if ! docker compose -f "${compose_file}" --env-file "${env_file}" pull 2>&1; then
-        fail "Gagal mengunduh image Docker."
+    info "Mengunduh image terbaru..."
+    if ! run_compose_update "${compose_file}" "${env_file}" pull 2>&1; then
+        fail "Gagal mengunduh image."
     fi
     success "Image diperbarui"
 
     info "Memulai ulang container ILDIS..."
-    if ! docker compose -f "${compose_file}" --env-file "${env_file}" up -d 2>&1; then
+    if ! run_compose_update "${compose_file}" "${env_file}" up -d 2>&1; then
         fail "Gagal memulai ulang container."
     fi
 
@@ -700,8 +752,8 @@ do_update() {
         info "Menunggu database..."
         local db_ready=false
         for i in $(seq 1 "${MYSQL_HEALTH_RETRIES}"); do
-            if docker compose -f "${compose_file}" exec -T db healthcheck.sh --connect --innodb_initialized &>/dev/null 2>&1 || \
-               docker compose -f "${compose_file}" exec -T db mysqladmin ping -h localhost &>/dev/null 2>&1; then
+            if run_compose_update "${compose_file}" "${env_file}" exec -T db healthcheck.sh --connect --innodb_initialized &>/dev/null 2>&1 || \
+               run_compose_update "${compose_file}" "${env_file}" exec -T db mysqladmin ping -h localhost &>/dev/null 2>&1; then
                 db_ready=true
                 break
             fi
@@ -725,13 +777,13 @@ do_update() {
     if [ "${app_ready}" = false ]; then
         echo ""
         echo -e "${YELLOW}Aplikasi tidak merespons setelah pembaruan.${NC}"
-        echo "Periksa log: docker compose -f ${compose_file} logs app"
+        echo "Periksa log: ${COMPOSE_CMD} -f ${compose_file} logs app"
     else
         success "Aplikasi merespons"
     fi
 
     info "Menjalankan migrasi database..."
-    if docker compose -f "${compose_file}" exec -T app php yii migrate/up --interactive=0 --migrationPath=@console/migrations 2>&1; then
+    if run_compose_update "${compose_file}" "${env_file}" exec -T app php yii migrate/up --interactive=0 --migrationPath=@console/migrations 2>&1; then
         success "Migrasi diterapkan"
     else
         warn "Perintah migrasi mengembalikan non-zero. Mungkin normal jika tidak ada yang tertunda."
@@ -774,6 +826,25 @@ main() {
     echo ""
 
     if [ "${ACTION}" = "update" ]; then
+        # Detect container runtime for update mode
+        COMPOSE_CMD=""
+        CONTAINER_RUNTIME=""
+        if command -v docker &>/dev/null && docker compose version &>/dev/null 2>&1; then
+            COMPOSE_CMD="docker compose"
+            CONTAINER_RUNTIME="docker"
+        elif command -v podman &>/dev/null; then
+            if podman compose version &>/dev/null 2>&1; then
+                COMPOSE_CMD="podman compose"
+                CONTAINER_RUNTIME="podman"
+            elif command -v podman-compose &>/dev/null; then
+                COMPOSE_CMD="podman-compose"
+                CONTAINER_RUNTIME="podman"
+            fi
+        fi
+        if [ -z "${COMPOSE_CMD}" ]; then
+            fail "Tidak ditemukan Docker Compose maupun Podman Compose. Pasang salah satu sebelum memperbarui."
+        fi
+
         local existing_dir
         existing_dir=$(detect_existing_install) || true
         if [ -n "${existing_dir}" ]; then
