@@ -107,7 +107,7 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                     <div class="bg-primary bg-opacity-10 border border-primary border-opacity-20 rounded-4 p-4 text-center">
                         <i class="ti-info-alt text-primary h1 d-block mb-3"></i>
                         <h5 class="font-weight-700 text-dark-blue mb-2 small text-uppercase tracking-wider">Informasi Publik</h5>
-                        <p class="text-muted small mb-0">Dapatkan informasi hukum terbaru dan terpercaya melalui portal ILDIS.</p>
+                        <p class="text-muted small mb-0">Dapatkan informasi hukum terbaru dan terpercaya melalui portal JDIH ini.</p>
                     </div>
                 </div>
             </div>

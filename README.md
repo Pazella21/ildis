@@ -98,8 +98,8 @@ Untuk update ke versi terbaru:
 - [x] Update library dengan **CVE** agar sistem lebih aman dan terjaga dari kerentanan
 - [x] Panduan pengembangan lokal
 - [x] Update ke Versi Yii 2.0.52
-- [x] Update ke PHP 8.1
-- [x] Migration Script untuk database yang sudah ada
+- [x] Update ke PHP 8.3
+- [ ] Migration Script untuk database yang sudah ada
 - [ ] Headless mode untuk flexibilitas frontend
 - [ ] Dokumentasi API yang lebih lengkap
 

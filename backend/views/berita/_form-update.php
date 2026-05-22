@@ -92,7 +92,7 @@ $this->registerJs($js);
 
         <?=
             $form->field($model, 'status')->dropDownList(
-                ['1' => 'Publish', '1' => 'Tidak Publish'],
+                ['1' => 'Publish', '0' => 'Tidak Publish'],
                 ['prompt' => 'Pilih Status...']
             );
         ?>
