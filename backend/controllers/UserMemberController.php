@@ -11,6 +11,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
+use backend\models\DokumenJdih;
 
 /**
  * UserMemberController implements the CRUD actions for UserMember model.
@@ -39,10 +40,6 @@ class UserMemberController extends Controller
     public function actionIndex()
     {
         $searchModel = new UserMemberSearch();
-        /*
-        $searchModel = new UserMemberSearch(['id'=>\Yii::$app->user->identity->direktorat_id]);
-        $dataProvider->query->andWhere(['id'=>[2,3,4]]);
-        */
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -51,76 +48,11 @@ class UserMemberController extends Controller
         ]);
     }
 
-    /**
-     * Displays a single UserMember model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new UserMember model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-    
-    public function actionCreate()
-    {
-        $model = new UserMember();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-     */
-
-    // public function actionCreate()
-    // {
-    //     $model = new UserMember();
-
-    //     if ($model->load(Yii::$app->request->post())) {
-
-    //         $model->setPassword('123456');
-    //         //$model->password_hash = Yii::$app->security->generatePasswordHash($_POST['UserMember']['password_hash']);
-    //         $model->generateAuthKey();
-    //         /*
-    //         isi parameter tambahan
-
-    //         $model->id = md5(uniqid(mt_rand(), true));
-    //         $jenis = $_POST['UserMember']['field']);    
-    //         $model->tahun_ln =  date('Y', strtotime($_POST['Peraturan']['tgl_diundangkan']));
-    //         */
-
-
-    //         if ($model->save()) {
-    //             Yii::$app->session->setFlash('success', 'Data UserMember berhasil ditambahkan');
-    //             return $this->redirect(['view', 'id' => $model->id]);
-    //         } else {
-    //             Yii::$app->session->setFlash('error', 'Data UserMember Gagal ditambahkan, periksa kembali ');
-    //             return $this->render('create', ['model' => $model]);
-    //         }
-    //     } else {
-    //         return $this->render('create', [
-    //             'model' => $model,
-    //         ]);
-    //     }
-    // }
-
-
-    public function actionCreate()
+public function actionCreate()
     {
         $model = new Signup();
         if ($model->load(Yii::$app->getRequest()->post())) {
             if ($user = $model->signup()) {
-                //return $this->goHome();
                 return $this->redirect(['view', 'id' => $user->id]);
             }
         }
@@ -188,24 +120,13 @@ class UserMemberController extends Controller
 
     public function actionParent($id)
     {
-        if ($id == '11e449f371bb47e09607313231373436') {
-            $instansi = 'Kementerian';
-            $rows = \backend\models\peraturan\Institutions::find()->where(['jenis' => $instansi])->all();
-            echo "<option>Pilih Kementerian</option>";
-        } else {
-            $instansi = 'Lembaga';
-            $rows = \backend\models\peraturan\Institutions::find()->where(['jenis' => $instansi])->all();
-            echo "<option>Pilih Lembaga Non Kementerian</option>";
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $institutionType = ($id == DokumenJdih::KEMENTERIAN_ID) ? 'Kementerian' : 'Lembaga';
+        $institutions = \backend\models\peraturan\Institutions::find()->where(['jenis' => $institutionType])->all();
+        $results = [];
+        foreach ($institutions as $institution) {
+            $results[] = ['id' => $institution->id, 'name' => $institution->nama];
         }
-
-        // echo "<option>Pilih Kementerian/Lembaga</option>";
-
-        if (count($rows) > 0) {
-            foreach ($rows as $row) {
-                echo "<option value='$row->id'>$row->nama</option>";
-            }
-        } else {
-            echo "<option>Nenhum municipio cadastrado</option>";
-        }
+        return $results;
     }
 }

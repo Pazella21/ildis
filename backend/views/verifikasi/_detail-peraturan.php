@@ -59,11 +59,11 @@ use mdm\admin\components\Helper;
             ],
             [
                 'label' => 'Tanggal Penetapan',
-                'value' => $model->getTanggal($model->tanggal_penetapan),
+                'value' => \common\components\DateHelper::formatIndonesian($model->tanggal_penetapan),
             ],
             [
                 'label' => 'Tanggal Pengundangan',
-                'value' => $model->getTanggal($model->tanggal_pengundangan),
+                'value' => \common\components\DateHelper::formatIndonesian($model->tanggal_pengundangan),
             ],
 
             'sumber:ntext',
@@ -117,7 +117,7 @@ use mdm\admin\components\Helper;
             [
                 'attribute' => 'created_at',
                 'value' => function ($data) {
-                    return $data->getTanggal2($data->created_at);
+                    return \common\components\DateHelper::formatIndonesian($data->created_at);
                 },
             ],
 
@@ -130,7 +130,7 @@ use mdm\admin\components\Helper;
             [
                 'attribute' => 'updated_at',
                 'value' => function ($data) {
-                    return $data->getTanggal2($data->updated_at);
+                    return \common\components\DateHelper::formatIndonesian($data->updated_at);
                 },
             ],
             [

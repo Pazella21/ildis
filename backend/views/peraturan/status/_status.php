@@ -45,7 +45,7 @@ use kartik\grid\GridView;
             [
                 'label' => 'Tanggal Perubahan',
                 'value' => function ($data) {
-                    return $data->getTanggal($data->tanggal_perubahan);
+                    return \common\components\DateHelper::formatIndonesian($data->tanggal_perubahan);
                 }
             ],
             [

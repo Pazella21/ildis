@@ -82,7 +82,7 @@ use yii\widgets\DetailView;
             [
                 'attribute' => 'created_at',
                 'value' => function ($data) {
-                    return $data->getTanggal2($data->created_at);
+                    return \common\components\DateHelper::formatIndonesian($data->created_at);
                 },
             ],
 
@@ -95,7 +95,7 @@ use yii\widgets\DetailView;
             [
                 'attribute' => 'updated_at',
                 'value' => function ($data) {
-                    return $data->getTanggal2($data->updated_at);
+                    return \common\components\DateHelper::formatIndonesian($data->updated_at);
                 },
             ],
             [

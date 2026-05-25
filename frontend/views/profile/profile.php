@@ -68,16 +68,16 @@ use yii\widgets\DetailView;
                                     
                                     [
                                         'attribute'=>'member_since_date',
-                                        'value' =>$model->getTanggal($model->member_since_date), 
+                                        'value' =>\common\components\DateHelper::formatIndonesian($model->member_since_date), 
                                     ],
 
                                      [
                                         'attribute'=>'register_date',
-                                        'value' =>$model->getTanggal($model->register_date), 
+                                        'value' =>\common\components\DateHelper::formatIndonesian($model->register_date), 
                                     ],
                                     [
                                         'attribute'=>'expire_date',
-                                        'value' =>$model->getTanggal($model->expire_date), 
+                                        'value' =>\common\components\DateHelper::formatIndonesian($model->expire_date), 
                                     ],
                                     
                                 ],
@@ -94,7 +94,7 @@ use yii\widgets\DetailView;
                                     //'birth_date',
                                      [
                                         'attribute'=>'birth_date',
-                                        'value' =>$model->getTanggal($model->birth_date), 
+                                        'value' =>\common\components\DateHelper::formatIndonesian($model->birth_date), 
                                     ],
                                     'personal_id_number',
                                     'gender',

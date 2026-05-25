@@ -10,7 +10,7 @@ return [
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
     'name' => 'Jaringan Dokumentasi dan Informasi Hukum',
-    'bootstrap' => ['log', 'userCounter'],
+    'bootstrap' => ['log', 'userCounter', 'visitorCounter'],
     'controllerNamespace' => 'frontend\controllers',
     'modules' => [
         'gridview' =>  [
@@ -31,6 +31,12 @@ return [
             'onlineTime' => 10, // min
         ],
 
+        'visitorCounter' => [
+            'class' => 'common\components\VisitorCounter',
+            'deduplicateWindowMinutes' => 30,
+            'cookieName' => '__visitor_id',
+            'cookieExpiryDays' => 180,
+        ],
 
         'view' => [
             'class' => 'daxslab\taggedview\View',
@@ -42,11 +48,15 @@ return [
         'user' => [
             'identityClass' => 'common\models\Member',
             'enableAutoLogin' => true,
-            'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
+            'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true, 'secure' => getenv('YII_ENV') === 'prod', 'sameSite' => 'Lax'],
         ],
         'session' => [
-            // this is the name of the session cookie used for login on the frontend
-            'name' => 'practical-a-frontend',
+            'name' => 'ildis-frontend',
+            'cookieParams' => [
+                'httponly' => true,
+                'secure' => getenv('YII_ENV') === 'prod',
+                'sameSite' => 'Lax',
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -66,6 +76,7 @@ return [
             'rules' => [
                 '/' => 'site/index',
                 'kontak' => 'site/kontak',
+                'sitemap.xml' => 'sitemap/index',
                 '/rancangan' => 'rancangan/index',
             ],
         ],

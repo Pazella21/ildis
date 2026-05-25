@@ -136,14 +136,15 @@ class CounterController extends Controller
 
     public function actionReport()
     {
-        if(empty($_POST['tgls']))
+        $tgls = Yii::$app->request->post('tgls', '');
+        if (empty($tgls))
         {
             $tgl1 = date('Y-m-01').' 00:00:00';
             $tgl2 = date('Y-m-t').' 23:59:59';
         }
         else
         {
-            $e = explode(' - ', $_POST['tgls']);
+            $e = explode(' - ', $tgls);
             $z = explode('-', $e[0]);
             $tgl1 = $z[2].'-'.$z[1].'-'.$z[0].' 00:00:00';
             $w = explode('-', $e[1]);

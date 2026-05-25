@@ -9,6 +9,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
+use common\components\SafeDownload;
+use backend\models\DokumenJdih;
 
 /**
  * MasukanMasyarakatController implements the CRUD actions for MasukanMasyarakat model.
@@ -112,16 +114,9 @@ class MasukanMasyarakatController extends Controller
         }
     }
 
-    public function actionDownload($id) 
-    { 
-
-        $path = Yii::getAlias('@common'). '/uploads/masyarakat/' . $id;
-        if (file_exists($path)) {
-
-            return Yii::$app->response->sendFile($path);
-        } else {
-            throw new NotFoundHttpException("can't find {$id} file");
-        }
+    public function actionDownload($id)
+    {
+        return SafeDownload::sendFile('@common/uploads/masyarakat', $id);
     } 
     /**
      * Updates an existing MasukanMasyarakat model.
@@ -205,7 +200,7 @@ class MasukanMasyarakatController extends Controller
     }
 
     public function actionParent($id){
-        if ($id== '11e449f371bb47e09607313231373436')
+        if ($id== DokumenJdih::KEMENTERIAN_ID)
         {
             $instansi='Kementerian';
             $rows = \backend\models\peraturan\Institutions::find()->where(['jenis' => $instansi])->all();

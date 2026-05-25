@@ -627,16 +627,9 @@ class MonografiController extends Controller
 
 /*---------- END STATUS -----------------*/   
 
-    public function actionDownload($id) 
-    { 
-
-        $path = Yii::getAlias('@common'). '/dokumen/' . $id;
-        if (file_exists($path)) {
-
-            return Yii::$app->response->sendFile($path);
-        } else {
-            throw new NotFoundHttpException("can't find {$id} file");
-        }
+    public function actionDownload($id)
+    {
+        return \common\components\SafeDownload::sendFile('@common/dokumen', $id);
     }
 
     public function actionLoaddokumen($q = null, $id = null) {

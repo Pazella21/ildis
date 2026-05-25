@@ -6,6 +6,7 @@ use Yii;
 use backend\models\Artikel;
 use backend\models\Pengarang;
 use backend\models\LogPustakawan;
+use common\components\DateHelper;
 use backend\models\JenisPeraturan;
 use backend\models\DataPengarang;
 use backend\models\DataSubyek;
@@ -20,6 +21,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
 use backend\web\components\FileHelper;
+use common\components\SafeDownload;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Json;
 
@@ -164,7 +166,7 @@ class ArtikelController extends Controller
             $log->dokumen_id = $model->id;
             $log->controller = 'Peraturan';
             $log->aksi = 'Tambah Peraturan';
-            $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data artikel pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+            $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data artikel pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
             $log->save();
 
             Yii::$app->session->setFlash('success', 'data artikel berhasil ditambahkan');
@@ -235,7 +237,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $id;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Ubah Peraturan';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data artikel pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data artikel pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 Yii::$app->session->setFlash('success', 'data artikel berhasil diubah');
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -262,7 +264,7 @@ return $this->render('create',['model'=>$model]);
             $log->dokumen_id = $id;
             $log->controller = 'Peraturan';
             $log->aksi = 'Hapus Peraturan';
-            $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data artikel pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+            $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data artikel pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
             $log->save();
 
             Yii::$app->session->setFlash('danger', 'data artikel berhasil dihapus');
@@ -304,7 +306,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $id;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Tambah Pengarang';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data pengarang pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data pengarang pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
 
                 Yii::$app->session->setFlash('success', 'Data Pengarang berhasil ditambah');
@@ -329,7 +331,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $model->id_dokumen;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Ubah teu';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data teu peraturan pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data teu peraturan pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 return $this->redirect(['view', 'id' => $model->id_dokumen]);
                 Yii::$app->session->setFlash('warning', 'Data Pengarang berhasil diubah');
@@ -358,7 +360,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $id;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Tambah Pengarang';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data pengarang pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data pengarang pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
 
                 Yii::$app->session->setFlash('success', 'Data Pengarang berhasil ditambah');
@@ -381,7 +383,7 @@ return $this->render('create',['model'=>$model]);
         $log->dokumen_id = $model->id_dokumen;
         $log->controller = 'Peraturan';
         $log->aksi = 'Hapus  Pengarang';
-        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data teu peraturan pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data teu peraturan pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
         $log->save();
         Yii::$app->session->setFlash('danger', 'Data Pengarang berhasil dihapus');
         return $this->redirect(['view', 'id' => $model->id_dokumen]);
@@ -403,7 +405,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $id;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Tambah Subjek';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data subjek peraturan pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data subjek peraturan pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
 
                 Yii::$app->session->setFlash('success', 'Data Subyek berhasil ditambah');
@@ -426,7 +428,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $model->id_dokumen;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Ubah Subjek';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data subjek peraturan pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data subjek peraturan pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 Yii::$app->session->setFlash('warning', 'Data Subyek berhasil diubah');
                 return $this->redirect(['view', 'id' => $model->id_dokumen]);
@@ -446,7 +448,7 @@ return $this->render('create',['model'=>$model]);
         $log->dokumen_id = $model->id_dokumen;
         $log->controller = 'Peraturan';
         $log->aksi = 'Hapus Subjek';
-        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data subjek peraturan pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data subjek peraturan pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
         $log->save();
         Yii::$app->session->setFlash('danger', 'Data Subyek berhasil dihapus');
         return $this->redirect(['view', 'id' => $model->id_dokumen]);
@@ -478,7 +480,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $model->id;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Tambah Lampiran';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data lampiran pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data lampiran pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 Yii::$app->session->setFlash('success', 'Data Lampiran berhasil ditambah');
                 return $this->redirect(['view', 'id' => $id]);
@@ -514,7 +516,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $model->id_dokumen;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Ubah Lampiran';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data lampiran pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data lampiran pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 Yii::$app->session->setFlash('warning', 'Data Lampiran berhasil diubah');
                 return $this->redirect(['view', 'id' => $model->id_dokumen]);
@@ -534,7 +536,7 @@ return $this->render('create',['model'=>$model]);
         $log->dokumen_id = $model->id_dokumen;
         $log->controller = 'Peraturan';
         $log->aksi = 'Hapus Lampiran';
-        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data lampiran peraturan pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data lampiran peraturan pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
         $log->save();
         Yii::$app->session->setFlash('danger', 'Data Lampiran berhasil dihapus');
         return $this->redirect(['view', 'id' => $model->id_dokumen]);
@@ -554,7 +556,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $model->id_dokumen;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Tambah Peraturan Terkait';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data artikel terkait pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data artikel terkait pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 Yii::$app->session->setFlash('success', 'data artikel Terkait berhasil ditambah');
                 return $this->redirect(['view', 'id' => $id]);
@@ -575,7 +577,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $model->id_dokumen;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Ubah Peraturan Terkait';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data artikel terkait pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data artikel terkait pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 Yii::$app->session->setFlash('warning', 'data artikel Terkait berhasil diubah');
                 return $this->redirect(['view', 'id' => $model->id_dokumen]);
@@ -595,7 +597,7 @@ return $this->render('create',['model'=>$model]);
         $log->dokumen_id = $model->id_dokumen;
         $log->controller = 'Peraturan';
         $log->aksi = 'Hapus Peraturan Terkait';
-        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data artikel terkait pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data artikel terkait pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
         $log->save();
         Yii::$app->session->setFlash('danger', 'data artikel Terkait berhasil dihapus');
         return $this->redirect(['view', 'id' => $model->id_dokumen]);
@@ -625,7 +627,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $model->id_dokumen;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Dokumen Terkait';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data dokumen terkait peraturan pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data dokumen terkait peraturan pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 Yii::$app->session->setFlash('success', 'Data Dokumen terkait berhasil ditambah');
                 return $this->redirect(['view', 'id' => $id]);
@@ -647,7 +649,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $id;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Tambah Dokumen Terkait';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data dokumen terkait pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data dokumen terkait pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 Yii::$app->session->setFlash('success', 'Data Dokumen terkait berhasil ditambah');
                 return $this->redirect(['view', 'id' => $id]);
@@ -681,7 +683,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $model->id_dokumen;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Ubah Dokumen Terkait';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data dokumen terkait peraturan pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data dokumen terkait peraturan pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 Yii::$app->session->setFlash('warning', 'Data Dokumen terkait berhasil diubah');
                 return $this->redirect(['view', 'id' => $model->id_dokumen]);
@@ -701,7 +703,7 @@ return $this->render('create',['model'=>$model]);
         $log->dokumen_id = $model->id_dokumen;
         $log->controller = 'Peraturan';
         $log->aksi = 'Hapus Dokumen Terkait';
-        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data dokumen terkait peraturan pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data dokumen terkait peraturan pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
         $log->save();
         Yii::$app->session->setFlash('danger', 'Data Dokumen terkait berhasil dihapus');
         return $this->redirect(['view', 'id' => $model->id_dokumen]);
@@ -730,7 +732,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $model->id_dokumen;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Tambah Uji Materi';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data uji materi pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data uji materi pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 Yii::$app->session->setFlash('success', 'Data Hasil Uji Materi berhasil ditambah');
                 return $this->redirect(['view', 'id' => $id]);
@@ -763,7 +765,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $model->id_dokumen;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Ubah Uji Materi';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data uji materi peraturan pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data uji materi peraturan pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 Yii::$app->session->setFlash('warning', 'Data Hasil Uji Materi berhasil diubah');
                 return $this->redirect(['view', 'id' => $model->id_dokumen]);
@@ -783,7 +785,7 @@ return $this->render('create',['model'=>$model]);
         $log->dokumen_id = $model->id_dokumen;
         $log->controller = 'Peraturan';
         $log->aksi = 'Hapus Uji Materi';
-        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data uji materi pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data uji materi pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
         $log->save();
         Yii::$app->session->setFlash('danger', 'Data Hasil Uji Materi berhasil dihapus');
         return $this->redirect(['view', 'id' => $model->id_dokumen]);
@@ -802,7 +804,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $model->id_dokumen;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Tambah Status';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data status peraturan pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan tambah data status peraturan pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 Yii::$app->session->setFlash('success', 'Data Status berhasil ditambah');
                 return $this->redirect(['view', 'id' => $id]);
@@ -823,7 +825,7 @@ return $this->render('create',['model'=>$model]);
                 $log->dokumen_id = $model->id_dokumen;
                 $log->controller = 'Peraturan';
                 $log->aksi = 'Ubah Status';
-                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data status peraturan pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+                $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan ubah data status peraturan pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
                 $log->save();
                 Yii::$app->session->setFlash('warning', 'Data status berhasil diubah');
                 return $this->redirect(['view', 'id' => $model->id_dokumen]);
@@ -843,7 +845,7 @@ return $this->render('create',['model'=>$model]);
         $log->dokumen_id = $model->id_dokumen;
         $log->controller = 'Peraturan';
         $log->aksi = 'Hapus Status';
-        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data status peraturan pada ' . $log->getTanggal2(date("Y-m-d H:i:s"));
+        $log->keterangan = 'User ' . \Yii::$app->user->identity->username . ' melakukan hapus data status peraturan pada ' . DateHelper::formatIndonesian(date('Y-m-d H:i:s'));
         $log->save();
         Yii::$app->session->setFlash('danger', 'Data status berhasil dihapus');
         return $this->redirect(['view', 'id' => $model->id_dokumen]);
@@ -854,43 +856,22 @@ return $this->render('create',['model'=>$model]);
 
     public function actionDownload($id)
     {
-
-        $path = Yii::getAlias('@common') . '/dokumen/' . $id;
-        if (file_exists($path)) {
-
-            return Yii::$app->response->sendFile($path);
-        } else {
-            throw new NotFoundHttpException("can't find {$id} file");
-        }
+        return SafeDownload::sendFile('@common/dokumen', $id);
     }
 
     public function actionDownloadPeraturan($id)
     {
         $file = DataLampiran::find()->where(['id_dokumen' => $id])->one();
-
-
-        $path = Yii::getAlias('@common') . '/dokumen/' . $file->dokumen_lampiran;
-        if (file_exists($path)) {
-
-            return Yii::$app->response->sendFile($path);
-        } else {
-            throw new NotFoundHttpException("Tidak dapat menemukan file {$id}, silahkan hubungi admin");
+        if (!$file) {
+            throw new NotFoundHttpException('Data lampiran tidak ditemukan.');
         }
+        return SafeDownload::sendFile('@common/dokumen', $file->dokumen_lampiran);
     }
 
 
     public function actionDownloadAbstrak($id)
     {
-        //$file = DataLampiran::find()->where(['id_dokumen'=>$id])->one();
-
-
-        $path = Yii::getAlias('@common') . '/dokumen/' . $id;
-        if (file_exists($path)) {
-
-            return Yii::$app->response->sendFile($path);
-        } else {
-            throw new NotFoundHttpException("Tidak dapat menemukan file {$id}, silahkan hubungi admin");
-        }
+        return SafeDownload::sendFile('@common/dokumen', $id);
     }
 
     public function actionLoaddokumen($q = null, $id = null)

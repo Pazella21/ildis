@@ -76,6 +76,12 @@ use yii\behaviors\BlameableBehavior;
  */
 class Dokumen extends \yii\db\ActiveRecord
 {
+    const TYPE_PERATURAN = 1;
+    const TYPE_MONOGRAFI = 2;
+    const TYPE_ARTIKEL = 3;
+    const TYPE_PUTUSAN = 4;
+    const KEMENTERIAN_ID = '11e449f371bb47e09607313231373436';
+
     /**
      * {@inheritdoc}
      */

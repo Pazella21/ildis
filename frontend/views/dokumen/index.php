@@ -5,8 +5,11 @@ use yii\helpers\Url;
 use yii\widgets\ListView;
 
 $this->title = 'Dokumen Hukum';
+$this->registerMetaTag(['name' => 'description', 'content' => 'Koleksi dokumen hukum Indonesia - cari dan telusuri peraturan, monografi, artikel, dan putusan pengadilan.']);
+$this->registerMetaTag(['name' => 'robots', 'content' => 'index, follow']);
 ?>
 
+<h1 class="sr-only">Dokumen Hukum Indonesia</h1>
 <div class="dokumen-index-wrapper" style="background-color: #f8fafc; min-height: 100vh; padding-top: 80px;">
     <!-- Main Content -->
     <div class="container py-5">

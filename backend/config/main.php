@@ -59,11 +59,15 @@ return [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => false,
             'authTimeout' => 300,
-            'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
+            'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true, 'secure' => getenv('YII_ENV') === 'prod', 'sameSite' => 'Strict'],
         ],
         'session' => [
-            // this is the name of the session cookie used for login on the backend
             'name' => 'ildis-backend',
+            'cookieParams' => [
+                'httponly' => true,
+                'secure' => getenv('YII_ENV') === 'prod',
+                'sameSite' => 'Strict',
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

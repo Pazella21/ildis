@@ -9,7 +9,9 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
+use yii\web\Response;
 use backend\web\components\FileHelper;
+use backend\models\DokumenJdih;
 
 /**
  * BeritaController implements the CRUD actions for Berita model.
@@ -38,10 +40,6 @@ class BeritaController extends Controller
     public function actionIndex()
     {
         $searchModel = new BeritaSearch();
-        /*
-        $searchModel = new BeritaSearch(['id'=>\Yii::$app->user->identity->direktorat_id]);
-        $dataProvider->query->andWhere(['id'=>[2,3,4]]);
-        */
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -62,25 +60,6 @@ class BeritaController extends Controller
         ]);
     }
 
-    /**
-     * Creates a new Berita model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-    
-    public function actionCreate()
-    {
-        $model = new Berita();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-     */
-
     public function actionCreate()
     {
         $model = new Berita();
@@ -88,19 +67,11 @@ class BeritaController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $image = UploadedFile::getInstance($model, 'image');
             if (!empty($image)) {
-                $model->image =  strtolower(preg_replace('/[^a-zA-Z0-9-_\.]/', '', $image->name));
                 $model->image = FileHelper::sanitizeFilename($image->name);
                 $path = Yii::getAlias('@common') . '/dokumen/' . $model->image;
                 $image->saveAs($path);
             }
-            $model->judul = htmlentities($model->judul);            
-            /*
-            isi parameter tambahan
-            
-            $model->id = md5(uniqid(mt_rand(), true));
-            $jenis = $_POST['Berita']['field']);    
-            $model->tahun_ln =  date('Y', strtotime($_POST['Peraturan']['tgl_diundangkan']));
-            */
+            $model->judul = htmlentities($model->judul);
 
 
             if ($model->save()) {
@@ -126,57 +97,27 @@ class BeritaController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $image = UploadedFile::getInstance($model, 'image');
             if (!empty($image)) {
-                $model->image =  strtolower(preg_replace('/[^a-zA-Z0-9-_\.]/', '', $image->name));
                 $model->image = FileHelper::sanitizeFilename($image->name);
                 $path = Yii::getAlias('@common') . '/dokumen/' . $model->image;
                 $image->saveAs($path);
             }else{
-	    $model->image = $old_image;
-	    }
-            /*
-            isi parameter tambahan
-            
-            $model->id = md5(uniqid(mt_rand(), true));
-            $jenis = $_POST['Berita']['field']);    
-            $model->tahun_ln =  date('Y', strtotime($_POST['Peraturan']['tgl_diundangkan']));
-            */
+            $model->image = $old_image;
+            }
             $model->judul = htmlentities($model->judul);
 
             if ($model->save()) {
-                Yii::$app->session->setFlash('success', 'Data Berita berhasil ditambahkan');
+                Yii::$app->session->setFlash('success', 'Data Berita berhasil diubah');
                 return $this->redirect(['view', 'id' => $model->id]);
             } else {
-                Yii::$app->session->setFlash('error', 'Data Berita Gagal ditambahkan, periksa kembali ');
-                return $this->render('create', ['model' => $model]);
+                Yii::$app->session->setFlash('error', 'Data Berita Gagal diubah, periksa kembali ');
+                return $this->render('update', ['model' => $model]);
             }
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-
-    /**
-     * Updates an existing Berita model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-    
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('success', 'Data Berita berhasil diubah');
-            return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
             ]);
         }
     }
- */
     /**
      * Deletes an existing Berita model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -215,24 +156,13 @@ class BeritaController extends Controller
 
     public function actionParent($id)
     {
-        if ($id == '11e449f371bb47e09607313231373436') {
-            $instansi = 'Kementerian';
-            $rows = \backend\models\peraturan\Institutions::find()->where(['jenis' => $instansi])->all();
-            echo "<option>Pilih Kementerian</option>";
-        } else {
-            $instansi = 'Lembaga';
-            $rows = \backend\models\peraturan\Institutions::find()->where(['jenis' => $instansi])->all();
-            echo "<option>Pilih Lembaga Non Kementerian</option>";
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $institutionType = ($id == DokumenJdih::KEMENTERIAN_ID) ? 'Kementerian' : 'Lembaga';
+        $institutions = \backend\models\peraturan\Institutions::find()->where(['jenis' => $institutionType])->all();
+        $results = [];
+        foreach ($institutions as $institution) {
+            $results[] = ['id' => $institution->id, 'name' => $institution->nama];
         }
-
-        // echo "<option>Pilih Kementerian/Lembaga</option>";
-
-        if (count($rows) > 0) {
-            foreach ($rows as $row) {
-                echo "<option value='$row->id'>$row->nama</option>";
-            }
-        } else {
-            echo "<option>Nenhum municipio cadastrado</option>";
-        }
+        return $results;
     }
 }

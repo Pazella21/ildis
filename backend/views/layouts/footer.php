@@ -1,29 +1,53 @@
-<!-- 	  <footer class="main-footer">
-        <div class="pull-right hidden-xs">
-          <b>Version</b> 2.3.0
-        </div>
-        <strong>Copyright &copy; 2020 <a href="https://bphn.go.id">Pusat Dokumentasi dan Jaringan Informasi Hukum Nasional</a>.</strong> All rights reserved.
-      </footer>
- -->
 <?php
 
+use yii\helpers\Html;
 use mdm\admin\models\User;
-use mdm\admin\models\AuthAssignment;
 
-$user = User::find()->where(['username' => Yii::$app->user->identity->username])->one();
+$packagePath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'package.json';
+$package = file_exists($packagePath) ? json_decode(file_get_contents($packagePath), true) : [];
+$appVersion = $package['version'] ?? 'dev';
+
+$user = !Yii::$app->user->isGuest
+    ? User::find()->where(['id' => Yii::$app->user->id])->one()
+    : null;
+$assignments = $user ? Yii::$app->authManager->getAssignments($user->id) : [];
 ?>
 <footer class="main-footer">
-    <div class="pull-right hidden-xs">
-        <strong>Copyright &copy; 2020 <a href="https://bphn.go.id">Badan Pembinaan Hukum Nasional</a>.</strong> All
-        rights reserved.
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <?php if ($user): ?>
+                <span style="display: inline-flex; align-items: center; gap: 5px; color: #555; font-size: 13px;">
+                    <i class="fa fa-user-circle-o" style="opacity: .55;"></i>
+                    <?= Html::encode($user->username) ?>
+                </span>
+                <?php foreach ($assignments as $assignment): ?>
+                    <span style="
+                        display: inline-block;
+                        padding: 1px 8px;
+                        font-size: 11px;
+                        line-height: 18px;
+                        border-radius: 3px;
+                        background: #f39c1233;
+                        color: #a3760d;
+                        border: 1px solid #f39c1244;
+                        font-weight: 500;
+                    "><?= Html::encode($assignment->roleName) ?></span>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="
+                display: inline-block;
+                padding: 1px 8px;
+                font-size: 11px;
+                line-height: 18px;
+                border-radius: 3px;
+                background: #e8e8e8;
+                color: #666;
+                font-weight: 500;
+                letter-spacing: .3px;
+            ">ILDIS <?= Html::encode($appVersion) ?></span>
+        </div>
     </div>
-    User : <span class="label label-default label-md"><?php echo $user->username; ?></span> | Hak Akses :
-    <?php //$group = AuthAssignment::find()->(['user_id'=>$user->user_id])->all();
-    $assignments = Yii::$app->authManager->getAssignments($user->id);
-
-    foreach ($assignments as $assignment) {
-        echo '<span class="label label-warning label-md">' . $assignment->roleName . '</span>&nbsp;';
-    }
-
-    ?>
 </footer>

@@ -56,7 +56,7 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                         <!-- News Meta -->
                         <div class="mb-4">
                             <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill font-weight-600 small">
-                                <i class="ti-calendar mr-1"></i> <?= $model->getTanggal($model->tanggal) ?>
+                                <i class="ti-calendar mr-1"></i> <?= \common\components\DateHelper::formatIndonesian($model->tanggal) ?>
                             </span>
                         </div>
 

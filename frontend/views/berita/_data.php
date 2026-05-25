@@ -29,7 +29,7 @@ use yii\helpers\Url;
                 <div class="card-body p-4 d-flex flex-column h-100">
                     <div class="mb-2">
                         <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill small font-weight-600">
-                            <i class="ti-calendar mr-1"></i> <?= $model->getTanggal($model->tanggal) ?>
+                            <i class="ti-calendar mr-1"></i> <?= \common\components\DateHelper::formatIndonesian($model->tanggal) ?>
                         </span>
                     </div>
                     

@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\helpers\Json;
 use frontend\models\PeraturanTerkait;
 use frontend\models\DokumenTerkait;
 use frontend\models\DataLampiran;
@@ -13,33 +14,56 @@ use frontend\models\DataSubyek;
 /* @var $this yii\web\View */
 /* @var $model frontend\models\Dokumen */
 
-$this->title = $title;
+$this->title = $title . ' - JDIH';
 
 // --- SEO Metatags & Open Graph ---
 $baseUrl = Url::to(['/'], true);
 $currentUrl = Url::current([], true);
 $desc = !empty($model->abstrak) ? strip_tags($model->abstrak) : $deskripsi;
 $desc = mb_strimwidth($desc, 0, 160, "...");
+$fallbackImage = $baseUrl . 'assets/img/jdih-default.png';
 
 $this->registerMetaTag(['name' => 'description', 'content' => $desc]);
 $this->registerMetaTag(['name' => 'keywords', 'content' => implode(', ', $keywords)]);
+$this->registerLinkTag(['rel' => 'canonical', 'href' => $currentUrl]);
 
 // Open Graph
+$this->registerMetaTag(['property' => 'og:site_name', 'content' => 'JDIH']);
 $this->registerMetaTag(['property' => 'og:title', 'content' => $this->title]);
 $this->registerMetaTag(['property' => 'og:description', 'content' => $desc]);
 $this->registerMetaTag(['property' => 'og:type', 'content' => 'article']);
 $this->registerMetaTag(['property' => 'og:url', 'content' => $currentUrl]);
-if (!empty($model->gambar_sampul)) {
-    $this->registerMetaTag(['property' => 'og:image', 'content' => $baseUrl . 'common/dokumen/' . $model->gambar_sampul]);
-}
+$ogImage = !empty($model->gambar_sampul) ? $baseUrl . 'common/dokumen/' . $model->gambar_sampul : $fallbackImage;
+$this->registerMetaTag(['property' => 'og:image', 'content' => $ogImage]);
 
 // Twitter
 $this->registerMetaTag(['name' => 'twitter:card', 'content' => 'summary_large_image']);
 $this->registerMetaTag(['name' => 'twitter:title', 'content' => $this->title]);
 $this->registerMetaTag(['name' => 'twitter:description', 'content' => $desc]);
+$this->registerMetaTag(['name' => 'twitter:image', 'content' => $ogImage]);
 
 $this->params['breadcrumbs'][] = ['label' => 'Dokumen', 'url' => ['index']];
 $this->params['breadcrumbs'][] = Html::encode($this->title);
+?>
+
+<?php
+$ldJson = [
+    '@context' => 'https://schema.org',
+    '@type' => 'Legislation',
+    'name' => $model->judul,
+    'legislationIdentifier' => $model->nomor_peraturan,
+    'legislationJurisdiction' => [
+        '@type' => 'AdministrativeArea',
+        'name' => 'Indonesia',
+    ],
+];
+if (!empty($model->tanggal_penetapan)) {
+    $ldJson['legislationDate'] = date('Y-m-d', strtotime($model->tanggal_penetapan));
+}
+if (!empty($model->abstrak)) {
+    $ldJson['description'] = strip_tags($model->abstrak);
+}
+$this->registerJs('<script type="application/ld+json">' . Json::encode($ldJson) . '</script>', \yii\web\View::POS_HEAD);
 ?>
 
 <div class="dokumen-view-wrapper" style="background-color: #f8fafc; min-height: 100vh; padding: 100px 0 40px 0;">
@@ -77,7 +101,7 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                         </div>
                         <div class="col-sm-6">
                             <label class="text-muted small text-uppercase font-weight-700 mb-1 d-block tracking-wider">Tanggal Penetapan</label>
-                            <div class="text-dark font-weight-600"><?= $model->tanggal_penetapan ? $model->getTanggal($model->tanggal_penetapan) : '-' ?></div>
+                            <div class="text-dark font-weight-600"><?= $model->tanggal_penetapan ? \common\components\DateHelper::formatIndonesian($model->tanggal_penetapan) : '-' ?></div>
                         </div>
                         <div class="col-sm-6">
                             <label class="text-muted small text-uppercase font-weight-700 mb-1 d-block tracking-wider">Tanggal Pengundangan</label>

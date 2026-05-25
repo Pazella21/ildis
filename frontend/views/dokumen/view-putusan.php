@@ -79,11 +79,11 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                         </div>
                         <div class="col-sm-6">
                             <label class="text-muted small text-uppercase font-weight-700 mb-1 d-block tracking-wider">Tanggal Musyawarah</label>
-                            <div class="text-dark font-weight-600"><?= $model->tanggal_musyawarah ? $model->getTanggal($model->tanggal_musyawarah) : '-' ?></div>
+                            <div class="text-dark font-weight-600"><?= $model->tanggal_musyawarah ? \common\components\DateHelper::formatIndonesian($model->tanggal_musyawarah) : '-' ?></div>
                         </div>
                         <div class="col-sm-6">
                             <label class="text-muted small text-uppercase font-weight-700 mb-1 d-block tracking-wider">Tanggal Dibacakan</label>
-                            <div class="text-dark font-weight-600"><?= $model->tanggal_dibacakan ? $model->getTanggal($model->tanggal_dibacakan) : '-' ?></div>
+                            <div class="text-dark font-weight-600"><?= $model->tanggal_dibacakan ? \common\components\DateHelper::formatIndonesian($model->tanggal_dibacakan) : '-' ?></div>
                         </div>
                     </div>
 

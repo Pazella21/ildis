@@ -7,7 +7,7 @@ use backend\models\FrontendConfig;
 
 /* Set meta tags */
 
-$this->title = 'Pencarian JDIH - Beranda';
+$this->title = 'JDIH - Jaringan Dokumentasi dan Informasi Hukum';
 $this->description = 'Jaringan Dokumentasi dan Informasi Hukum';
 $this->keywords = ['Jaringan', 'Dokumentasi', 'Informasi', 'Hukum'];
 

@@ -1,6 +1,4 @@
 <?php
-$dir = 'assets/';
-array_map('unlink', glob("{$dir}*.*"));
 
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
@@ -16,11 +14,17 @@ AppAsset::register($this);
 use backend\models\FrontendConfig;
 
 $logo = FrontendConfig::findOne(1);
+$siteName = 'JDIH - Jaringan Dokumentasi dan Informasi Hukum';
+$canonicalUrl = Url::canonical();
+
+if (empty($this->params['description'])) {
+    $this->registerMetaTag(['name' => 'description', 'content' => 'Jaringan Dokumentasi dan Informasi Hukum - Portal hukum terlengkap untuk peraturan, monografi, putusan, dan artikel hukum.']);
+}
 
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
-<html lang="<?= Yii::$app->language ?>">
+<html lang="id">
 
 <head>
 
@@ -28,17 +32,18 @@ $logo = FrontendConfig::findOne(1);
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?= Html::csrfMetaTags() ?>
-    <title><?= Html::encode($this->title) ?></title>
+    <title><?= Html::encode($this->title) ?> - <?= Html::encode($siteName) ?></title>
+    <link rel="canonical" href="<?= Html::encode($canonicalUrl) ?>" />
     <?php $this->head() ?>
     <!-- Favicons -->
     <link href="assets/img/favicon.png" rel="icon">
     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i&display=swap" rel="stylesheet">
 
-    <?php $this->head() ?>
-    
 </head>
 
 
@@ -51,12 +56,9 @@ $logo = FrontendConfig::findOne(1);
     <header id="header" class="fixed-top d-flex align-items-center">
         <div class="container d-flex justify-content-between align-items-center">
 
-          <div class="logo">
-             <?= Html::a(Html::img('@web/common/dokumen/' . $logo->isi_konfig, ['id' => 'logo']), ['/'], ['class' => 'navbar-brand width-200px sm-width-180px xs-width-150px']); ?>
-            <h1><a href=""></a></h1>
-            <!-- Uncomment below if you prefer to use an image logo -->
-            <!-- <a href="index.html"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
-          </div>
+<div class="logo">
+              <?= Html::a(Html::img('@web/common/dokumen/' . $logo->isi_konfig, ['id' => 'logo', 'alt' => Html::encode($siteName)]), ['/'], ['class' => 'navbar-brand width-200px sm-width-180px xs-width-150px']); ?>
+            </div>
 
           <nav id="navbar" class="navbar">
             <?= $this->render('menu.php') ?>
@@ -75,7 +77,7 @@ $logo = FrontendConfig::findOne(1);
     <!-- end main-wrapper section -->
 
     <!-- start scroll to top -->
-    <a href="javascript:void(0)" class="scroll-to-top"><i class="fas fa-angle-up" aria-hidden="true"></i></a>
+    <a href="#" class="back-to-top" aria-label="Kembali ke atas"><i class="bi bi-chevron-up" aria-hidden="true"></i></a>
     <!-- end scroll to top -->
 
     <!-- all js include start -->

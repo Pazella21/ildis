@@ -22,10 +22,6 @@ class SirkulasiController extends \yii\web\Controller
     public function actionIndex()
     {
         $searchModel = new CirculationAllSearch();
-        /*
-            $searchModel = new CirculationSearch(['id'=>\Yii::$app->user->identity->direktorat_id]);
-            $dataProvider->query->andWhere(['id'=>[2,3,4]]);
-            */
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index-all', [
@@ -37,10 +33,6 @@ class SirkulasiController extends \yii\web\Controller
     public function actionBukuBelumKembali()
     {
         $searchModel = new CirculationAllSearch();
-        /*
-            $searchModel = new CirculationSearch(['id'=>\Yii::$app->user->identity->direktorat_id]);
-            $dataProvider->query->andWhere(['id'=>[2,3,4]]);
-            */
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->query->andWhere(['status' => 1]);
         return $this->render('index-buku-dipinjam', [
@@ -52,32 +44,22 @@ class SirkulasiController extends \yii\web\Controller
     public function actionPeminjaman()
     {
         $searchModel = new Member2Search();
-        /*
-        $searchModel = new MemberSearch(['id'=>\Yii::$app->user->identity->direktorat_id]);
-        $dataProvider->query->andWhere(['id'=>[2,3,4]]);
-        */
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            // 'searchModel' => $searchModel,
         ]);
     }
 
     public function actionPengembalian()
     {
         $searchModel = new CirculationSearch();
-        /*
-        $searchModel = new MemberSearch(['id'=>\Yii::$app->user->identity->direktorat_id]);
-        $dataProvider->query->andWhere(['id'=>[2,3,4]]);
-        */
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index-pengembalian', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            // 'searchModel' => $searchModel,
         ]);
     }
 
@@ -102,34 +84,22 @@ class SirkulasiController extends \yii\web\Controller
         ]);
     }
 
-    public function actionPinjam($id, $id2)
+    public function actionPinjam($eksemplarId, $memberId)
     {
 
-
-        $eksemplar = Eksemplar::findOne($id);
-        $model = Member::findOne($id2);
+        $eksemplar = Eksemplar::findOne($eksemplarId);
+        $model = Member::findOne($memberId);
         $member = MemberType::findOne($model->member_type_id);
         $day = '+' . $member->loan_periode . ' day';
-        // $model2 = Circulation::find()->where(['member_id' => $id2])->all();
-        $model3 = Circulation::find()->where(['member_id' => $id2, 'status' => 1])->count();
-        // $searchModel = new EksemplarSearch();
-        // $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $model3 = Circulation::find()->where(['member_id' => $memberId, 'status' => 1])->count();
 
         if ($model3 >= $member->loan_limit) {
             Yii::$app->session->setFlash('danger', 'Batas peminjaman buku hanya sebanyak 3 buku');
-            return $this->redirect(['view', 'id' => $id2]);
-            // return $this->render('view', [
-            //     'model' => $model,
-            //     'searchModel' => $searchModel,
-            //     'dataProvider' => $dataProvider,
-            //     'model2' => $model2,
-            //     'id' => $id2,
-
-            // ]);
+            return $this->redirect(['view', 'id' => $memberId]);
         }
 
         $pinjam = new Circulation();
-        $pinjam->member_id = $id2;
+        $pinjam->member_id = $memberId;
         $pinjam->member = $model->username;
         $pinjam->item_code = $eksemplar->kode_eksemplar;
         $pinjam->item_id = $eksemplar->id;
@@ -140,24 +110,15 @@ class SirkulasiController extends \yii\web\Controller
         $pinjam->tanggal_kembali = date('Y-m-d', strtotime($day));
         $pinjam->document_id = $eksemplar->id_dokumen;
 
-
-        $pinjam->save();
+        if (!$pinjam->save()) {
+            Yii::error('Failed to save circulation: ' . json_encode($pinjam->errors));
+        }
 
         $eksemplar->status_eksemplar = 'Dipinjam';
-        $eksemplar->save(false);
-
-        // $model2 = Circulation::find()->where(['member_id' => $id2])->all();
+        $eksemplar->save(false); // TODO: review - skips validation
 
         Yii::$app->session->setFlash('success', 'Buku berhasil dipinjam');
-        return $this->redirect(['view', 'id' => $id2]);
-        // return $this->render('view', [
-        //     'model' => $model,
-        //     'searchModel' => $searchModel,
-        //     'dataProvider' => $dataProvider,
-        //     'model2' => $model2,
-        //     'id' => $id2,
-
-        // ]);
+        return $this->redirect(['view', 'id' => $memberId]);
     }
 
     public function actionHapusSirkulasi($id)
@@ -167,17 +128,16 @@ class SirkulasiController extends \yii\web\Controller
         $model->delete();
         $eksemplar = Eksemplar::findOne($model->item_id);
         $eksemplar->status_eksemplar = 'Tersedia';
-        $eksemplar->save(false);
+        $eksemplar->save(false); // TODO: review - skips validation
         Yii::$app->session->setFlash('danger', 'Data Sirkulasi berhasil dihapus');
-        //return $this->redirect(['index']);
         return $this->redirect(['view', 'id' => $model->member_id]);
     }
 
-    public function actionKembali($id, $id2)
+    public function actionKembali($circulationId, $memberId)
     {
-        $model = Circulation::findOne($id);
+        $model = Circulation::findOne($circulationId);
 
-        $member = Member::findOne($id2);
+        $member = Member::findOne($memberId);
         $member_type = MemberType::findOne($member->member_type_id);
 
         $model->status = 0;
@@ -185,20 +145,19 @@ class SirkulasiController extends \yii\web\Controller
         $timeStart = strtotime($model->tanggal_pinjam);
         $timeEnd = strtotime(date('Y-m-d'));
 
-        $terlambat = date("d", $timeEnd) - date("d", $timeStart);
+        $terlambat = (int)(($timeEnd - $timeStart) / 86400);
 
         if ($terlambat > 0) {
-            //$numBulan=$numBulan-3;
-            $model->denda = $terlambat * $member_type->fine_each_day;;
+            $model->denda = $terlambat * $member_type->fine_each_day;
         } else {
             $model->denda = 0;
         }
 
-        $model->save(false);
+        $model->save(false); // TODO: review - skips validation
 
         $eksemplar = Eksemplar::findOne($model->item_id);
         $eksemplar->status_eksemplar = 'Tersedia';
-        $eksemplar->save(false);
+        $eksemplar->save(false); // TODO: review - skips validation
 
         Yii::$app->session->setFlash('success', 'Pengembalian Buku berhasil');
         return $this->redirect('pengembalian');
@@ -207,21 +166,25 @@ class SirkulasiController extends \yii\web\Controller
     public function actionPerpanjang($id)
     {
         $model = Circulation::findOne($id);
+        $member = Member::findOne($model->member_id);
+        $memberType = MemberType::findOne($member->member_type_id);
+
         $model->status = 0;
         $model->status_peminjaman = 'Telah Kembali';
         $timeStart = strtotime($model->tanggal_pinjam);
         $timeEnd = strtotime(date('Y-m-d'));
 
-        $numBulan = date("d", $timeEnd) - date("d", $timeStart);
+        $numBulan = (int)(($timeEnd - $timeStart) / 86400);
 
         if ($numBulan > 3) {
             $numBulan = $numBulan - 3;
-            $model->denda = $numBulan * 2000;
+            $model->denda = $numBulan * $memberType->fine_each_day;
         } else {
             $model->denda = 0;
         }
 
-        $model->save(false);
+        $model->save(false); // TODO: review - skips validation
+
         $pinjam = new Circulation();
         $pinjam->member_id = $model->member_id;
         $pinjam->member = $model->member;
@@ -231,13 +194,12 @@ class SirkulasiController extends \yii\web\Controller
         $pinjam->status = 1;
         $pinjam->status_peminjaman = 'Dipinjam';
         $pinjam->tanggal_pinjam = date('Y-m-d');
-        $pinjam->tanggal_kembali = date('Y-m-d', strtotime("+3 day"));
+        $pinjam->tanggal_kembali = date('Y-m-d', strtotime('+' . $memberType->loan_periode . ' day'));
         $pinjam->document_id = $model->document_id;
-        $pinjam->save();
 
-        // $eksemplar = Eksemplar::findOne($model->item_id);
-        // $eksemplar->status_eksemplar = 'Dipinjam';
-        // $eksemplar->save(false);
+        if (!$pinjam->save()) {
+            Yii::error('Failed to save circulation extension: ' . json_encode($pinjam->errors));
+        }
 
         Yii::$app->session->setFlash('success', 'Perpanjangan Peminjaman Buku berhasil');
         return $this->redirect('pengembalian');

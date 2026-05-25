@@ -10,6 +10,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
 use backend\web\components\FileHelper;
+use yii\web\Response;
+use yii\helpers\Html;
+use backend\models\DokumenJdih;
 
 /**
  * MemberController implements the CRUD actions for Member model.
@@ -38,10 +41,6 @@ class MemberController extends Controller
     public function actionIndex()
     {
         $searchModel = new MemberSearch();
-        /*
-        $searchModel = new MemberSearch(['id'=>\Yii::$app->user->identity->direktorat_id]);
-        $dataProvider->query->andWhere(['id'=>[2,3,4]]);
-        */
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -62,49 +61,21 @@ class MemberController extends Controller
         ]);
     }
 
-    /**
-     * Creates a new Member model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-    
-    public function actionCreate()
-    {
-        $model = new Member();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-     */
-
     public function actionCreate()
     {
         $model = new Member();
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->status = 10;
-            $model->setPassword('123456');
+            $model->status = Member::STATUS_ACTIVE;
+            $model->setPassword(Yii::$app->security->generateRandomString(8));
             $model->generateAuthKey();
 
             $image = UploadedFile::getInstance($model, 'member_image');
             if (!empty($image)) {
-                $model->member_image =  strtolower(preg_replace('/[^a-zA-Z0-9-_\.]/', '', $image->name));
                 $model->member_image = FileHelper::sanitizeFilename($image->name);
                 $path = Yii::getAlias('@common') . '/dokumen/' . $model->member_image;
                 $image->saveAs($path);
             }
-            /*
-            isi parameter tambahan
-            
-            $model->id = md5(uniqid(mt_rand(), true));
-            $jenis = $_POST['Member']['field']);    
-            $model->tahun_ln =  date('Y', strtotime($_POST['Peraturan']['tgl_diundangkan']));
-            */
-
 
             if ($model->save()) {
                 Yii::$app->session->setFlash('success', 'Data Member berhasil ditambahkan');
@@ -123,9 +94,9 @@ class MemberController extends Controller
     public function actionPassword($id)
     {
         $model = $this->findModel($id);
-        $model->setPassword('123456');
+        $model->setPassword(Yii::$app->security->generateRandomString());
         $model->save(false);
-        Yii::$app->session->setFlash('success', 'User berhasil direset dengan password 123456');
+        Yii::$app->session->setFlash('success', 'Password user berhasil direset');
         return $this->redirect(['index']);
     }
 
@@ -144,31 +115,27 @@ class MemberController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $image = UploadedFile::getInstance($model, 'member_image');
             if (!empty($image)) {
-                $model->member_image =  strtolower(preg_replace('/[^a-zA-Z0-9-_\.]/', '', $image->name));
                 $model->member_image = FileHelper::sanitizeFilename($image->name);
                 $path = Yii::getAlias('@common') . '/dokumen/' . $model->member_image;
                 $image->saveAs($path);
-            }else{
-                $model->member_image=$old_image;
+            } else {
+                $model->member_image = $old_image;
             }
 
             $image_ktp = UploadedFile::getInstance($model, 'member_ktp');
             if (!empty($image_ktp)) {
-                $model->member_ktp =  strtolower(preg_replace('/[^a-zA-Z0-9-_\.]/', '', $image_ktp->name));
-                $model->member_ktp = FileHelper::sanitizeFilename($member_ktp->name);
+                $model->member_ktp = FileHelper::sanitizeFilename($image_ktp->name);
                 $path_ktp = Yii::getAlias('@common') . '/dokumen/' . $model->member_ktp;
                 $image_ktp->saveAs($path_ktp);
-            }else{
-                $model->member_ktp=$old_image_ktp;
+            } else {
+                $model->member_ktp = $old_image_ktp;
             }
 
-            if ($model->save()){
-
-
-            Yii::$app->session->setFlash('success', 'Data Member berhasil diubah');
-            return $this->redirect(['view', 'id' => $model->id]);
-        } 
-        }else {
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', 'Data Member berhasil diubah');
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+        } else {
             return $this->render('update', [
                 'model' => $model,
             ]);
@@ -187,13 +154,11 @@ class MemberController extends Controller
             $this->findModel($id)->delete();
             Yii::$app->session->setFlash('danger', 'Data Member berhasil dihapus');
             return $this->redirect(['index']);
-        } catch (\yii\db\IntegrityException  $e) {
+        } catch (\yii\db\IntegrityException $e) {
             Yii::$app->session->setFlash('error', "Data Member Tidak Dapat Dihapus Karena Dipakai Modul Lain");
             return $this->redirect(['index']);
         }
     }
-
-
 
     /**
      * Finds the Member model based on its primary key value.
@@ -213,29 +178,13 @@ class MemberController extends Controller
 
     public function actionParent($id)
     {
-        if ($id == '11e449f371bb47e09607313231373436') {
-            $instansi = 'Kementerian';
-            $rows = \backend\models\peraturan\Institutions::find()->where(['jenis' => $instansi])->all();
-            echo "<option>Pilih Kementerian</option>";
-        } else {
-            $instansi = 'Lembaga';
-            $rows = \backend\models\peraturan\Institutions::find()->where(['jenis' => $instansi])->all();
-            echo "<option>Pilih Lembaga Non Kementerian</option>";
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $institutionType = ($id == DokumenJdih::KEMENTERIAN_ID) ? 'Kementerian' : 'Lembaga';
+        $institutions = \backend\models\peraturan\Institutions::find()->where(['jenis' => $institutionType])->all();
+        $results = [];
+        foreach ($institutions as $institution) {
+            $results[] = ['id' => $institution->id, 'name' => $institution->nama];
         }
-
-        // echo "<option>Pilih Kementerian/Lembaga</option>";
-
-        if (count($rows) > 0) {
-            foreach ($rows as $row) {
-                echo "<option value='$row->id'>$row->nama</option>";
-            }
-        } else {
-            echo "<option>Nenhum municipio cadastrado</option>";
-        }
-    }
-
-    public function actionShit()
-    {
-        echo "adada";
+        return $results;
     }
 }

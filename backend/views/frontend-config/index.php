@@ -49,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
             //     'attribute'=>'tanggal',
             //     'contentOptions' => ['style' => 'width: 150px;', 'class' => 'text-left'],
             //     'value'=>function($data){
-            //         return $data->getTanggal($data->tanggal);
+            //         return \common\components\DateHelper::formatIndonesian($data->tanggal);
             //     }
             // ],
 

@@ -1,0 +1,5 @@
+# Run feed/generate-document every day at 2:00 AM
+0 2 * * * php /var/www/yii feed/generate-document >> /var/log/cron.log 2>&1
+
+# Optional: Run every hour for testing
+# 0 * * * * php /var/www/yii feed/generate-document >> /var/log/cron.log 2>&1

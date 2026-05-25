@@ -4,70 +4,78 @@ namespace common\models;
 
 use Yii;
 use yii\base\Model;
+use common\components\LoginThrottleService;
 
-/**
- * Login form
- */
 class MemberForm extends Model
 {
+    const MEMBER_SESSION_DURATION = 2592000; // 3600 * 24 * 30 = 30 days
+
     public $username;
     public $password;
     public $rememberMe = true;
 
     private $_user;
 
-
-    /**
-     * @inheritdoc
-     */
     public function rules()
     {
         return [
-            // username and password are both required
             [['username', 'password'], 'required'],
-            // rememberMe must be a boolean value
             ['rememberMe', 'boolean'],
-            // password is validated by validatePassword()
             ['password', 'validatePassword'],
         ];
     }
 
-    /**
-     * Validates the password.
-     * This method serves as the inline validation for password.
-     *
-     * @param string $attribute the attribute currently being validated
-     * @param array $params the additional name-value pairs given in the rule
-     */
     public function validatePassword($attribute, $params)
     {
-        if (!$this->hasErrors()) {
-            $user = $this->getUser();
-            if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
+        if ($this->hasErrors()) {
+            return;
+        }
+
+        $user = $this->getUser();
+        $now = time();
+        $throttleKey = 'member_' . LoginThrottleService::getCacheKey($this->username);
+
+        if ($user) {
+            if ($user->suspended_until && strtotime($user->suspended_until) > $now) {
+                $remaining = strtotime($user->suspended_until) - $now;
+                $minutesLeft = ceil($remaining / 60);
+                $this->addError($attribute, "Akun ditangguhkan. Coba lagi dalam {$minutesLeft} menit.");
+                return;
             }
+
+            if (!$user->validatePassword($this->password)) {
+                $failedLogins = Yii::$app->cache->get($throttleKey) ?: 0;
+                $failedLogins++;
+                Yii::$app->cache->set($throttleKey, $failedLogins, LoginThrottleService::LOCKOUT_DURATION);
+
+                if ($failedLogins >= LoginThrottleService::MAX_ATTEMPTS) {
+                    $user->suspended_until = date('Y-m-d H:i:s', $now + LoginThrottleService::LOCKOUT_DURATION);
+                    $user->save(false);
+                    Yii::$app->cache->delete($throttleKey);
+                    $this->addError($attribute, "Akun ditangguhkan selama 5 menit karena salah login 3x berturut-turut.");
+                } else {
+                    $this->addError($attribute, "Kesalahan username atau password.");
+                }
+            } else {
+                Yii::$app->cache->delete($throttleKey);
+            }
+        } else {
+            $failedLogins = Yii::$app->cache->get($throttleKey) ?: 0;
+            $failedLogins++;
+            Yii::$app->cache->set($throttleKey, $failedLogins, LoginThrottleService::LOCKOUT_DURATION);
+            $this->addError($attribute, "Kesalahan username atau password.");
         }
     }
 
-    /**
-     * Logs in a user using the provided username and password.
-     *
-     * @return bool whether the user is logged in successfully
-     */
     public function login()
     {
         if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
+            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? self::MEMBER_SESSION_DURATION : 0);
         }
 
         return false;
     }
 
-    /**
-     * Finds user by [[username]]
-     *
-     * @return User|null
-     */
     protected function getUser()
     {
         if ($this->_user === null) {

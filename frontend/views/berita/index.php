@@ -7,7 +7,9 @@ use yii\widgets\ListView;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $searchModel frontend\models\search\BeritaSearch */
 
-$this->title = 'Berita & Artikel';
+$this->title = 'Berita & Artikel Hukum';
+$this->registerMetaTag(['name' => 'description', 'content' => 'Berita dan artikel hukum terbaru - informasi terkini seputar dunia hukum Indonesia di ILDIS.']);
+$this->registerMetaTag(['name' => 'robots', 'content' => 'index, follow']);
 ?>
 
 <div class="berita-index-wrapper" style="background-color: #f8fafc; min-height: 100vh; padding-top: 100px;">

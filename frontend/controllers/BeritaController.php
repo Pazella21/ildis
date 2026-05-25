@@ -8,15 +8,26 @@ use frontend\models\search\BeritaSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use yii\web\UploadedFile;
+use frontend\models\Dokumen;
 
 class BeritaController extends Controller
 {
-    const KEMENTERIAN_ID = '11e449f371bb47e09607313231373436';
-
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'actions' => ['create', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -105,30 +116,13 @@ class BeritaController extends Controller
 
     public function actionParent($id)
     {
-        $isKementerian = ($id == self::KEMENTERIAN_ID);
-        $instansi = $isKementerian ? 'Kementerian' : 'Lembaga';
-        $optionText = $isKementerian ? 'Pilih Kementerian' : 'Pilih Lembaga Non Kementerian';
-        $institutions = $this->getInstitutionsByType($instansi);
-
-        echo "<option>{$optionText}</option>";
-
-        if (count($institutions) === 0) {
-            echo "<option>Nenhum municipio cadastrado</option>";
-            return;
-        }
-
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $institutionType = ($id == Dokumen::KEMENTERIAN_ID) ? 'Kementerian' : 'Lembaga';
+        $institutions = \backend\models\peraturan\Institutions::find()->where(['jenis' => $institutionType])->all();
+        $results = [];
         foreach ($institutions as $institution) {
-            echo "<option value='{$institution->id}'>{$institution->nama}</option>";
+            $results[] = ['id' => $institution->id, 'name' => $institution->nama];
         }
-    }
-
-    /**
-     * Ambil institutions berdasarkan jenis.
-     * @param string $jenis
-     * @return array
-     */
-    private function getInstitutionsByType($jenis)
-    {
-        return \backend\models\peraturan\Institutions::find()->where(['jenis' => $jenis])->all();
+        return $results;
     }
 }

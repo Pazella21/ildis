@@ -1,20 +1,17 @@
-version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0
     container_name: ildis_mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-ildis2024}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
       MYSQL_DATABASE: ${DB_DATABASE:-ildis_v4}
       MYSQL_USER: ${DB_USER:-ildis}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-ildis2024}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./DATABASE:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD}" ]
       interval: 10s
@@ -45,7 +42,7 @@ services:
       - YII_DEBUG=${YII_DEBUG:-false}
       - DB_HOST=${DB_HOST:-mysql}
       - DB_USER=${DB_USER:-root}
-      - DB_PASSWORD=${DB_PASSWORD:-ildis2024}
+      - DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD must be set}
       - DB_DATABASE=${DB_DATABASE:-ildis_v4}
       - DB_DATABASE_PORT=${DB_DATABASE_PORT:-3306}
       - PUBLIC_DOMAIN=${PUBLIC_DOMAIN:-http://localhost:8080}

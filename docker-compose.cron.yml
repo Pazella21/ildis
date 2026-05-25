@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ildis_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-ildis2024}
+      MYSQL_DATABASE: ${DB_DATABASE:-ildis_v4}
+      MYSQL_USER: ${DB_USER:-ildis}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-ildis2024}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./DATABASE:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    volumes:
+      - runtime:/var/www/runtime
+      - backend-assets:/var/www/backend/web/assets
+      - frontend-assets:/var/www/frontend/web/assets
+      - backend-uploads:/var/www/backend/web/uploads
+      - frontend-uploads:/var/www/frontend/web/uploads
+      - ./docker/nginx/default.conf:/etc/nginx/http.d/default.conf:ro
+      - feed_data:/var/www/feed
+    environment:
+      - S6_KEEP_ENV=1
+      - YII_ENV=${YII_ENV:-prod}
+      - YII_DEBUG=${YII_DEBUG:-false}
+      - DB_HOST=${DB_HOST:-mysql}
+      - DB_USER=${DB_USER:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-ildis2024}
+      - DB_DATABASE=${DB_DATABASE:-ildis_v4}
+      - DB_DATABASE_PORT=${DB_DATABASE_PORT:-3306}
+      - PUBLIC_DOMAIN=${PUBLIC_DOMAIN:-http://localhost:8080}
+      - COOKIE_VALIDATION_KEY_BE=${COOKIE_VALIDATION_KEY_BE}
+      - COOKIE_VALIDATION_KEY_FE=${COOKIE_VALIDATION_KEY_FE}
+      - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY}
+      - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
+      - PHP_DISPLAY_ERRORS=Off
+      - PHP_ERROR_REPORTING=E_ALL & ~E_DEPRECATED
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  cron:
+    build:
+      context: .
+      dockerfile: Dockerfile.cron
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - feed_data:/var/www/feed
+    environment:
+      - YII_ENV=${YII_ENV:-prod}
+      - YII_DEBUG=${YII_DEBUG:-false}
+      - DB_HOST=${DB_HOST:-mysql}
+      - DB_USER=${DB_USER:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-ildis2024}
+      - DB_DATABASE=${DB_DATABASE:-ildis_v4}
+      - DB_DATABASE_PORT=${DB_DATABASE_PORT:-3306}
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  runtime:
+  backend-assets:
+  frontend-assets:
+  backend-uploads:
+  frontend-uploads:
+  feed_data:

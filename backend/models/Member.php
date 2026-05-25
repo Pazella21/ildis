@@ -41,6 +41,8 @@ use yii\behaviors\BlameableBehavior;
  */
 class Member extends \yii\db\ActiveRecord
 {
+    const STATUS_ACTIVE = 10;
+
     /**
      * {@inheritdoc}
      */

@@ -4,16 +4,6 @@
 # @author Kartik Visweswaran <kartikv2@gmail.com>
 # @see http://demos.krajee.com/app-practical
 # ----------------------------------------------------------------------
-# Security Headers
-<IfModule mod_headers.c>
-Header set Content-Security-Policy "upgrade-insecure-requests"
-Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
-Header set X-Xss-Protection "1; mode=block"
-Header set X-Frame-Options "SAMEORIGIN"
-Header set X-Content-Type-Options "nosniff"
-Header set Referrer-Policy "strict-origin-when-cross-origin"
-Header set Permissions-Policy "geolocation=self"
-</IfModule>
 
 # "-Indexes" will have Apache block users from browsing folders without a default document
 # Usually you should leave this activated, because you shouldn't allow everybody to surf through

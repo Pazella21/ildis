@@ -2,6 +2,28 @@
 
 🇮🇩 ILDIS adalah sistem informasi dokumentasi hukum Indonesia yang dikembangkan untuk membantu anggota JDIHN (Jaringan Dokumentasi dan Informasi Hukum Nasional) mengelola data dokumen hukum secara mandiri, efisien, dan sesuai standar.
 
+## Pasang Cepat
+
+Pasang ILDIS dengan satu perintah (memerlukan [Docker](https://docs.docker.com/engine/install/) atau [Podman](https://podman.io/getting-started/installation)):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bphndigitalservice/ildis/main/install.sh | bash
+```
+
+Untuk pemasangan non-interaktif (CI/otomatisasi):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bphndigitalservice/ildis/main/install.sh | bash -s -- --non-interactive
+```
+
+Untuk memperbarui instalasi yang ada:
+
+```bash
+./install.sh --update
+```
+
+Skrip secara otomatis mendeteksi Docker Compose atau Podman Compose.
+
 ## 🔍 Apa itu ILDIS?
 
 ILDIS adalah aplikasi terbuka yang memungkinkan instansi pemerintah pusat maupun daerah untuk:
@@ -56,6 +78,19 @@ ILDIS adalah aplikasi terbuka yang memungkinkan instansi pemerintah pusat maupun
    mysql -h db -u mariadb -p mariadb < DATABASE/ildis_v4.sql
    ```
 6. Jalankan _Debugger_ menu dan pilih `Launch Built-in web server` dan lanjutkan pengembangan.
+
+### Menggunakan Docker (Production)
+
+1. Salin `.env.example` ke `.env` dan sesuaikan konfigurasi.
+2. Jalankan `docker compose up -d` — container akan otomatis menjalankan database migration saat pertama kali startup.
+3. Aplikasi tersedia di `http://localhost:8080`.
+
+Untuk update ke versi terbaru:
+```bash
+./update.sh              # Update ke versi terbaru
+./update.sh --check      # Cek versi yang tersedia
+./update.sh --help       # Lihat semua opsi
+```
 
 ## 📝 TODO
 

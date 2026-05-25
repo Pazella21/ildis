@@ -40,16 +40,6 @@ class CatatanVerifikasiController extends Controller
     {
         $dataProvider = new ActiveDataProvider([
             'query' => CatatanVerifikasi::find(),
-            /*
-            'pagination' => [
-                'pageSize' => 50
-            ],
-            'sort' => [
-                'defaultOrder' => [
-                    'id' => SORT_DESC,
-                ]
-            ],
-            */
         ]);
 
         return $this->render('index', [

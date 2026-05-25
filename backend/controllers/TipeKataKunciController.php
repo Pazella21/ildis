@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
+use backend\models\DokumenJdih;
 
 /**
  * TipeKataKunciController implements the CRUD actions for TipeKataKunci model.
@@ -175,7 +176,7 @@ class TipeKataKunciController extends Controller
     }
 
     public function actionParent($id){
-        if ($id== '11e449f371bb47e09607313231373436')
+        if ($id== DokumenJdih::KEMENTERIAN_ID)
         {
             $instansi='Kementerian';
             $rows = \backend\models\peraturan\Institutions::find()->where(['jenis' => $instansi])->all();

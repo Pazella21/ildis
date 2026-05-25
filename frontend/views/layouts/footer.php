@@ -2,6 +2,23 @@
 
 use yii\helpers\Html;
 use backend\models\FrontendConfig;
+use common\models\VisitorStats;
+
+// Fetch visitor stats
+$today = date('Y-m-d');
+$thisWeek = date('Y-m-d', strtotime('monday this week'));
+$thisMonth = date('Y-m-01');
+$thisYear = date('Y-01-01');
+
+$todayStat = VisitorStats::find()->where(['stat_type' => VisitorStats::TYPE_DAILY, 'stat_date' => $today, 'document_id' => null])->one();
+$weekStat = VisitorStats::find()->where(['stat_type' => VisitorStats::TYPE_WEEKLY, 'stat_date' => $thisWeek, 'document_id' => null])->one();
+$monthStat = VisitorStats::find()->where(['stat_type' => VisitorStats::TYPE_MONTHLY, 'stat_date' => $thisMonth, 'document_id' => null])->one();
+$yearStat = VisitorStats::find()->where(['stat_type' => VisitorStats::TYPE_YEARLY, 'stat_date' => $thisYear, 'document_id' => null])->one();
+
+$todayVisits = $todayStat ? (int)$todayStat->unique_visits : 0;
+$weekVisits = $weekStat ? (int)$weekStat->unique_visits : 0;
+$monthVisits = $monthStat ? (int)$monthStat->unique_visits : 0;
+$yearVisits = $yearStat ? (int)$yearStat->unique_visits : 0;
 
 $logo = FrontendConfig::findOne(3);
 $fb = FrontendConfig::findOne(13);
@@ -67,18 +84,41 @@ $cleanEmail = $email ? trim(strip_tags($email->isi_konfig)) : 'humas@bphn.go.id 
     <!-- Divider -->
     <hr style="border-color: rgba(255, 255, 255, 0.1); margin: 0 0 25px 0;">
 
+    <!-- Analytics Strip -->
+    <div class="footer-analytics">
+      <div class="container">
+        <div class="analytics-strip">
+          <div class="analytics-item">
+            <i class="bi bi-calendar-day"></i>
+            <span class="analytics-label">Hari Ini</span>
+            <span class="analytics-value"><?= $todayVisits ?></span>
+          </div>
+          <div class="analytics-divider"></div>
+          <div class="analytics-item">
+            <i class="bi bi-calendar-week"></i>
+            <span class="analytics-label">Minggu Ini</span>
+            <span class="analytics-value"><?= $weekVisits ?></span>
+          </div>
+          <div class="analytics-divider"></div>
+          <div class="analytics-item">
+            <i class="bi bi-calendar-month"></i>
+            <span class="analytics-label">Bulan Ini</span>
+            <span class="analytics-value"><?= $monthVisits ?></span>
+          </div>
+          <div class="analytics-divider"></div>
+          <div class="analytics-item">
+            <i class="bi bi-calendar-event"></i>
+            <span class="analytics-label">Tahun Ini</span>
+            <span class="analytics-value"><?= $yearVisits ?></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Bottom Section -->
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center" style="font-size: 0.75rem;">
       <div class="d-flex flex-wrap justify-content-center justify-content-lg-start align-items-center gap-3 mb-3 mb-lg-0" style="color: #64748b;">
-        <span class="text-white">&copy; 2026 BPHN</span>
-        <span style="color: #475569; font-weight: bold;">&middot;</span>
-        <a href="#" class="footer-link-muted">Prasyarat Penggunaan</a>
-        <span style="color: #475569; font-weight: bold;">&middot;</span>
-        <a href="#" class="footer-link-muted">Kebijakan Privasi</a>
-        <span style="color: #475569; font-weight: bold;">&middot;</span>
-        <a href="#" class="footer-link-muted">Status Sistem</a>
-        <span style="color: #475569; font-weight: bold;">&middot;</span>
-        <a href="#" class="footer-link-muted">Pengaturan Cookie</a>
+        <span class="text-white">&copy; <?= date('Y') ?> <?= Html::encode($cleanInstansi) ?> powered by <a href="https://ildis.bphn.go.id" target="_blank" style="color: #ffc107;">ILDIS</a></span>
       </div>
 
       <div class="d-flex align-items-center gap-4">
@@ -139,6 +179,85 @@ $cleanEmail = $email ? trim(strip_tags($email->isi_konfig)) : 'humas@bphn.go.id 
     .footer-social svg {
       vertical-align: middle;
       transform: translateY(-2px);
+    }
+
+    /* Analytics Strip */
+    .footer-analytics {
+      background: rgba(255, 255, 255, 0.03);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 16px 0;
+      margin-bottom: 20px;
+    }
+
+    .analytics-strip {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+
+    .analytics-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 0 24px;
+      min-width: 100px;
+    }
+
+    .analytics-item i {
+      font-size: 1.1rem;
+      color: #ffc107;
+      opacity: 0.8;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .analytics-item:hover i {
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+
+    .analytics-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #728aad;
+      font-weight: 500;
+    }
+
+    .analytics-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .analytics-divider {
+      width: 1px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 0 12px;
+    }
+
+    @media (max-width: 768px) {
+      .analytics-strip {
+        flex-direction: column;
+        gap: 16px;
+      }
+      
+      .analytics-item {
+        padding: 0 16px;
+        min-width: auto;
+      }
+      
+      .analytics-divider {
+        width: 40px;
+        height: 1px;
+        margin: 8px 0;
+      }
     }
   </style>
 </footer>

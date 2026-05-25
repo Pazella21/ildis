@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
+use backend\models\DokumenJdih;
 
 /**
  * CirculationController implements the CRUD actions for Circulation model.
@@ -37,10 +38,6 @@ class CirculationController extends Controller
     public function actionIndex()
     {
         $searchModel = new CirculationSearch();
-        /*
-        $searchModel = new CirculationSearch(['id'=>\Yii::$app->user->identity->direktorat_id]);
-        $dataProvider->query->andWhere(['id'=>[2,3,4]]);
-        */
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -63,40 +60,12 @@ class CirculationController extends Controller
         ]);
     }
 
-    /**
-     * Creates a new Circulation model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-    
-    public function actionCreate()
-    {
-        $model = new Circulation();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-     */
-
     public function actionCreate()
     {
         $model = new Circulation();
 
         if ($model->load(Yii::$app->request->post()))
         {
-            /*
-            isi parameter tambahan
-            
-            $model->id = md5(uniqid(mt_rand(), true));
-            $jenis = $_POST['Circulation']['field']);    
-            $model->tahun_ln =  date('Y', strtotime($_POST['Peraturan']['tgl_diundangkan']));
-            */
-        
-
             if ($model->save()) 
             {
                 Yii::$app->session->setFlash('success', 'Data Circulation berhasil ditambahkan');
@@ -176,29 +145,15 @@ class CirculationController extends Controller
         }
     }
 
-    public function actionParent($id){
-        if ($id== '11e449f371bb47e09607313231373436')
-        {
-            $instansi='Kementerian';
-            $rows = \backend\models\peraturan\Institutions::find()->where(['jenis' => $instansi])->all();
-            echo "<option>Pilih Kementerian</option>";
-        }else
-        {
-            $instansi='Lembaga';
-            $rows = \backend\models\peraturan\Institutions::find()->where(['jenis' => $instansi])->all();
-            echo "<option>Pilih Lembaga Non Kementerian</option>";
+    public function actionParent($id)
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $institutionType = ($id == DokumenJdih::KEMENTERIAN_ID) ? 'Kementerian' : 'Lembaga';
+        $institutions = \backend\models\peraturan\Institutions::find()->where(['jenis' => $institutionType])->all();
+        $results = [];
+        foreach ($institutions as $institution) {
+            $results[] = ['id' => $institution->id, 'name' => $institution->nama];
         }
-
-       // echo "<option>Pilih Kementerian/Lembaga</option>";
-        
-        if(count($rows)>0){
-            foreach($rows as $row){
-                echo "<option value='$row->id'>$row->nama</option>";
-            }
-        }
-        else{
-            echo "<option>Nenhum municipio cadastrado</option>";
-        }
-        
+        return $results;
     }
 }

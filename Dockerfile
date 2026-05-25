@@ -14,7 +14,7 @@ COPY . .
 # ============================================
 # Stage 2: Production runtime
 # ============================================
-FROM php:8.2-fpm-alpine AS production
+FROM php:8.3-fpm-alpine AS production
 
 WORKDIR /var/www
 
@@ -66,6 +66,8 @@ RUN php init --env=Production --overwrite=n
 
 # Setup permissions - create directories first
 RUN mkdir -p /var/www/runtime \
+    && mkdir -p /var/www/console/runtime \
+    && mkdir -p /var/www/backups \
     && mkdir -p /var/www/backend/web/assets \
     && mkdir -p /var/www/backend/web/uploads \
     && mkdir -p /var/www/frontend/web/assets \
@@ -73,6 +75,8 @@ RUN mkdir -p /var/www/runtime \
     && chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www \
     && chmod -R 775 /var/www/runtime \
+    && chmod -R 775 /var/www/console/runtime \
+    && chmod -R 775 /var/www/backups \
     && chmod -R 775 /var/www/backend/web/assets \
     && chmod -R 775 /var/www/frontend/web/assets
 
@@ -97,9 +101,19 @@ RUN printf '#!/bin/sh\nexec nginx -g "daemon off;"\n' > /etc/s6-overlay/s6-rc.d/
     && chmod 755 /etc/s6-overlay/s6-rc.d/nginx/run \
     && echo 'longrun' > /etc/s6-overlay/s6-rc.d/nginx/type
 
-# Register both services in the default user bundle so they start on boot
+# Register services in the default user bundle so they start on boot
 RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/php-fpm \
     && touch /etc/s6-overlay/s6-rc.d/user/contents.d/nginx
+
+# Add container init script to run database migrations on startup
+# This runs once before services start, then applies pending migrations
+RUN mkdir -p /etc/s6-overlay/s6-rc.d/ildis-init
+COPY docker/ildis-init.sh /etc/s6-overlay/s6-rc.d/ildis-init/up
+RUN chmod 755 /etc/s6-overlay/s6-rc.d/ildis-init/up \
+    && echo 'oneshot' > /etc/s6-overlay/s6-rc.d/ildis-init/type \
+    && touch /etc/s6-overlay/s6-rc.d/user/contents.d/ildis-init \
+    && mkdir -p /etc/s6-overlay/s6-rc.d/php-fpm/dependencies.d \
+    && touch /etc/s6-overlay/s6-rc.d/php-fpm/dependencies.d/ildis-init
 
 EXPOSE 80
 

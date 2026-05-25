@@ -92,8 +92,8 @@ $id2  = $model->id;
                             echo '<th scope="col">' . $data->id . '</th>';
                             echo '<th scope="col">' . $data->getJudul($data->document_id) . '</th>';
                             echo '<th scope="col">' . $data->item_code . '</th>';
-                            echo '<th scope="col">' . $data->getTanggal($data->tanggal_pinjam) . '</th>';
-                            echo '<th scope="col">' . $data->getTanggal($data->tanggal_kembali) . '</th>';
+                            echo '<th scope="col">' . \common\components\DateHelper::formatIndonesian($data->tanggal_pinjam) . '</th>';
+                            echo '<th scope="col">' . \common\components\DateHelper::formatIndonesian($data->tanggal_kembali) . '</th>';
                             echo '<th scope="col">' .
                             Html::a('<span class="btn btn-sm btn-danger"><b class="fa fa-trash"></b></span>', ['hapus-sirkulasi', 'id' => $data->id], [
                                     //'class' => 'btn btn-danger btn-flat',

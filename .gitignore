@@ -52,3 +52,10 @@ phpunit.phar
 /backend/assets/**
 
 node_modules/
+
+# local private notes
+/docs/local-private/
+
+# backup files (database dumps from update.sh)
+/backups/*.sql.gz
+/backups/*.sql

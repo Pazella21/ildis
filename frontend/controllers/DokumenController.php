@@ -9,6 +9,7 @@ use frontend\models\DokumenSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use yii\web\UploadedFile;
 
 /**
@@ -22,6 +23,17 @@ class DokumenController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'actions' => ['create', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -38,10 +50,6 @@ class DokumenController extends Controller
     public function actionIndex()
     {
         $searchModel = new DokumenSearch();
-        /*
-        $searchModel = new DokumenSearch(['id'=>\Yii::$app->user->identity->direktorat_id]);
-        $dataProvider->query->andWhere(['id'=>[2,3,4]]);
-        */
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         
         return $this->render('index', [
@@ -53,11 +61,6 @@ class DokumenController extends Controller
     public function actionIndex2($id)
     {
         $searchModel = new DokumenSearch(['bentuk_peraturan' => $id]);
-        //$dataProvider->query->andWhere(['id'=>[2,3,4]]);
-        /*
-        $searchModel = new DokumenSearch(['id'=>\Yii::$app->user->identity->direktorat_id]);
-        $dataProvider->query->andWhere(['id'=>[2,3,4]]);
-        */
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -68,7 +71,7 @@ class DokumenController extends Controller
 
     public function actionPeraturan()
     {
-        $searchModel = new DokumenSearch(['tipe_dokumen' => 1]);
+        $searchModel = new DokumenSearch(['tipe_dokumen' => Dokumen::TYPE_PERATURAN]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index-peraturan', [
@@ -79,7 +82,7 @@ class DokumenController extends Controller
 
     public function actionMonografi()
     {
-        $searchModel = new DokumenSearch(['tipe_dokumen' => 2]);
+        $searchModel = new DokumenSearch(['tipe_dokumen' => Dokumen::TYPE_MONOGRAFI]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index-monografi', [
@@ -90,7 +93,7 @@ class DokumenController extends Controller
 
     public function actionArtikel()
     {
-        $searchModel = new DokumenSearch(['tipe_dokumen' => 3]);
+        $searchModel = new DokumenSearch(['tipe_dokumen' => Dokumen::TYPE_ARTIKEL]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index-artikel', [
@@ -101,7 +104,7 @@ class DokumenController extends Controller
 
     public function actionPutusan()
     {
-        $searchModel = new DokumenSearch(['tipe_dokumen' => 4]);
+        $searchModel = new DokumenSearch(['tipe_dokumen' => Dokumen::TYPE_PUTUSAN]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index-putusan', [
@@ -167,7 +170,7 @@ class DokumenController extends Controller
     
      public function actionBerlaku()
     {
-        $searchModel = new DokumenSearch(['status' => 'Berlaku', 'tipe_dokumen' => 1]);
+        $searchModel = new DokumenSearch(['status' => 'Berlaku', 'tipe_dokumen' => Dokumen::TYPE_PERATURAN]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index-berlaku', [
@@ -208,42 +211,27 @@ class DokumenController extends Controller
                 $jenisperaturan->singkatan . ' ' . $model->nomor_peraturan . '/' . $model->tahun_terbit,
                 $jenisperaturan->singkatan . '-' . $model->nomor_peraturan . '-' . $model->tahun_terbit,
                 $jenisperaturan->singkatan . '-no-' . $model->nomor_peraturan . '-tahun-' . $model->tahun_terbit,
-                // $model->jenisperaturan->nama_peraturan . ' Nomor ' . $model->nomor . ' Tahun ' . $model->tahun_terbit . ' Tentang ' . ucwords(strtolower($model->judul)),
-                // ucwords(strtolower($model->tentang)),
             ];
         }
 
         switch ($model->tipe_dokumen) {
-            case 1:
+            case Dokumen::TYPE_PERATURAN:
                 return $this->render('view-peraturan', ['model' => $this->findModel($id), 'title' => $title, 'deskripsi' => $deskripsi, 'keywords' => $keywords]);
                 break;
 
-            case 2:
+            case Dokumen::TYPE_MONOGRAFI:
                 return $this->render('view-monografi', ['model' => $this->findModel($id), 'title' => $title, 'deskripsi' => $deskripsi]);
                 break;
 
-            case 3:
+            case Dokumen::TYPE_ARTIKEL:
                 return $this->render('view-artikel', ['model' => $this->findModel($id), 'title' => $title, 'deskripsi' => $deskripsi]);
                 break;
 
-            case 4:
+            case Dokumen::TYPE_PUTUSAN:
                 return $this->render('view-putusan', ['model' => $this->findModel($id), 'title' => $title, 'deskripsi' => $deskripsi]);
                 break;
         }
     }
-
-    /**
-     * Creates a new Dokumen model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-    
-
-
-
-
-
-
-
 
     /**
      * Finds the Dokumen model based on its primary key value.
@@ -264,33 +252,17 @@ class DokumenController extends Controller
 
     public function actionJenis($id)
     {
-
-        //  $dokumen = \backend\models\JenisDokumenHukum::find()->where(['singkatan_peraturan'=>$id])->one(); 
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $rows = \frontend\models\DokumenHukum::find()->where(['parent_id' => $id])->all();
-        //echo "<option> Pilih Jenis Dokumen </option>";
-        echo "<option></option>";
-        if (count($rows) > 0) {
-            foreach ($rows as $branch) {
-                echo "<option value'" . $branch->id . "'>" . $branch->name . "</option>";
-            }
+        $result = [];
+        foreach ($rows as $branch) {
+            $result[] = ['id' => $branch->id, 'name' => $branch->name];
         }
+        return $result;
     }
 
     public function actionDownload($id)
     {
-
-        $path = Yii::getAlias('@common') . '/dokumen/' . $id;
-        if (file_exists($path)) {
-
-            // $model = Dokumen::find()
-            //    ->where(['lampiran' => $id])
-            //    ->one();
-
-            //    $model->hit_download = $model->hit_download +1;
-            //    $model->save(); 
-            return Yii::$app->response->sendFile($path);
-        } else {
-            throw new NotFoundHttpException("Tidak dapat menemukan file {$id}, silahkan hubungi admin");
-        }
+        return \common\components\SafeDownload::sendFile('@common/dokumen', $id);
     }
 }

@@ -100,6 +100,7 @@ class Peraturan extends \yii\db\ActiveRecord
             [['tanggal_penetapan', 'tanggal_dibacakan', 'created_at', 'updated_at', 'tanggal_pengundangan'], 'safe'],
             [['nomor_peraturan', 'nomor_panggil', 'cetakan', 'deskripsi_fisik', 'isbn', 'nomor_induk_buku', 'jenis_peraturan', 'singkatan_bentuk', 'tipe_koleksi_nomor_eksemplar', 'pola_nomor_eksemplar', 'slug', 'jumlah_eksemplar', 'kala_terbit', 'tahun_terbit', 'edisi', 'gmd', 'judul_seri', 'klasifikasi', 'info_detil_spesifik', 'abstrak', 'gambar_sampul', 'label', 'sembunyikan_di_opac', 'promosikan_ke_beranda', 'status_terakhir', 'status', '_created_by', '_updated_by', 'inisiatif', 'pemrakarsa', 'penandatanganan', 'lembaga_peradilan', 'pemohon', 'termohon', 'jenis_perkara', 'sub_klasifikasi', 'amar_status', 'berkekuatan_hukum_tetap', 'urusan_pemerintahan', 'catatan_status_peraturan'], 'string', 'max' => 255],
             [['integrasi'], 'string', 'max' => 11],
+            [['gambar_sampul'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg, gif, pdf', 'maxSize' => 10 * 1024 * 1024],
         ];
     }
 
