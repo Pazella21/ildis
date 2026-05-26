@@ -91,12 +91,11 @@ class DokumenDataSubyek extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'tipe_dokumen', 'dokumen_type_id', 'daerah', 'hit_see', 'hit_download', 'is_publish'], 'integer'],
-            [['tipe_dokumen', 'judul', 'nama_pengarang'], 'required'],
+            [['id', 'tipe_dokumen', 'dokumen_type_id', 'daerah', 'hit_see', 'hit_download', 'is_publish', 'integrasi'], 'integer'],
+            [['tipe_dokumen', 'judul'], 'required'],
             [['judul', 'teu', 'bentuk_peraturan', 'tempat_terbit', 'penerbit', 'sumber', 'bahasa', 'bidang_hukum', 'pernyataan_tanggung_jawab', 'abstrak', 'sumber_perolehan'], 'string'],
             [['tanggal_penetapan', 'tanggal_dibacakan', 'created_at', 'updated_at', 'tanggal_pengundangan'], 'safe'],
             [['nomor_peraturan', 'nomor_panggil', 'jenis_peraturan', 'singkatan_jenis', 'cetakan', 'deskripsi_fisik', 'isbn', 'nomor_induk_buku', 'singkatan_bentuk', 'tipe_koleksi_nomor_eksemplar', 'pola_nomor_eksemplar', 'jumlah_eksemplar', 'kala_terbit', 'tahun_terbit', 'edisi', 'gmd', 'judul_seri', 'klasifikasi', 'info_detil_spesifik', 'gambar_sampul', 'label', 'sembunyikan_di_opac', 'promosikan_ke_beranda', 'status_terakhir', 'status', '_created_by', '_updated_by', 'inisiatif', 'pemrakarsa', 'penandatanganan', 'lembaga_peradilan', 'pemohon', 'termohon', 'jenis_perkara', 'sub_klasifikasi', 'amar_status', 'berkekuatan_hukum_tetap', 'urusan_pemerintahan', 'catatan_status_peraturan', 'subjek_data', 'slug', 'subyek', 'nama_pengarang'], 'string', 'max' => 255],
-            [['integrasi'], 'string', 'max' => 11],
         ];
     }
 

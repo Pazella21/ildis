@@ -93,11 +93,10 @@ class Putusan extends \yii\db\ActiveRecord
     {
         return [
             [['jenis_peraturan','nomor_peraturan','tahun_terbit','tanggal_penetapan','judul','bahasa'], 'required'],
-            [['tipe_dokumen', 'daerah', 'hit_see', 'hit_download'], 'integer'],
+            [['tipe_dokumen', 'daerah', 'hit_see', 'hit_download', 'integrasi'], 'integer'],
             [['judul', 'teu', 'bentuk_peraturan', 'singkatan_jenis', 'tempat_terbit', 'penerbit', 'sumber', 'bahasa', 'bidang_hukum', 'pernyataan_tanggung_jawab'], 'string'],
             [['tanggal_penetapan', 'tanggal_dibacakan', 'created_at', 'updated_at', 'tanggal_pengundangan'], 'safe'],
             [['nomor_peraturan', 'nomor_panggil', 'cetakan', 'deskripsi_fisik', 'isbn', 'nomor_induk_buku', 'jenis_peraturan', 'singkatan_bentuk', 'tipe_koleksi_nomor_eksemplar', 'pola_nomor_eksemplar', 'jumlah_eksemplar', 'kala_terbit', 'tahun_terbit', 'edisi', 'gmd', 'judul_seri', 'klasifikasi', 'info_detil_spesifik', 'abstrak', 'gambar_sampul', 'label', 'sembunyikan_di_opac', 'promosikan_ke_beranda', 'status_terakhir', 'status', '_created_by', '_updated_by', 'inisiatif', 'pemrakarsa', 'penandatanganan', 'lembaga_peradilan', 'pemohon', 'termohon', 'jenis_perkara', 'sub_klasifikasi', 'amar_status', 'berkekuatan_hukum_tetap', 'urusan_pemerintahan', 'catatan_status_peraturan'], 'string', 'max' => 255],
-            [['integrasi'], 'string', 'max' => 11],
         ];
     }
 

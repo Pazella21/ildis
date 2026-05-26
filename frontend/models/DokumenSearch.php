@@ -118,7 +118,7 @@ class DokumenSearch extends DokumenDataSubyek
             ->andFilterWhere(['like', 'promosikan_ke_beranda', $this->promosikan_ke_beranda])
             ->andFilterWhere(['like', 'status_terakhir', $this->status_terakhir])
             ->andFilterWhere(['like', 'status', $this->status])
-            ->andFilterWhere(['like', 'integrasi', $this->integrasi])
+            ->andFilterWhere(['integrasi' => $this->integrasi])
             ->andFilterWhere(['like', '_created_by', $this->_created_by])
             ->andFilterWhere(['like', '_updated_by', $this->_updated_by])
             ->andFilterWhere(['like', 'inisiatif', $this->inisiatif])
