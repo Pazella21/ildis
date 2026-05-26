@@ -1554,6 +1554,42 @@ do_update() {
         fail "Instalasi ILDIS tidak ditemukan di ${INSTALL_DIR}. Jalankan ./install.sh tanpa --update untuk pemasangan baru."
     fi
 
+    info "Memeriksa pembaruan install.sh..."
+    local self_update_url="https://raw.githubusercontent.com/${GITHUB_REPO}/main/install.sh"
+    local self_path
+    self_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+    local new_self="${INSTALL_DIR}/install.sh.new"
+
+    if command -v curl &>/dev/null; then
+        if curl -fsSL "${self_update_url}" -o "${new_self}" 2>/dev/null && [ -s "${new_self}" ]; then
+            local old_md5 new_md5
+            if command -v md5sum &>/dev/null; then
+                old_md5=$(md5sum "${self_path}" 2>/dev/null | awk '{print $1}')
+                new_md5=$(md5sum "${new_self}" 2>/dev/null | awk '{print $1}')
+            elif command -v md5 &>/dev/null; then
+                old_md5=$(md5 -q "${self_path}" 2>/dev/null)
+                new_md5=$(md5 -q "${new_self}" 2>/dev/null)
+            else
+                old_md5=""
+                new_md5="different"
+            fi
+            if [ "${old_md5}" != "${new_md5}" ]; then
+                chmod +x "${new_self}"
+                mv "${new_self}" "${self_path}"
+                success "install.sh diperbarui, menjalankan versi terbaru..."
+                exec "${self_path}" --update --dir "${INSTALL_DIR}"
+            else
+                rm -f "${new_self}"
+                success "install.sh sudah terbaru"
+            fi
+        else
+            rm -f "${new_self}" 2>/dev/null || true
+            warn "Tidak dapat mengunduh pembaruan install.sh. Melanjutkan dengan versi saat ini."
+        fi
+    else
+        warn "curl tidak ditemukan. Melewatkan pembaruan install.sh."
+    fi
+
     info "Memuat konfigurasi yang ada..."
     while IFS='=' read -r key value; do
         case "$key" in
