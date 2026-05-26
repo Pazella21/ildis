@@ -1,3 +1,9 @@
+## [4.3.3](https://github.com/bphndigitalservice/ildis/compare/v4.3.2...v4.3.3) (2026-05-26)
+
+### Bug Fixes
+
+* **login:** csp ([6da8c06](https://github.com/bphndigitalservice/ildis/commit/6da8c06a8fbd932182db2de7d038e66adbefaf00))
+
 ## [4.3.2](https://github.com/bphndigitalservice/ildis/compare/v4.3.1...v4.3.2) (2026-05-26)
 
 ### Bug Fixes
