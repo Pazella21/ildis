@@ -20,7 +20,11 @@ ENV_FILE=".env"
 VERSION_FILE="VERSION"
 BACKUP_DIR="backups"
 DEFAULT_PORT=8080
-DEFAULT_INSTALL_DIR="/opt/ildis"
+if [ -w "/opt" ] 2>/dev/null; then
+    DEFAULT_INSTALL_DIR="/opt/ildis"
+else
+    DEFAULT_INSTALL_DIR="$(pwd)/ildis"
+fi
 MIN_DISK_MB=1024
 HEALTH_RETRIES=12
 HEALTH_INTERVAL=5
@@ -706,7 +710,11 @@ patch_recaptcha_support() {
 
 # ── Install ──────────────────────────────────────────────────────────────────
 do_install() {
-    mkdir -p "${INSTALL_DIR}"
+    if ! mkdir -p "${INSTALL_DIR}" 2>/dev/null; then
+        warn "Tidak dapat membuat ${INSTALL_DIR} — menggunakan direktori saat ini."
+        INSTALL_DIR="$(pwd)/ildis"
+        mkdir -p "${INSTALL_DIR}"
+    fi
 
     generate_env
     generate_compose
