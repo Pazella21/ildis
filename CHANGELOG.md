@@ -1,3 +1,16 @@
+## [4.3.0](https://github.com/bphndigitalservice/ildis/compare/v4.2.1...v4.3.0) (2026-05-26)
+
+### Features
+
+* **recaptcha:** make backend login reCAPTCHA optional via env ([a11e91a](https://github.com/bphndigitalservice/ildis/commit/a11e91af78166c68155c795fd0aded6d34157fb5))
+
+### Bug Fixes
+
+* **docker:** restore dokumen_data_subyek view and align document validation ([be738a6](https://github.com/bphndigitalservice/ildis/commit/be738a6855366492510af77d598d9472a5e3aee7))
+* **install:** docker install and migration reliability ([212cc61](https://github.com/bphndigitalservice/ildis/commit/212cc615d62f7d68fb059592d8d41b9154bd0dc4))
+* **install:** docker install and migration reliability ([#40](https://github.com/bphndigitalservice/ildis/issues/40)) ([1d80712](https://github.com/bphndigitalservice/ildis/commit/1d80712bf56a04372276cf0a736c5e253b1e8fee))
+* **install:** wire RECAPTCHA_ENABLED and patch GHCR image until rebuild ([b1c86f4](https://github.com/bphndigitalservice/ildis/commit/b1c86f4756f9ab15e4642c63acf6568ded6d1970))
+
 ## [4.2.1](https://github.com/bphndigitalservice/ildis/compare/v4.2.0...v4.2.1) (2026-05-26)
 
 ## [4.2.0](https://github.com/bphndigitalservice/ildis/compare/v4.1.4...v4.2.0) (2026-05-25)
