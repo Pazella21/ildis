@@ -71,12 +71,20 @@ return [
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
-            'targets' => [
+            'targets' => array_values(array_filter([
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
-            ],
+                (YII_DEBUG || filter_var(getenv('YII_DEBUG') ?: '0', FILTER_VALIDATE_BOOLEAN)) ? [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['warning'],
+                    'categories' => ['auth', 'auth.*'],
+                    'logFile' => '@runtime/logs/auth.log',
+                    'logVars' => [],
+                    'maxFileSize' => 10240,
+                ] : null,
+            ])),
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
