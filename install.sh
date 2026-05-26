@@ -20,7 +20,7 @@ ENV_FILE=".env"
 VERSION_FILE="VERSION"
 BACKUP_DIR="backups"
 DEFAULT_PORT=8080
-if [ -w "/opt" ] 2>/dev/null; then
+if mkdir -p "/opt/ildis" 2>/dev/null && rmdir "/opt/ildis" 2>/dev/null; then
     DEFAULT_INSTALL_DIR="/opt/ildis"
 else
     DEFAULT_INSTALL_DIR="$(pwd)/ildis"
@@ -711,8 +711,9 @@ patch_recaptcha_support() {
 # ── Install ──────────────────────────────────────────────────────────────────
 do_install() {
     if ! mkdir -p "${INSTALL_DIR}" 2>/dev/null; then
-        warn "Tidak dapat membuat ${INSTALL_DIR} — menggunakan direktori saat ini."
-        INSTALL_DIR="$(pwd)/ildis"
+        local fallback_dir="$(pwd)/ildis"
+        warn "Tidak dapat membuat ${INSTALL_DIR} — menggunakan ${fallback_dir}."
+        INSTALL_DIR="${fallback_dir}"
         mkdir -p "${INSTALL_DIR}"
     fi
 
