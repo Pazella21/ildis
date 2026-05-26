@@ -31,14 +31,14 @@ INSERT INTO `auth_assignment` (`item_name`, `user_id`, `created_at`) VALUES
 ('pustakawan', '12', 1645434097),
 ('superadmin', '33', 1672213292),
 ('peraturan', '34', 1645434239),
-('koordinator pustakawan', '1', 1635211618),
+
 ('superadmin', '48', 1674114676),
 ('koordinator pustakawan', '52', 1636104556),
 ('peraturan', '28', 1647844171),
 ('superadmin', '126', 1645410369),
 ('superadmin', '131', 1678254539),
 ('peraturan', '36', 1647844248),
-('superadmin', '54', 1677203836),
+
 ('peraturan', '14', 1647844259),
 ('peraturan', '15', 1647844273),
 ('peraturan', '128', 1675910555),
@@ -101,8 +101,7 @@ INSERT INTO `auth_assignment` (`item_name`, `user_id`, `created_at`) VALUES
 ('pustakawan', '170', 1704259628),
 ('pustakawan', '171', 1704260399),
 ('pustakawan', '175', 1709118488),
-('superadmin', '176', 1735545505),
-('superadmin', '177', 1735545611);
+('superadmin', '176', 1735545505);
 INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `created_at`, `updated_at`) VALUES
 ('/*', 2, NULL, NULL, NULL, 1594180921, 1594180921),
 ('/admin/*', 2, NULL, NULL, NULL, 1594180921, 1594180921),
@@ -53732,9 +53731,6 @@ INSERT INTO `urusan_pemerintahan` (`id`, `name`, `status`, `created_at`, `update
 (42, 'Agama', NULL, '2020-01-30 02:04:35', '2020-01-30 02:04:35', NULL, NULL),
 (43, 'Pertahanan', NULL, '2020-01-30 04:17:37', '2020-01-30 04:17:37', NULL, NULL),
 (44, 'Bidang Keuangan', 'Publish', '2022-07-27 08:22:23', '2022-07-27 08:22:23', 126, 126);
-INSERT INTO `user` (`id`, `username`, `auth_key`, `password_hash`, `password_reset_token`, `email`, `status`, `suspended_until`, `created_at`, `updated_at`, `picture`, `updated_by`) VALUES
-(1, 'admin', 'G-yPulEGDEp9zo9PlMzcMOLF0KQkDj7c', '$2y$13$zww50Qv22hxBaoRjjJ6qqunEgOtYjx55WrXTHvqmc.7B4bmAjVfgC', '6JrEpJDkpeZpQOtCtNlCoLFM1M3bPVPT_1602794270', 'muchtarsani@gmail.com', 0, NULL, 2147483647, 1607549059, 'avatar-2009.jpg', 54),
-(54, 'indar', 'CU8n1EnMnftTpLaBBuBCfHawuo2NxnFG', '$2y$13$/RNJM4wP4G2nqTJfs73g.eB65lPzQ2T8dfJg6mDG6ponmkMRipXoC', NULL, 'indarsaleh24@gmail.com', 10, NULL, 1618548739, 1618548739, 'avatar.png', NULL),
-(177, 'sample', 'FFbjqvC2h2rvffzi-VKp5mqm0lxtARN6', '$2y$13$SJBRYq2324lXhz8cqVwtPu4m3Zhd8Qc5UgbzpwbpdboYvQF7wrMFK', NULL, 'sample@gmail.com', 10, NULL, 1735545606, 1735545606, 'avatar.png', NULL);
+
 INSERT INTO `visi_misi` (`id`, `visi_misi`, `status`) VALUES
 (7, '<p>Jaringan Dokumentasi dan Informasi Hukum Nasional atau disingakat JDIHN adalah:</p>\r\n\r\n<ul>\r\n	<li>Wadah pendayagunaan bersama atas dokumen hukum secara tertib, terpadu, dan berkesinambungan.</li>\r\n	<li>Merupakan sarana pemberian pelayanan informasi hukum secara lengkap akurat, mudah, dan cepat</li>\r\n</ul>\r\n\r\n<p><strong>VISI</strong></p>\r\n\r\n<p>&quot;Masyarakat memperoleh kepastian hukum&quot;</p>\r\n\r\n<p><strong>MISI</strong></p>\r\n\r\n<p>&quot;Mewujudkan peraturan Perundang-Undangan yang berkualitas&quot;</p>', 1);
