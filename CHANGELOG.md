@@ -1,3 +1,14 @@
+## [4.3.4](https://github.com/bphndigitalservice/ildis/compare/v4.3.3...v4.3.4) (2026-05-26)
+
+### Documentation
+
+* add design spec for Traefik, SSL, superadmin, and logging in install.sh ([cc6a2f0](https://github.com/bphndigitalservice/ildis/commit/cc6a2f07870a07db62b63e4e76f261f2fea16f8d))
+* add implementation plan for Traefik, SSL, superadmin, and logging ([6cdbd2d](https://github.com/bphndigitalservice/ildis/commit/6cdbd2d06b0ea8858e1cb3780ef3f5cd94124105))
+
+### Maintenance
+
+* **auth:** implement detailed logging for login failures ([f1b145e](https://github.com/bphndigitalservice/ildis/commit/f1b145e97ce3aefe1a5d06a0405c36de1388f372))
+
 ## [4.3.3](https://github.com/bphndigitalservice/ildis/compare/v4.3.2...v4.3.3) (2026-05-26)
 
 ### Bug Fixes
