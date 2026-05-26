@@ -5,10 +5,6 @@ namespace backend\assets_b;
 use yii\base\Exception;
 use yii\web\AssetBundle;
 
-/**
- * AdminLte AssetBundle
- * @since 0.1
- */
 class AdminLteAsset extends AssetBundle
 {
     public $sourcePath = '@vendor/bower/adminlte/dist';
@@ -17,7 +13,6 @@ class AdminLteAsset extends AssetBundle
         'css/AdminLTE.min.css',
         'css/skins/_all-skins.min.css',
         'css/style.css',
-        'summernote/dist/summernote.css',
         'https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css'
     ];
     public $js = [
@@ -28,8 +23,6 @@ class AdminLteAsset extends AssetBundle
         'plugins/jvectormap/jquery-jvectormap-world-mill-en.js',
         'plugins/slimScroll/jquery.slimscroll.min.js',
         'plugins/chartjs/Chart.min.js',
-        //'js/pages/dashboard2.js',
-        'summernote/dist/summernote.js',
         'https://cdn.jsdelivr.net/momentjs/latest/moment.min.js',
         'https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js'
     ];
@@ -38,20 +31,13 @@ class AdminLteAsset extends AssetBundle
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
         'yii\bootstrap\BootstrapPluginAsset',
+        'kartik\editors\assets\SummernoteAsset',
     ];
 
-    /**
-     * @var string|bool Choose skin color, eg. `'skin-blue'` or set `false` to disable skin loading
-     * @see https://almsaeedstudio.com/themes/AdminLTE/documentation/index.html#layout
-     */
     public $skin = '_all-skins';
 
-    /**
-     * @inheritdoc
-     */
     public function init()
     {
-        // Append skin color file if specified
         if ($this->skin) {
             if (('_all-skins' !== $this->skin) && (strpos($this->skin, 'skin-') !== 0)) {
                 throw new Exception('Invalid skin specified');
