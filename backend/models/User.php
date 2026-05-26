@@ -46,7 +46,14 @@ class User extends \yii\db\ActiveRecord
             [['username'], 'unique'],
             [['email'], 'unique'],
             [['password_reset_token'], 'unique'],
-            ['reCaptcha', \himiklab\yii2\recaptcha\ReCaptchaValidator2::className(), 'secret' => Yii::$app->params['recaptcha.secretKey'],'required'],
+            [
+                'reCaptcha',
+                \himiklab\yii2\recaptcha\ReCaptchaValidator2::className(),
+                'secret' => Yii::$app->params['recaptcha.secretKey'],
+                'when' => function () {
+                    return !empty(Yii::$app->params['recaptcha.enabled']);
+                },
+            ],
         ];
     }
 

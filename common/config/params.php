@@ -1,8 +1,16 @@
 <?php
+$recaptchaEnabled = getenv('RECAPTCHA_ENABLED');
+if ($recaptchaEnabled === false || $recaptchaEnabled === '') {
+    $recaptchaEnabled = false;
+} else {
+    $recaptchaEnabled = filter_var($recaptchaEnabled, FILTER_VALIDATE_BOOLEAN);
+}
+
 return [
     'adminEmail' => 'admin@example.com',
     'supportEmail' => 'support@example.com',
     'user.passwordResetTokenExpire' => 3600,
-    'recaptcha.siteKey' => getenv('RECAPTCHA_SITE_KEY'),
-    'recaptcha.secretKey' => getenv('RECAPTCHA_SECRET_KEY'),
+    'recaptcha.enabled' => $recaptchaEnabled,
+    'recaptcha.siteKey' => getenv('RECAPTCHA_SITE_KEY') ?: '',
+    'recaptcha.secretKey' => getenv('RECAPTCHA_SECRET_KEY') ?: '',
 ];

@@ -17,12 +17,24 @@ class LoginForm extends Model
 
     public function rules()
     {
-        return [
+        $rules = [
             [['username', 'password'], 'required'],
             ['rememberMe', 'boolean'],
             ['password', 'validatePassword'],
-            [['reCaptcha'], 'required'],
         ];
+
+        if (!empty(Yii::$app->params['recaptcha.enabled'])) {
+            $rules[] = [['reCaptcha'], 'required'];
+            $rules[] = [
+                ['reCaptcha'],
+                \himiklab\yii2\recaptcha\ReCaptchaValidator3::class,
+                'secret' => Yii::$app->params['recaptcha.secretKey'],
+                'threshold' => 0.5,
+                'action' => 'login',
+            ];
+        }
+
+        return $rules;
     }
 
     public function validatePassword($attribute, $params)

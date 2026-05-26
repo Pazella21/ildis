@@ -57,12 +57,17 @@ $fieldOptions2 = [
                 ->field($model, 'password', $fieldOptions2)
                 ->label(false)
                 ->passwordInput(['autocomplete' => 'off', 'placeholder' => $model->getAttributeLabel('password')]) ?>
+            <?php if (!empty(Yii::$app->params['recaptcha.enabled'])): ?>
             <?= $form->field($model, 'reCaptcha', [
                 'template' => '{input}',
             ])->widget(
                 \himiklab\yii2\recaptcha\ReCaptcha3::className(),
-                ['siteKey' => Yii::$app->params['recaptcha.siteKey']]
+                [
+                    'siteKey' => Yii::$app->params['recaptcha.siteKey'],
+                    'action' => 'login',
+                ]
             ) ?>
+            <?php endif; ?>
 
             <div class="row">
                 <div class="col-xs-8">
