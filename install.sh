@@ -1121,7 +1121,7 @@ generate_nginx_config() {
 
     local real_ip_directives=""
     local hsts_header=""
-    local csp_value="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https: data:; object-src 'none';"
+    local csp_value="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' https: data: https://fonts.gstatic.com; object-src 'none';"
     local proxy_headers=""
 
     if [ "${REVERSE_PROXY}" = true ]; then
