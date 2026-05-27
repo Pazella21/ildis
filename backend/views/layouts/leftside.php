@@ -54,24 +54,38 @@ use mdm\admin\components\MenuHelper;
         // $items2 = MenuHelper::getAssignedMenu(Yii::$app->user->id);
         $items2 = MenuHelper::getAssignedMenu(Yii::$app->user->id, null, $callback, true);
 
-        $puuSidebarItems = [];
         $puuTypes = DocumentType::findByGroup(DocumentGroup::LEGISLATION_FORMATION);
         if ($puuTypes && Yii::$app->user->can('/document-group/legislation-formation')) {
-            $puuSidebarItems = [
-                [
+            $puuChildren = array_map(static function (DocumentType $t) {
+                return [
+                    'label' => $t->name,
+                    'url' => [
+                        '/monografi/index',
+                        'MonografiSearch[documentTypeId]' => $t->id,
+                    ],
+                ];
+            }, $puuTypes);
+
+            $found = false;
+            foreach ($items2 as $i => $item) {
+                if ($item['label'] === 'Dokumen Hukum') {
+                    $items2[$i]['items'] = array_merge(
+                        $items2[$i]['items'] ?? [],
+                        $puuChildren
+                    );
+                    $found = true;
+                    break;
+                }
+            }
+
+            if (!$found) {
+                $items2[] = [
                     'label' => DocumentGroup::label(DocumentGroup::LEGISLATION_FORMATION),
+                    'url' => ['#'],
                     'icon' => 'file-text-o',
-                    'items' => array_map(static function (DocumentType $t) {
-                        return [
-                            'label' => $t->name,
-                            'url' => [
-                                '/monografi/index',
-                                'MonografiSearch[documentTypeId]' => $t->id,
-                            ],
-                        ];
-                    }, $puuTypes),
-                ],
-            ];
+                    'items' => $puuChildren,
+                ];
+            }
         }
 
         //$items = $menuItems + $items2;
@@ -91,12 +105,6 @@ use mdm\admin\components\MenuHelper;
             ]
         )
         ?>
-        <?php if (!empty($puuSidebarItems)) : ?>
-            <?= Menu::widget([
-                'options' => ['class' => 'sidebar-menu'],
-                'items' => $puuSidebarItems,
-            ]) ?>
-        <?php endif; ?>
 
     </section>
     <!-- /.sidebar -->
