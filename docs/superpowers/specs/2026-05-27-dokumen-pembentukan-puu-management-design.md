@@ -90,7 +90,9 @@ Cloned from `views/monografi/` with the following changes per file:
 
 **File:** `backend/views/layouts/leftside.php` (already modified in prior work)
 
-Change the PUU children URLs from `/monografi/index` to `/dokumen-pembentukan-puu/index`:
+The PUU document types must appear as a **sub-sub-menu** under: Dokumen Hukum → Dokumen Penyusunan PUU → [individual document types]. Currently they are injected as direct children of "Dokumen Hukum". The fix wraps them in a nested group labeled "Dokumen Penyusunan PUU".
+
+Change the PUU children injection from flat list to a nested sub-group:
 
 ```php
 $puuChildren = array_map(static function (DocumentType $t) {
@@ -102,7 +104,28 @@ $puuChildren = array_map(static function (DocumentType $t) {
         ],
     ];
 }, $puuTypes);
+
+$puuGroup = [
+    'label' => 'Dokumen Penyusunan PUU',
+    'url' => ['#'],
+    'icon' => 'fa fa-file-text-o',
+    'items' => $puuChildren,
+];
+
+foreach ($items2 as $i => $item) {
+    if ($item['label'] === 'Dokumen Hukum') {
+        $items2[$i]['items'][] = $puuGroup;
+        $found = true;
+        break;
+    }
+}
+
+if (!$found) {
+    $items2[] = $puuGroup;
+}
 ```
+
+This produces the sidebar hierarchy: **Dokumen Hukum → Dokumen Penyusunan PUU → Naskah Akademik / Penelitian Hukum / ...**
 
 ### 3.5 RBAC
 
@@ -142,18 +165,28 @@ Also add a wildcard permission `/dokumen-pembentukan-puu/*`.
 | `superadmin` | `/dokumen-pembentukan-puu/*` |
 | `pustakawan` | All individual permissions (no wildcard, no delete) |
 
-**Menu table entry:**
+**Menu table entries:**
 
-Add a row to the `menu` table under parent "Dokumen Hukum" (id=16):
+Two rows must be added to the `menu` table to create the sub-sub-menu hierarchy:
+
+1. A parent entry "Dokumen Penyusunan PUU" under "Dokumen Hukum" (id=16):
 
 ```sql
 INSERT INTO `menu` (`name`, `parent`, `route`, `order`, `data`)
-VALUES ('Dokumen Pembentukan PUU', 16, '/dokumen-pembentukan-puu/index', 15, X'66612066612d66696c652d746578742d6f');
+VALUES ('Dokumen Penyusunan PUU', 16, NULL, 15, X'66612066612d66696c652d746578742d6f');
 ```
 
-This makes it appear as a child of "Dokumen Hukum" in the RBAC menu alongside Peraturan, Monografi Hukum, etc. The dynamic sub-items (individual document types) remain in the sidebar as they are now — this menu entry provides the route-level permission link.
+2. A child entry "Dokumen Pembentukan PUU" under the newly inserted "Dokumen Penyusunan PUU":
 
-> **Note:** The dynamic sub-items (Naskah Akademik, Penelitian Hukum, etc.) are NOT menu table entries. They are rendered dynamically via `DocumentType::findByGroup()`. The menu entry above is only for RBAC permission routing.
+```sql
+SET @penyusunan_puu_id = (SELECT id FROM `menu` WHERE `name` = 'Dokumen Penyusunan PUU' AND `parent` = 16 LIMIT 1);
+INSERT INTO `menu` (`name`, `parent`, `route`, `order`, `data`)
+VALUES ('Dokumen Pembentukan PUU', @penyusunan_puu_id, '/dokumen-pembentukan-puu/index', 1, X'66612066612d66696c652d746578742d6f');
+```
+
+This creates the RBAC menu hierarchy: **Dokumen Hukum → Dokumen Penyusunan PUU → Dokumen Pembentukan PUU**. The "Dokumen Penyusunan PUU" entry has no route (it's a structural parent only). The individual document types (Naskah Akademik, Penelitian Hukum, etc.) are NOT menu table entries — they are rendered dynamically in the sidebar via `DocumentType::findByGroup()`.
+
+> **Note:** The "Dokumen Penyusunan PUU" parent menu entry exists purely for sidebar grouping; the dynamic sub-items provide the actual navigation links with pre-filtered `documentTypeId` parameters.
 
 ## 4. Data flow
 

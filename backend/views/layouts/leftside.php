@@ -66,25 +66,24 @@ use mdm\admin\components\MenuHelper;
                 ];
             }, $puuTypes);
 
+            $puuGroup = [
+                'label' => 'Dokumen Penyusunan PUU',
+                'url' => ['#'],
+                'icon' => 'fa fa-file-text-o',
+                'items' => $puuChildren,
+            ];
+
             $found = false;
             foreach ($items2 as $i => $item) {
                 if ($item['label'] === 'Dokumen Hukum') {
-                    $items2[$i]['items'] = array_merge(
-                        $items2[$i]['items'] ?? [],
-                        $puuChildren
-                    );
+                    $items2[$i]['items'][] = $puuGroup;
                     $found = true;
                     break;
                 }
             }
 
             if (!$found) {
-                $items2[] = [
-                    'label' => DocumentGroup::label(DocumentGroup::LEGISLATION_FORMATION),
-                    'url' => ['#'],
-                    'icon' => 'file-text-o',
-                    'items' => $puuChildren,
-                ];
+                $items2[] = $puuGroup;
             }
         }
 
