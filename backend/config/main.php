@@ -29,6 +29,14 @@ return [
 
     'components' => [
 
+        'assetManager' => [
+            'bundles' => [
+                'kartik\editors\assets\SummernoteAsset' => [
+                    'baseUrl' => 'https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist',
+                ],
+            ],
+        ],
+
         'reCaptcha' => [
             'class' => 'himiklab\yii2\recaptcha\ReCaptchaConfig',
             'siteKeyV3' => Yii::$app->params['recaptcha.siteKey'],
