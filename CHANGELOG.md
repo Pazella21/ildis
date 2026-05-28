@@ -1,3 +1,44 @@
+## [4.4.0](https://github.com/bphndigitalservice/ildis/compare/v4.3.4...v4.4.0) (2026-05-28)
+
+### Features
+
+* **console:** add non-interactive flags to user/create command ([3674be5](https://github.com/bphndigitalservice/ildis/commit/3674be58a4398a891a7044ff24bc3142426df870))
+* **dokumen:** implement Dokumen Pembentukan PUU with slug-based URLs and dynamic sidebar ([8cbd6ac](https://github.com/bphndigitalservice/ildis/commit/8cbd6acedf74db9b2b77110cc33b0453f8496429))
+* **install:** add Traefik, SSL, superadmin creation, nginx config, logging, and expanded post-install ([c43a3a9](https://github.com/bphndigitalservice/ildis/commit/c43a3a93f0ef6350aa2ef868ecf6aaa7958b312a))
+* **install:** self-update install.sh before running --update ([cf4cf20](https://github.com/bphndigitalservice/ildis/commit/cf4cf2057d179613050a077769b240f3d53eec91))
+* **nginx:** add access_log and error_log directives ([0e91de8](https://github.com/bphndigitalservice/ildis/commit/0e91de87b7d79985316950d23d7fb56919209f02))
+* **puu:** add DokumenPembentukanPuuController with scoped CRUD and 4 sub-entity actions ([328f1e7](https://github.com/bphndigitalservice/ildis/commit/328f1e79a76a573f0357af693a3b41ac2e12bf7e))
+* **puu:** add DokumenPembentukanPuuSearch model scoped to legislation_formation types ([2ee0ae6](https://github.com/bphndigitalservice/ildis/commit/2ee0ae618ddbfac3685d2ec1a55f65dc92731071))
+* **puu:** add RBAC migration for DokumenPembentukanPuu controller routes and menu entry ([adbbff3](https://github.com/bphndigitalservice/ildis/commit/adbbff3f312f084e1fcd9c9af5a22cf4f3a87bc9))
+* **puu:** add view files for Dokumen Pembentukan PUU management page ([924a881](https://github.com/bphndigitalservice/ildis/commit/924a88137f98d853bc2b6a6d5b84136bb9d92475))
+* **puu:** update sidebar links to point to dedicated Dokumen Pembentukan PUU controller ([406b6bc](https://github.com/bphndigitalservice/ildis/commit/406b6bc77d87204608c98accef1346f51388a7ae))
+
+### Bug Fixes
+
+* add is_publish filter to Berlaku/Tidak Berlaku badge counts ([d7cf2f1](https://github.com/bphndigitalservice/ildis/commit/d7cf2f1851eb5ddf1f8106923ad652987e2655cd))
+* add is_publish filter to DocumentQuery::total() ([0148649](https://github.com/bphndigitalservice/ildis/commit/014864941401c2ba0a7524e2ee08f2f74cf1ee15))
+* add missing namespace to m260527_120000 migration ([fd6b026](https://github.com/bphndigitalservice/ildis/commit/fd6b02625e99d0c8469e8ade2a9004857ff4b6d4))
+* **assets:** use kartik SummernoteAsset CDN instead of missing local dist files ([5df6c51](https://github.com/bphndigitalservice/ildis/commit/5df6c514801791be2a5361b36934baf35be0205e))
+* **csp:** allow CDN resources needed by AdminLTE ([3174dc7](https://github.com/bphndigitalservice/ildis/commit/3174dc77f024ebcc02fc813349bfd01505950319))
+* **install:** read interactive input from /dev/tty ([1436fba](https://github.com/bphndigitalservice/ildis/commit/1436fbad4c620704fbefc4e975cb17d50e1f1274))
+* **install:** use direct read for password prompts to prevent infinite loop ([7bd4e38](https://github.com/bphndigitalservice/ildis/commit/7bd4e386dba3ddeb4b689f2fed9ef737860da587))
+* **seed:** remove hard-coded user accounts from seed data ([868df18](https://github.com/bphndigitalservice/ildis/commit/868df184ec0160bd8c3671539e405ecf04b72040))
+* **sidebar:** merge Dokumen Pembentukan PUU under Dokumen Hukum parent menu ([6db80af](https://github.com/bphndigitalservice/ildis/commit/6db80afeff7e5f0c1619cf84c2c626cb6781b35b))
+
+### Documentation
+
+* add design spec and implementation plan for badge count fix ([20aef9f](https://github.com/bphndigitalservice/ildis/commit/20aef9fe5b2cefa46f01247679f03fd289d596bb))
+* **plans:** add implementation plan for Dokumen Pembentukan PUU management page ([8d9a578](https://github.com/bphndigitalservice/ildis/commit/8d9a57801d950516670eddb64456bb75c1a72e7a))
+* **specs:** add Dokumen Pembentukan PUU backend management page design ([f87c6f2](https://github.com/bphndigitalservice/ildis/commit/f87c6f2c23f070a4caf10392a852e9ce170934fc))
+* **specs:** add Dokumen Pembentukan PUU design ([eecdd22](https://github.com/bphndigitalservice/ildis/commit/eecdd22b9cad6e04ce585d1317a216e59f89b839))
+* **specs:** rename Naskah Akademik Kemenkumham to Kemenkum ([7da1275](https://github.com/bphndigitalservice/ildis/commit/7da1275dcb3c078f06378dbd9f4b1dbcd4f04629))
+* **specs:** use slug-based URLs for Dokumen Pembentukan PUU frontend ([9ca2b51](https://github.com/bphndigitalservice/ildis/commit/9ca2b51fdf6e9e5a7484e84e2dd3a266a43f4dc1))
+
+### Maintenance
+
+* CSP ([8738984](https://github.com/bphndigitalservice/ildis/commit/873898429381b366fb6b4a39979d72ae142fde68))
+* exclude host-side and dev files from Docker image ([aac7ac7](https://github.com/bphndigitalservice/ildis/commit/aac7ac72f1106911e03122b1430081a163c3594f))
+
 ## [4.3.4](https://github.com/bphndigitalservice/ildis/compare/v4.3.3...v4.3.4) (2026-05-26)
 
 ### Documentation
