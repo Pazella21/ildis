@@ -115,33 +115,30 @@ $socialLinks = $socialSection ? $socialSection->activeLinks : [];
     <!-- Divider -->
     <hr style="border-color: rgba(255, 255, 255, 0.1); margin: 0 0 25px 0;">
 
-    <!-- Analytics Strip -->
+    <!-- Visitor Analytics -->
     <div class="footer-analytics">
       <div class="container">
         <div class="analytics-strip">
-          <div class="analytics-item">
-            <i class="bi bi-calendar-day"></i>
-            <span class="analytics-label">Hari Ini</span>
-            <span class="analytics-value"><?= $todayVisits ?></span>
-          </div>
-          <div class="analytics-divider"></div>
-          <div class="analytics-item">
-            <i class="bi bi-calendar-week"></i>
-            <span class="analytics-label">Minggu Ini</span>
-            <span class="analytics-value"><?= $weekVisits ?></span>
-          </div>
-          <div class="analytics-divider"></div>
-          <div class="analytics-item">
-            <i class="bi bi-calendar-month"></i>
-            <span class="analytics-label">Bulan Ini</span>
-            <span class="analytics-value"><?= $monthVisits ?></span>
-          </div>
-          <div class="analytics-divider"></div>
-          <div class="analytics-item">
-            <i class="bi bi-calendar-event"></i>
-            <span class="analytics-label">Tahun Ini</span>
-            <span class="analytics-value"><?= $yearVisits ?></span>
-          </div>
+          <span class="analytics-title"><i class="bi bi-people"></i> Pengunjung</span>
+          <span class="analytics-stat">
+            <span class="analytics-num"><?= $todayVisits ?></span>
+            <span class="analytics-period">hari ini</span>
+          </span>
+          <span class="analytics-dot"></span>
+          <span class="analytics-stat">
+            <span class="analytics-num"><?= $weekVisits ?></span>
+            <span class="analytics-period">minggu ini</span>
+          </span>
+          <span class="analytics-dot"></span>
+          <span class="analytics-stat">
+            <span class="analytics-num"><?= $monthVisits ?></span>
+            <span class="analytics-period">bulan ini</span>
+          </span>
+          <span class="analytics-dot"></span>
+          <span class="analytics-stat">
+            <span class="analytics-num"><?= $yearVisits ?></span>
+            <span class="analytics-period">tahun ini</span>
+          </span>
         </div>
       </div>
     </div>
@@ -236,82 +233,86 @@ $socialLinks = $socialSection ? $socialSection->activeLinks : [];
       transform: translateY(-2px);
     }
 
-    /* Analytics Strip */
+    /* Visitor Analytics */
     .footer-analytics {
-      background: rgba(255, 255, 255, 0.03);
       border-top: 1px solid rgba(255, 255, 255, 0.06);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 16px 0;
-      margin-bottom: 20px;
+      padding: 12px 0;
+      margin-bottom: 16px;
     }
 
     .analytics-strip {
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       gap: 0;
       flex-wrap: wrap;
     }
 
-    .analytics-item {
-      display: flex;
-      flex-direction: column;
+    .analytics-title {
+      display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 0 24px;
-      min-width: 100px;
-    }
-
-    .analytics-item i {
-      font-size: 1.1rem;
-      color: #ffc107;
-      opacity: 0.8;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-
-    .analytics-item:hover i {
-      opacity: 1;
-      transform: translateY(-2px);
-    }
-
-    .analytics-label {
-      font-size: 0.7rem;
+      gap: 5px;
+      font-size: 0.65rem;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: #728aad;
-      font-weight: 500;
+      letter-spacing: 1.2px;
+      color: #5e7192;
+      margin-right: 14px;
+      white-space: nowrap;
     }
 
-    .analytics-value {
-      font-size: 1.5rem;
+    .analytics-title i {
+      font-size: 0.75rem;
+      color: #ffc107;
+      opacity: 0.7;
+    }
+
+    .analytics-stat {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 3px;
+      white-space: nowrap;
+    }
+
+    .analytics-num {
+      font-size: 0.85rem;
       font-weight: 700;
-      color: #ffffff;
-      line-height: 1;
+      color: #fff;
       font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
     }
 
-    .analytics-divider {
-      width: 1px;
-      height: 36px;
-      background: rgba(255, 255, 255, 0.1);
-      margin: 0 12px;
+    .analytics-period {
+      font-size: 0.65rem;
+      color: #5e7192;
+      letter-spacing: 0.3px;
+    }
+
+    .analytics-dot {
+      display: inline-block;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      margin: 0 10px;
+      vertical-align: middle;
     }
 
     @media (max-width: 768px) {
+      .analytics-title {
+        width: 100%;
+        justify-content: center;
+        margin-right: 0;
+        margin-bottom: 6px;
+      }
+
       .analytics-strip {
-        flex-direction: column;
-        gap: 16px;
+        gap: 0;
+        justify-content: center;
       }
-      
-      .analytics-item {
-        padding: 0 16px;
-        min-width: auto;
-      }
-      
-      .analytics-divider {
-        width: 40px;
-        height: 1px;
-        margin: 8px 0;
+
+      .analytics-dot {
+        margin: 0 6px;
       }
     }
   </style>
