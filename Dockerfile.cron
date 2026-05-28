@@ -64,6 +64,6 @@ COPY docker/cron/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=120s \
-    CMD test -f /var/www/feed/document.json || exit 1
+    CMD test -s /var/www/feed/document.json || exit 1
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

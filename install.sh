@@ -1814,7 +1814,18 @@ do_update() {
         success "Aplikasi merespons"
     fi
 
+    local patch_needed=false
+    if ! run_compose_update "${compose_file}" "${env_file}" exec -T app test -f /var/www/.ildis_patched 2>/dev/null; then
+        patch_needed=true
+    fi
+
     patch_app_for_migrations
+
+    if [ "${patch_needed}" = true ]; then
+        info "Restarting app after patching..."
+        run_compose_update "${compose_file}" "${env_file}" restart app 2>/dev/null || true
+        sleep 3
+    fi
 
     info "Menjalankan migrasi database..."
     if run_compose_update "${compose_file}" "${env_file}" exec -T app php yii migrate/up --interactive=0 2>&1; then

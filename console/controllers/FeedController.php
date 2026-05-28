@@ -22,7 +22,7 @@ class FeedController extends Controller
                     'd.tanggal_penetapan',
                     'd.tanggal_pengundangan',
                     'd.jenis_peraturan AS jenis',
-                    'd.nomor_perperaturan AS noPeraturan',
+                    'd.nomor_peraturan AS noPeraturan',
                     'd.judul',
                     'd.nomor_panggil AS noPanggil',
                     'd.singkatan_jenis AS singkatanJenis',
