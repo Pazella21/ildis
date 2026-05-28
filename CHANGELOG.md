@@ -1,3 +1,30 @@
+## [4.6.0](https://github.com/bphndigitalservice/ildis/compare/v4.5.0...v4.6.0) (2026-05-28)
+
+### Features
+
+* add footer menu items to admin sidebar ([121fdd4](https://github.com/bphndigitalservice/ildis/commit/121fdd4418e029ffc76ece87a3d11350e21448c8))
+* add footer_section and footer_link tables with seed data ([e612ff5](https://github.com/bphndigitalservice/ildis/commit/e612ff5fd4690041b474921241290659c180844a))
+* add footer-link backend views ([b1c49c5](https://github.com/bphndigitalservice/ildis/commit/b1c49c5e9fa61908a08607f203c6e3d50963208e))
+* add footer-section backend views ([ad61140](https://github.com/bphndigitalservice/ildis/commit/ad611407333aa304b878eeae09515e5926a2641a))
+* add FooterSection and FooterLink backend controllers ([6e75525](https://github.com/bphndigitalservice/ildis/commit/6e75525f45f50a27c4b44366c69128a7c3ae9544))
+* add FooterSection and FooterLink models ([2bba716](https://github.com/bphndigitalservice/ildis/commit/2bba71660ada5053463a117f7854c4dc290e6d31))
+* add query caching with invalidation for footer sections ([9282ca5](https://github.com/bphndigitalservice/ildis/commit/9282ca52656dc8618570b770de6d85a40de551a2))
+* dynamic footer rendering from footer_section and footer_link tables ([347d2d2](https://github.com/bphndigitalservice/ildis/commit/347d2d29141a92d0822f48bc3daada851d83a142))
+* redesign visitor counter and switch fonts to Inter ([11f5b4e](https://github.com/bphndigitalservice/ildis/commit/11f5b4e1973dd77534da4b6272f8f265436e80b5))
+
+### Bug Fixes
+
+* scope Berlaku/Tidak Berlaku counts to peraturan type only ([32055b6](https://github.com/bphndigitalservice/ildis/commit/32055b6219fdb5d640fc25e5823783eed1cc688d))
+
+### Documentation
+
+* add footer CMS design spec ([9605562](https://github.com/bphndigitalservice/ildis/commit/9605562055b466d198af9d03bf683fbf48956e05))
+* add footer CMS implementation plan ([7e8b920](https://github.com/bphndigitalservice/ildis/commit/7e8b920c847edeb2b95c30f185970f9d5ad1a849))
+
+### Maintenance
+
+* add .superpowers to gitignore ([bd46078](https://github.com/bphndigitalservice/ildis/commit/bd46078b64a4496b13e6c1e326865d61c444f2ec))
+
 ## [4.5.0](https://github.com/bphndigitalservice/ildis/compare/v4.4.1...v4.5.0) (2026-05-28)
 
 ### Features
