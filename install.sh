@@ -1730,8 +1730,14 @@ do_update() {
         generate_traefik_config
     fi
 
+    info "Menghentikan cron container (mencegah write setengah jadi)..."
+    run_compose_update "${compose_file}" "${env_file}" stop cron 2>/dev/null || true
+
+    info "Menghentikan aplikasi..."
+    run_compose_update "${compose_file}" "${env_file}" stop app 2>/dev/null || true
+
     info "Memulai ulang container ILDIS..."
-    if ! run_compose_update "${compose_file}" "${env_file}" up -d 2>&1; then
+    if ! run_compose_update "${compose_file}" "${env_file}" up -d --force-recreate app 2>&1; then
         fail "Gagal memulai ulang container."
     fi
 
@@ -1769,12 +1775,17 @@ do_update() {
         success "Aplikasi merespons"
     fi
 
+    patch_app_for_migrations
+
     info "Menjalankan migrasi database..."
     if run_compose_update "${compose_file}" "${env_file}" exec -T app php yii migrate/up --interactive=0 2>&1; then
         success "Migrasi diterapkan"
     else
         warn "Perintah migrasi mengembalikan non-zero. Mungkin normal jika tidak ada yang tertunda."
     fi
+
+    info "Memulai cron container..."
+    run_compose_update "${compose_file}" "${env_file}" up -d --force-recreate cron 2>&1 || true
 
     echo "${latest_version}" > "${INSTALL_DIR}/${VERSION_FILE}"
 
