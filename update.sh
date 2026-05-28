@@ -7,11 +7,17 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if [ -f "${SCRIPT_DIR}/install.sh" ]; then
-    exec "${SCRIPT_DIR}/install.sh" --update "$@"
-else
-    echo "KESALAHAN: install.sh tidak ditemukan di ${SCRIPT_DIR}"
-    echo "Unduh rilis terbaru dari:"
-    echo "  https://github.com/bphndigitalservice/ildis"
-    exit 1
+if [ ! -f "${SCRIPT_DIR}/install.sh" ]; then
+    echo "install.sh tidak ditemukan di ${SCRIPT_DIR}, mengunduh dari GitHub..."
+    curl -fsSL "https://raw.githubusercontent.com/bphndigitalservice/ildis/main/install.sh" -o "${SCRIPT_DIR}/install.sh"
+    if [ -f "${SCRIPT_DIR}/install.sh" ]; then
+        chmod +x "${SCRIPT_DIR}/install.sh"
+        echo "install.sh berhasil diunduh."
+    else
+        echo "KESALAHAN: Gagal mengunduh install.sh."
+        echo "Unduh manual dari: https://github.com/bphndigitalservice/ildis"
+        exit 1
+    fi
 fi
+
+exec "${SCRIPT_DIR}/install.sh" --update "$@"
