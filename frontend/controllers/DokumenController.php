@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\components\DocumentGroup;
 use frontend\models\DocumentType;
 use Yii;
 use frontend\models\Dokumen;
@@ -110,6 +111,31 @@ class DokumenController extends Controller
         return $this->render('index-putusan', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionLegislationFormation($slug = null)
+    {
+        $group = DocumentGroup::LEGISLATION_FORMATION;
+        $type = $slug ? DocumentType::findBySlugInGroup($slug, $group) : null;
+
+        if ($slug !== null && $slug !== '' && $type === null) {
+            throw new NotFoundHttpException('Tipe dokumen tidak ditemukan.');
+        }
+
+        $searchModel = new DokumenSearch();
+        $typeNames = $type
+            ? $type->descendantTypeNames()
+            : DocumentType::groupTypeNames($group);
+        $dataProvider = $searchModel->searchByTypeNames(
+            $typeNames,
+            Yii::$app->request->queryParams
+        );
+
+        return $this->render('index-legislation-formation', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'currentType' => $type,
         ]);
     }
     

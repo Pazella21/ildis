@@ -6,6 +6,8 @@ use yii\helpers\Url;
 
 
 
+use common\components\DocumentGroup;
+use common\models\DocumentType;
 use mdm\admin\components\Helper;
 use mdm\admin\components\MenuHelper;
 ?>
@@ -51,6 +53,39 @@ use mdm\admin\components\MenuHelper;
         };
         // $items2 = MenuHelper::getAssignedMenu(Yii::$app->user->id);
         $items2 = MenuHelper::getAssignedMenu(Yii::$app->user->id, null, $callback, true);
+
+        $puuTypes = DocumentType::findByGroup(DocumentGroup::LEGISLATION_FORMATION);
+        if ($puuTypes && Yii::$app->user->can('/document-group/legislation-formation')) {
+            $puuChildren = array_map(static function (DocumentType $t) {
+                return [
+                    'label' => $t->name,
+                    'url' => [
+                        '/dokumen-pembentukan-puu/index',
+                        'DokumenPembentukanPuuSearch[documentTypeId]' => $t->id,
+                    ],
+                ];
+            }, $puuTypes);
+
+            $puuGroup = [
+                'label' => 'Dokumen Penyusunan PUU',
+                'url' => ['#'],
+                'icon' => 'fa fa-file-text-o',
+                'items' => $puuChildren,
+            ];
+
+            $found = false;
+            foreach ($items2 as $i => $item) {
+                if ($item['label'] === 'Dokumen Hukum') {
+                    $items2[$i]['items'][] = $puuGroup;
+                    $found = true;
+                    break;
+                }
+            }
+
+            if (!$found) {
+                $items2[] = $puuGroup;
+            }
+        }
 
         //$items = $menuItems + $items2;
         ?>

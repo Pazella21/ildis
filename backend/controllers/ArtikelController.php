@@ -275,6 +275,26 @@ return $this->render('create',['model'=>$model]);
         }
     }
 
+    /**
+     * Unpublish an Artikel document (flips is_publish to 0).
+     * Mirrors the toggle counterpart of catatan-verifikasi/artikel.
+     */
+    public function actionInactive($id)
+    {
+        $model = $this->findModel($id);
+        $model->is_publish = 0;
+        if ($model->save(false)) {
+            Yii::$app->session->setFlash('danger', 'Verifikasi Artikel dibatalkan');
+        } else {
+            Yii::error(
+                '[artikel/inactive] Failed to save model: ' . json_encode($model->getErrors()),
+                __METHOD__
+            );
+            Yii::$app->session->setFlash('error', 'Gagal membatalkan verifikasi Artikel.');
+        }
+        return $this->redirect(['index']);
+    }
+
 
 
     /**

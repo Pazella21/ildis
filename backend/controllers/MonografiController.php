@@ -349,6 +349,26 @@ class MonografiController extends Controller
         }
     }
 
+    /**
+     * Unpublish a Monografi document (flips is_publish to 0).
+     * Mirrors the toggle counterpart of catatan-verifikasi/monografi.
+     */
+    public function actionInactive($id)
+    {
+        $model = $this->findModel($id);
+        $model->is_publish = 0;
+        if ($model->save(false)) {
+            Yii::$app->session->setFlash('danger', 'Verifikasi Monografi dibatalkan');
+        } else {
+            Yii::error(
+                '[monografi/inactive] Failed to save model: ' . json_encode($model->getErrors()),
+                __METHOD__
+            );
+            Yii::$app->session->setFlash('error', 'Gagal membatalkan verifikasi Monografi.');
+        }
+        return $this->redirect(['index']);
+    }
+
 
     public function actionHapusEksemplar2($id)
     {

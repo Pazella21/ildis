@@ -74,6 +74,8 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'dokumen-pembentukan-puu' => 'dokumen/legislation-formation',
+                'dokumen-pembentukan-puu/<slug:[\w-]+>' => 'dokumen/legislation-formation',
                 '/' => 'site/index',
                 'kontak' => 'site/kontak',
                 'sitemap.xml' => 'sitemap/index',

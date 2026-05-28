@@ -64,6 +64,24 @@ $menuItems = [
             // ['label' => 'Staatsblad', 'url' => ['dokumen/staatsblad']],
         ]
     ],
+    [
+        'label' => \common\components\DocumentGroup::label(
+            \common\components\DocumentGroup::LEGISLATION_FORMATION
+        ),
+        'url' => Url::to(['/dokumen-pembentukan-puu']),
+        'options' => ['class' => 'dropdown'],
+        'activateItems' => true,
+        'activeCssClass' => 'active',
+        'template' => '<span class="submenu-button"></span><a href={url}>{label}</a>',
+        'items' => array_map(static function (\common\models\DocumentType $t) {
+            return [
+                'label' => ucwords(strtolower($t->name)),
+                'url' => Url::to(['/dokumen-pembentukan-puu/' . $t->slug]),
+            ];
+        }, \common\models\DocumentType::findByGroup(
+            \common\components\DocumentGroup::LEGISLATION_FORMATION
+        )),
+    ],
     ['label' => 'Berita', 'url' => ['berita/index']],
     [
         'label' => 'Link Terkait',

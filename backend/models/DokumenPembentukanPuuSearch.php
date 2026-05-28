@@ -6,18 +6,22 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use backend\models\Monografi;
+use common\components\DocumentGroup;
+use common\models\DocumentType;
 
-/**
- * PeraturanSearch represents the model behind the search form of `backend\models\Peraturan`.
- */
-class MonografiSearch extends Monografi
+class DokumenPembentukanPuuSearch extends Monografi
 {
-    /** @var int|null Virtual filter: document_type.id → exact jenis_peraturan match */
     public $documentTypeId;
 
-    /**
-     * @inheritdoc
-     */
+    private static function groupTypeNames()
+    {
+        static $names;
+        if ($names === null) {
+            $names = DocumentType::groupTypeNames(DocumentGroup::LEGISLATION_FORMATION);
+        }
+        return $names;
+    }
+
     public function rules()
     {
         return [
@@ -26,43 +30,30 @@ class MonografiSearch extends Monografi
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function scenarios()
     {
-        // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
 
-    /**
-     * Creates data provider instance with search query applied
-     *
-     * @param array $params
-     *
-     * @return ActiveDataProvider
-     */
-    
     public function search($params)
     {
-        $query = Monografi::find()->where(['tipe_dokumen' => 2]);
+        $groupNames = self::groupTypeNames();
 
-        // add conditions that should always apply here
+        $query = Monografi::find()
+            ->where(['tipe_dokumen' => 2])
+            ->andWhere(['jenis_peraturan' => $groupNames]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => ['defaultOrder' => ['is_publish' => SORT_ASC, 'tahun_terbit' => SORT_DESC]]
+            'sort' => ['defaultOrder' => ['is_publish' => SORT_ASC, 'tahun_terbit' => SORT_DESC]],
         ]);
 
         $this->load($params);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
             return $dataProvider;
         }
 
-        // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
             'tipe_dokumen' => $this->tipe_dokumen,
@@ -130,7 +121,7 @@ class MonografiSearch extends Monografi
             ->andFilterWhere(['like', 'catatan_status_peraturan', $this->catatan_status_peraturan]);
 
         if ($this->documentTypeId) {
-            $type = \common\models\DocumentType::findOne($this->documentTypeId);
+            $type = DocumentType::findOne($this->documentTypeId);
             if ($type) {
                 $query->andWhere(['jenis_peraturan' => $type->name]);
             } else {

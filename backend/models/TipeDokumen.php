@@ -16,6 +16,8 @@ use yii\behaviors\BlameableBehavior;
  * @property int $parent_id
  * @property string $name
  * @property string $singkatan
+ * @property string|null $document_group_label
+ * @property string|null $slug
  * @property string|null $status
  * @property int|null $integrasi
  * @property int|null $created_by
@@ -43,6 +45,10 @@ class TipeDokumen extends \yii\db\ActiveRecord
             [['parent_id', 'integrasi', 'created_by', 'updated_by'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['second_id', 'name', 'singkatan', 'status'], 'string', 'max' => 255],
+            [['document_group_label'], 'string', 'max' => 64],
+            [['slug'], 'string', 'max' => 128],
+            [['slug'], 'match', 'pattern' => '/^[\w-]+$/'],
+            [['slug'], 'unique'],
         ];
     }
 
@@ -57,6 +63,8 @@ class TipeDokumen extends \yii\db\ActiveRecord
             'parent_id' => 'Parent ID',
             'name' => 'Name',
             'singkatan' => 'Singkatan',
+            'document_group_label' => 'Document Group',
+            'slug' => 'Slug',
             'status' => 'Status',
             'integrasi' => 'Integrasi',
             'created_by' => 'Created By',

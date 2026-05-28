@@ -5,6 +5,7 @@ namespace frontend\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use frontend\models\Dokumen;
 use frontend\models\DokumenDataSubyek;
 
 /**
@@ -134,6 +135,42 @@ class DokumenSearch extends DokumenDataSubyek
             ->andFilterWhere(['like', 'urusan_pemerintahan', $this->urusan_pemerintahan])
             ->andFilterWhere(['is_publish' => 1])
             ->andFilterWhere(['like', 'catatan_status_peraturan', $this->catatan_status_peraturan]);
+
+        return $dataProvider;
+    }
+
+    /**
+     * @param string[] $names Exact jenis_peraturan values
+     */
+    public function searchByTypeNames(array $names, array $params): ActiveDataProvider
+    {
+        $query = DokumenDataSubyek::find()
+            ->andWhere(['tipe_dokumen' => Dokumen::TYPE_MONOGRAFI])
+            ->andWhere(['is_publish' => 1]);
+
+        if ($names !== []) {
+            $query->andWhere(['jenis_peraturan' => $names]);
+        } else {
+            $query->andWhere('0=1');
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => ['pageSize' => 10],
+            'sort' => ['defaultOrder' => ['tahun_terbit' => SORT_DESC, 'dokumen_type_id' => SORT_ASC]],
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            return $dataProvider;
+        }
+
+        $query->andFilterWhere(['like', 'judul', $this->judul])
+            ->andFilterWhere(['like', 'teu', $this->teu])
+            ->andFilterWhere(['like', 'subyek', $this->subyek])
+            ->andFilterWhere(['like', 'nama_pengarang', $this->nama_pengarang])
+            ->andFilterWhere(['like', 'tahun_terbit', $this->tahun_terbit]);
 
         return $dataProvider;
     }

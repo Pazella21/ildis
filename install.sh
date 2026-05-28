@@ -31,6 +31,16 @@ HEALTH_INTERVAL=5
 MYSQL_HEALTH_RETRIES=30
 MYSQL_HEALTH_INTERVAL=2
 
+REVERSE_PROXY=false
+SSL_MODE="none"
+SSL_DOMAIN=""
+SSL_EMAIL=""
+SSL_CERT_PATH="ssl/server.crt"
+SSL_KEY_PATH="ssl/server.key"
+ADMIN_USERNAME=""
+ADMIN_PASSWORD=""
+DB_PORT_EXPOSE=""
+
 COMPOSE_CMD=""
 CONTAINER_RUNTIME=""
 
@@ -72,7 +82,7 @@ confirm() {
     else
         choices="[y/N]"
     fi
-    read -rp "${prompt} ${choices} " REPLY
+    read -rp "${prompt} ${choices} " REPLY </dev/tty
     REPLY="${REPLY:-$default}"
     [[ "$REPLY" =~ ^[Yy]$ ]]
 }
@@ -109,11 +119,11 @@ prompt_value() {
         return
     fi
     if [ "$is_secret" = true ]; then
-        read -rsp "${prompt} [generated]: " REPLY
+        read -rsp "${prompt} [generated]: " REPLY </dev/tty
         echo ""
         REPLY="${REPLY:-$default}"
     else
-        read -rp "${prompt} [${default}]: " REPLY
+        read -rp "${prompt} [${default}]: " REPLY </dev/tty
         REPLY="${REPLY:-$default}"
     fi
     echo "$REPLY"
@@ -174,6 +184,34 @@ while [[ $# -gt 0 ]]; do
             DB_TYPE_OVERRIDE="$2"
             shift 2
             ;;
+        --reverse-proxy)
+            REVERSE_PROXY=true
+            shift
+            ;;
+        --ssl-mode)
+            SSL_MODE="$2"
+            shift 2
+            ;;
+        --ssl-domain)
+            SSL_DOMAIN="$2"
+            shift 2
+            ;;
+        --ssl-email)
+            SSL_EMAIL="$2"
+            shift 2
+            ;;
+        --admin-username)
+            ADMIN_USERNAME="$2"
+            shift 2
+            ;;
+        --admin-password)
+            ADMIN_PASSWORD="$2"
+            shift 2
+            ;;
+        --db-port)
+            DB_PORT_EXPOSE="$2"
+            shift 2
+            ;;
         --help|-h)
             ACTION="help"
             shift
@@ -196,6 +234,13 @@ Penggunaan:
   ./install.sh --update             Perbarui instalasi yang ada
   ./install.sh --dir /opt/ildis    Tentukan direktori instalasi
   ./install.sh --db-type mariadb   Atur tipe DB (mariadb|mysql|external)
+  ./install.sh --reverse-proxy     ILDIS di belakang reverse proxy
+  ./install.sh --ssl-mode none     Mode SSL: none, letsencrypt, manual
+  ./install.sh --ssl-domain example.com  Domain untuk Traefik/SSL
+  ./install.sh --ssl-email user@example.com  Email untuk Let's Encrypt
+  ./install.sh --admin-username admin   Username superadmin
+  ./install.sh --admin-password secret   Password superadmin
+  ./install.sh --db-port 3306           Ekspos port database ke host
   ./install.sh --help               Tampilkan bantuan ini
 
 Container runtime:
@@ -204,18 +249,27 @@ Container runtime:
   podman-compose                   — dideteksi otomatis
 
 Variabel lingkungan (untuk --non-interactive):
-  INSTALL_DIR        Direktori instalasi (bawaan: /opt/ildis)
-  PORT               Port aplikasi (bawaan: 8080)
-  PUBLIC_DOMAIN      URL publik (bawaan: http://localhost:8080)
-  DB_TYPE            Tipe database: mariadb, mysql, external
-  DB_HOST            Host database (untuk external)
-  DB_USER            Pengguna database
-  DB_PASSWORD        Kata sandi database
-  DB_DATABASE        Nama database (bawaan: ildis_v4)
-  DB_DATABASE_PORT   Port database (bawaan: 3306)
-  RECAPTCHA_ENABLED     true|false — aktifkan reCAPTCHA di login backend (bawaan: false)
-  RECAPTCHA_SITE_KEY    Kunci situs reCAPTCHA v3 (wajib jika RECAPTCHA_ENABLED=true)
-  RECAPTCHA_SECRET_KEY  Kunci rahasia reCAPTCHA (wajib jika RECAPTCHA_ENABLED=true)
+  INSTALL_DIR               Direktori instalasi (bawaan: /opt/ildis)
+  PORT                      Port aplikasi (bawaan: 8080)
+  PUBLIC_DOMAIN             URL publik (bawaan: http://localhost:8080)
+  DB_TYPE                   Tipe database: mariadb, mysql, external
+  DB_HOST                   Host database (untuk external)
+  DB_USER                   Pengguna database
+  DB_PASSWORD               Kata sandi database
+  DB_DATABASE               Nama database (bawaan: ildis_v4)
+  DB_DATABASE_PORT           Port database (bawaan: 3306)
+  BEHIND_REVERSE_PROXY      true|false — di belakang reverse proxy (bawaan: false)
+  SSL_MODE                  none|letsencrypt|manual — mode SSL (bawaan: none)
+  SSL_DOMAIN                Domain untuk Traefik dan sertifikat
+  SSL_EMAIL                 Email untuk Let's Encrypt
+  SSL_CERT_PATH             Path sertifikat SSL relatif terhadap INSTALL_DIR (bawaan: ssl/server.crt)
+  SSL_KEY_PATH              Path kunci privat SSL relatif terhadap INSTALL_DIR (bawaan: ssl/server.key)
+  ADMIN_USERNAME            Username superadmin (bawaan: admin)
+  ADMIN_PASSWORD            Password superadmin (wajib)
+  DB_PORT_EXPOSE            Port host untuk ekspos database (contoh: 3306, kosongkan untuk tidak ekspos)
+  RECAPTCHA_ENABLED         true|false — aktifkan reCAPTCHA di login backend (bawaan: false)
+  RECAPTCHA_SITE_KEY        Kunci situs reCAPTCHA v3 (wajib jika RECAPTCHA_ENABLED=true)
+  RECAPTCHA_SECRET_KEY      Kunci rahasia reCAPTCHA (wajib jika RECAPTCHA_ENABLED=true)
 
 Contoh:
   curl -fsSL https://raw.githubusercontent.com/bphndigitalservice/ildis/main/install.sh | bash
@@ -299,7 +353,62 @@ run_wizard() {
     PORT=$(prompt_value "Port aplikasi" "${PORT:-${DEFAULT_PORT}}")
     echo ""
 
-    PUBLIC_DOMAIN=$(prompt_value "URL domain publik" "${PUBLIC_DOMAIN:-http://localhost:${PORT}}")
+    echo -e "${BOLD}Konfigurasi jaringan:${NC}"
+    if confirm "  Apakah ILDIS di belakang reverse proxy (Nginx/Apache/Traefik lain)?" "n"; then
+        REVERSE_PROXY=true
+    else
+        REVERSE_PROXY=false
+    fi
+    echo ""
+
+    if [ "${REVERSE_PROXY}" = false ]; then
+        echo -e "${BOLD}Konfigurasi SSL/TLS:${NC}"
+        echo "  1) Tidak ada (HTTP saja)"
+        echo "  2) Let's Encrypt (otomatis, perlu domain publik)"
+        echo "  3) Manual (sertifikat sendiri)"
+        echo ""
+        local ssl_choice
+        ssl_choice=$(prompt_value "Pilih mode SSL (1/2/3)" "1")
+        case "$ssl_choice" in
+            2) SSL_MODE="letsencrypt" ;;
+            3) SSL_MODE="manual" ;;
+            *) SSL_MODE="none" ;;
+        esac
+
+        if [ "${SSL_MODE}" = "letsencrypt" ] || [ "${SSL_MODE}" = "manual" ]; then
+            SSL_DOMAIN=$(prompt_value "  Domain" "${SSL_DOMAIN:-}")
+            if [ -z "${SSL_DOMAIN}" ]; then
+                fail "Domain diperlukan untuk SSL."
+            fi
+        fi
+
+        if [ "${SSL_MODE}" = "letsencrypt" ]; then
+            SSL_EMAIL=$(prompt_value "  Email untuk Let's Encrypt" "${SSL_EMAIL:-}")
+            if [ -z "${SSL_EMAIL}" ]; then
+                fail "Email diperlukan untuk Let's Encrypt."
+            fi
+        fi
+
+        if [ "${SSL_MODE}" = "manual" ]; then
+            SSL_CERT_PATH=$(prompt_value "  Path sertifikat SSL (relatif terhadap ${INSTALL_DIR})" "${SSL_CERT_PATH}")
+            SSL_KEY_PATH=$(prompt_value "  Path kunci privat SSL (relatif terhadap ${INSTALL_DIR})" "${SSL_KEY_PATH}")
+        fi
+
+        if [ "${SSL_MODE}" = "none" ]; then
+            SSL_DOMAIN=$(prompt_value "  Domain (opsional, tekan Enter untuk localhost)" "${SSL_DOMAIN:-localhost}")
+        fi
+        echo ""
+    fi
+
+    if [ "${REVERSE_PROXY}" = true ]; then
+        PUBLIC_DOMAIN=$(prompt_value "URL domain publik (dari reverse proxy)" "${PUBLIC_DOMAIN:-http://localhost:${PORT}}")
+    elif [ "${SSL_MODE}" = "letsencrypt" ] || [ "${SSL_MODE}" = "manual" ]; then
+        PUBLIC_DOMAIN="https://${SSL_DOMAIN}"
+    elif [ "${SSL_MODE}" = "none" ] && [ "${SSL_DOMAIN}" != "localhost" ] && [ -n "${SSL_DOMAIN}" ]; then
+        PUBLIC_DOMAIN="http://${SSL_DOMAIN}"
+    else
+        PUBLIC_DOMAIN=$(prompt_value "URL domain publik" "${PUBLIC_DOMAIN:-http://localhost:${PORT}}")
+    fi
     echo ""
 
     echo -e "${BOLD}Konfigurasi database:${NC}"
@@ -347,6 +456,38 @@ run_wizard() {
     fi
     echo ""
 
+    echo -e "${BOLD}Superadmin (akun pertama):${NC}"
+    ADMIN_USERNAME=$(prompt_value "  Nama pengguna superadmin" "${ADMIN_USERNAME:-admin}")
+    while true; do
+        read -rsp "  Kata sandi superadmin: " ADMIN_PASSWORD </dev/tty
+        echo ""
+        if [ -z "${ADMIN_PASSWORD}" ]; then
+            echo -e "  ${RED}Kata sandi tidak boleh kosong.${NC}"
+            continue
+        fi
+        if [ "${#ADMIN_PASSWORD}" -lt 8 ]; then
+            echo -e "  ${RED}Kata sandi minimal 8 karakter.${NC}"
+            continue
+        fi
+        local pw_confirm
+        read -rsp "  Konfirmasi kata sandi: " pw_confirm </dev/tty
+        echo ""
+        if [ "${ADMIN_PASSWORD}" != "${pw_confirm}" ]; then
+            echo -e "  ${RED}Kata sandi tidak cocok.${NC}"
+            continue
+        fi
+        break
+    done
+    echo ""
+
+    if [ "${DB_TYPE}" != "external" ]; then
+        echo -e "${BOLD}Port Database (opsional):${NC}"
+        echo "  Ekspos database ke host agar bisa diakses dari luar container (mis. dengan MySQL Workbench)."
+        echo "  Kosongkan jika tidak perlu."
+        DB_PORT_EXPOSE=$(prompt_value "  Port database ke host (contoh: 3306, kosongkan untuk tidak ekspos)" "${DB_PORT_EXPOSE:-}")
+        echo ""
+    fi
+
     echo -e "${BOLD}reCAPTCHA v3 (halaman login backend/CMS):${NC}"
     echo "  Untuk instal lokal/dev, pilih tidak — menghindari error grecaptcha tanpa kunci Google."
     if confirm "  Aktifkan reCAPTCHA pada login backend?" "n"; then
@@ -385,6 +526,22 @@ run_wizard() {
     fi
     echo "  Pengguna DB: ${DB_USER}"
     echo "  Nama DB:     ${DB_DATABASE}"
+    if [ -n "${DB_PORT_EXPOSE}" ] && [ "${DB_TYPE}" != "external" ]; then
+        echo "  Port DB ke host: ${DB_PORT_EXPOSE}:3306"
+    fi
+    echo "  Superadmin:  ${ADMIN_USERNAME}"
+    if [ "${REVERSE_PROXY}" = true ]; then
+        echo "  Reverse proxy: ya (SSL ditangani reverse proxy)"
+    else
+        echo "  Reverse proxy: tidak (Traefik digunakan)"
+        echo "  SSL:         ${SSL_MODE}"
+        if [ "${SSL_MODE}" != "none" ]; then
+            echo "  Domain:     ${SSL_DOMAIN}"
+        fi
+        if [ "${SSL_MODE}" = "letsencrypt" ]; then
+            echo "  Email LE:    ${SSL_EMAIL}"
+        fi
+    fi
     if [ "${RECAPTCHA_ENABLED}" = true ]; then
         echo "  reCAPTCHA:   aktif"
     else
@@ -436,6 +593,25 @@ RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY:-}
 
 # ── Tag image kontainer ──
 ILDIS_IMAGE_TAG=${ILDIS_IMAGE_TAG:-latest}
+
+# ── Reverse proxy dan SSL ──
+BEHIND_REVERSE_PROXY=${REVERSE_PROXY}
+SSL_MODE=${SSL_MODE}
+SSL_DOMAIN=${SSL_DOMAIN}
+SSL_CERT_PATH=${SSL_CERT_PATH}
+SSL_KEY_PATH=${SSL_KEY_PATH}
+
+# ── Let's Encrypt ──
+SSL_EMAIL=${SSL_EMAIL}
+
+# ── Superadmin ──
+# ADMIN_USERNAME dan ADMIN_PASSWORD tidak disimpan di .env untuk keamanan.
+# Superadmin dibuat saat instalasi melalui perintah console.
+
+# ── Port database ke host ──
+# Kosongkan jika tidak perlu ekspos database ke luar container.
+# Contoh: DB_PORT_EXPOSE=3306
+DB_PORT_EXPOSE=${DB_PORT_EXPOSE}
 EOF
 
     chmod 600 "${INSTALL_DIR}/${ENV_FILE}"
@@ -445,6 +621,8 @@ EOF
 # ── Generate docker-compose.yml ─────────────────────────────────────────────
 generate_compose() {
     info "Membuat ${COMPOSE_FILE}..."
+
+    mkdir -p "${INSTALL_DIR}/logs/nginx"
 
     local DB_IMAGE=""
     local DB_CONTAINER_NAME=""
@@ -466,15 +644,118 @@ generate_compose() {
       retries: 5'
     fi
 
-    if [ "${DB_TYPE}" = "external" ]; then
-        cat > "${INSTALL_DIR}/${COMPOSE_FILE}" <<'COMPOSEEOF'
+    local app_ports=""
+    local app_labels=""
+    local app_networks=""
+    local traefik_service=""
+    local traefik_volumes=""
+    local traefik_ports=""
+    local network_def=""
+    local extra_volumes=""
+    local db_ports=""
+
+    if [ -n "${DB_PORT_EXPOSE}" ] && [ "${DB_TYPE}" != "external" ]; then
+        db_ports="
+    ports:
+      - \"${DB_PORT_EXPOSE}:3306\""
+    fi
+
+    extra_volumes="
+      - ./nginx/default.conf:/etc/nginx/http.d/default.conf:ro
+      - ./logs/nginx:/var/log/nginx
+      - app_logs:/var/www/runtime/logs"
+
+    if [ "${REVERSE_PROXY}" = true ]; then
+        app_ports="    ports:
+      - \"\${PORT:-8080}:80\""
+    else
+        mkdir -p "${INSTALL_DIR}/logs/traefik"
+        mkdir -p "${INSTALL_DIR}/ssl"
+
+        app_labels="    labels:
+      - \"traefik.enable=true\"
+      - \"traefik.http.routers.ildis.rule=Host(\`\${SSL_DOMAIN}\`)\"
+      - \"traefik.http.routers.ildis.entrypoints=web\"
+      - \"traefik.http.services.ildis.loadbalancer.server.port=80\""
+        app_networks="
+    networks:
+      - ildis_net"
+
+        if [ "${SSL_MODE}" = "letsencrypt" ]; then
+            app_labels="${app_labels}
+      - \"traefik.http.routers.ildis-secure.rule=Host(\`\${SSL_DOMAIN}\`)\"
+      - \"traefik.http.routers.ildis-secure.entrypoints=websecure\"
+      - \"traefik.http.routers.ildis-secure.tls.certresolver=letsencrypt\"
+      - \"traefik.http.routers.ildis-secure.service=ildis\""
+
+            traefik_ports="    ports:
+      - \"80:80\"
+      - \"443:443\""
+            traefik_volumes="
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/config.yml:/etc/traefik/config/dynamic.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_acme:/etc/traefik/acme
+      - ./logs/traefik:/var/log/traefik"
+        elif [ "${SSL_MODE}" = "manual" ]; then
+            app_labels="${app_labels}
+      - \"traefik.http.routers.ildis-secure.rule=Host(\`\${SSL_DOMAIN}\`)\"
+      - \"traefik.http.routers.ildis-secure.entrypoints=websecure\"
+      - \"traefik.http.routers.ildis-secure.service=ildis\"
+      - \"traefik.http.routers.ildis-secure.tls=true\""
+
+            traefik_ports="    ports:
+      - \"80:80\"
+      - \"443:443\""
+            traefik_volumes="
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/config.yml:/etc/traefik/config/dynamic.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./ssl:/etc/traefik/certs:ro
+      - ./logs/traefik:/var/log/traefik"
+        else
+            traefik_ports="    ports:
+      - \"80:80\""
+            traefik_volumes="
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/config.yml:/etc/traefik/config/dynamic.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./logs/traefik:/var/log/traefik"
+        fi
+
+        traefik_service="
+  traefik:
+    image: traefik:v3.0
+    container_name: ildis_traefik
+    restart: unless-stopped
+    command:
+      - \"--providers.docker=true\"
+      - \"--providers.docker.exposedbydefault=false\"
+      - \"--providers.file.filename=/etc/traefik/config/dynamic.yml\"
+      - \"--entrypoints.web.address=:80\"
+    volumes:${traefik_volumes}
+    networks:
+      - ildis_net
+${traefik_ports}"
+
+        network_def="
+networks:
+  ildis_net:
+    driver: bridge"
+    fi
+
+    if [ "${REVERSE_PROXY}" = true ]; then
+        if [ "${DB_TYPE}" = "external" ]; then
+            cat > "${INSTALL_DIR}/${COMPOSE_FILE}" <<'COMPOSEEOF'
 services:
   app:
     image: ghcr.io/bphndigitalservice/ildis:${ILDIS_IMAGE_TAG:-latest}
     container_name: ildis_app
     restart: unless-stopped
-    ports:
-      - "${PORT:-8080}:80"
+COMPOSEEOF
+            echo "    ports:" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+            echo "      - \"\${PORT:-8080}:80\"" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+            cat >> "${INSTALL_DIR}/${COMPOSE_FILE}" <<'COMPOSEEOF'
     volumes:
       - runtime:/var/www/runtime
       - backend-assets:/var/www/backend/web/assets
@@ -482,6 +763,9 @@ services:
       - backend-uploads:/var/www/backend/web/uploads
       - frontend-uploads:/var/www/frontend/web/uploads
       - feed_data:/var/www/feed
+COMPOSEEOF
+            echo "${extra_volumes}" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+            cat >> "${INSTALL_DIR}/${COMPOSE_FILE}" <<'COMPOSEEOF'
     environment:
       - S6_KEEP_ENV=1
       - YII_ENV=${YII_ENV:-prod}
@@ -527,9 +811,10 @@ volumes:
   backend-uploads:
   frontend-uploads:
   feed_data:
+  app_logs:
 COMPOSEEOF
-    else
-        cat > "${INSTALL_DIR}/${COMPOSE_FILE}" <<EOF
+        else
+            cat > "${INSTALL_DIR}/${COMPOSE_FILE}" <<EOF
 services:
   db:
     image: ${DB_IMAGE}
@@ -544,7 +829,7 @@ services:
       - mysql_data:/var/lib/mysql
     healthcheck:
 ${DB_HEALTHCHECK}
-
+${db_ports}
   app:
     image: ghcr.io/bphndigitalservice/ildis:\${ILDIS_IMAGE_TAG:-latest}
     container_name: ildis_app
@@ -560,7 +845,7 @@ ${DB_HEALTHCHECK}
       - frontend-assets:/var/www/frontend/web/assets
       - backend-uploads:/var/www/backend/web/uploads
       - frontend-uploads:/var/www/frontend/web/uploads
-      - feed_data:/var/www/feed
+      - feed_data:/var/www/feed${extra_volumes}
     environment:
       - S6_KEEP_ENV=1
       - YII_ENV=\${YII_ENV:-prod}
@@ -610,7 +895,158 @@ volumes:
   backend-uploads:
   frontend-uploads:
   feed_data:
+  app_logs:
 EOF
+        fi
+    else
+        if [ "${DB_TYPE}" = "external" ]; then
+            cat > "${INSTALL_DIR}/${COMPOSE_FILE}" <<COMPOSEEOF
+services:${traefik_service}
+  app:
+    image: ghcr.io/bphndigitalservice/ildis:\${ILDIS_IMAGE_TAG:-latest}
+    container_name: ildis_app
+    restart: unless-stopped${app_labels}${app_networks}
+    volumes:
+      - runtime:/var/www/runtime
+      - backend-assets:/var/www/backend/web/assets
+      - frontend-assets:/var/www/frontend/web/assets
+      - backend-uploads:/var/www/backend/web/uploads
+      - frontend-uploads:/var/www/frontend/web/uploads
+      - feed_data:/var/www/feed${extra_volumes}
+    environment:
+      - S6_KEEP_ENV=1
+      - YII_ENV=\${YII_ENV:-prod}
+      - YII_DEBUG=\${YII_DEBUG:-false}
+      - DB_HOST=\${DB_HOST}
+      - DB_USER=\${DB_USER}
+      - DB_PASSWORD=\${DB_PASSWORD}
+      - DB_DATABASE=\${DB_DATABASE:-ildis_v4}
+      - DB_DATABASE_PORT=\${DB_DATABASE_PORT:-3306}
+      - PUBLIC_DOMAIN=\${PUBLIC_DOMAIN:-http://localhost:8080}
+      - COOKIE_VALIDATION_KEY_BE=\${COOKIE_VALIDATION_KEY_BE}
+      - COOKIE_VALIDATION_KEY_FE=\${COOKIE_VALIDATION_KEY_FE}
+      - RECAPTCHA_ENABLED=\${RECAPTCHA_ENABLED:-false}
+      - RECAPTCHA_SITE_KEY=\${RECAPTCHA_SITE_KEY:-}
+      - RECAPTCHA_SECRET_KEY=\${RECAPTCHA_SECRET_KEY:-}
+      - PHP_DISPLAY_ERRORS=Off
+      - PHP_ERROR_REPORTING=E_ALL & ~E_DEPRECATED
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  cron:
+    image: ghcr.io/bphndigitalservice/ildis-cron:\${ILDIS_IMAGE_TAG:-latest}
+    container_name: ildis_cron
+    restart: unless-stopped
+    volumes:
+      - feed_data:/var/www/feed
+    environment:
+      - YII_ENV=\${YII_ENV:-prod}
+      - YII_DEBUG=\${YII_DEBUG:-false}
+      - DB_HOST=\${DB_HOST}
+      - DB_USER=\${DB_USER}
+      - DB_PASSWORD=\${DB_PASSWORD}
+      - DB_DATABASE=\${DB_DATABASE:-ildis_v4}
+      - DB_DATABASE_PORT=\${DB_DATABASE_PORT:-3306}
+COMPOSEEOF
+        else
+            cat > "${INSTALL_DIR}/${COMPOSE_FILE}" <<EOF
+services:
+  db:
+    image: ${DB_IMAGE}
+    container_name: ${DB_CONTAINER_NAME}
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: \${DB_PASSWORD}
+      MYSQL_DATABASE: \${DB_DATABASE:-ildis_v4}
+      MYSQL_USER: \${DB_USER:-ildis}
+      MYSQL_PASSWORD: \${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+${DB_HEALTHCHECK}
+${db_ports}
+    networks:
+      - ildis_net
+${traefik_service}
+  app:
+    image: ghcr.io/bphndigitalservice/ildis:\${ILDIS_IMAGE_TAG:-latest}
+    container_name: ildis_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy${app_labels}${app_networks}
+    volumes:
+      - runtime:/var/www/runtime
+      - backend-assets:/var/www/backend/web/assets
+      - frontend-assets:/var/www/frontend/web/assets
+      - backend-uploads:/var/www/backend/web/uploads
+      - frontend-uploads:/var/www/frontend/web/uploads
+      - feed_data:/var/www/feed${extra_volumes}
+    environment:
+      - S6_KEEP_ENV=1
+      - YII_ENV=\${YII_ENV:-prod}
+      - YII_DEBUG=\${YII_DEBUG:-false}
+      - DB_HOST=db
+      - DB_USER=\${DB_USER:-ildis}
+      - DB_PASSWORD=\${DB_PASSWORD}
+      - DB_DATABASE=\${DB_DATABASE:-ildis_v4}
+      - DB_DATABASE_PORT=\${DB_DATABASE_PORT:-3306}
+      - PUBLIC_DOMAIN=\${PUBLIC_DOMAIN:-http://localhost:8080}
+      - COOKIE_VALIDATION_KEY_BE=\${COOKIE_VALIDATION_KEY_BE}
+      - COOKIE_VALIDATION_KEY_FE=\${COOKIE_VALIDATION_KEY_FE}
+      - RECAPTCHA_ENABLED=\${RECAPTCHA_ENABLED:-false}
+      - RECAPTCHA_SITE_KEY=\${RECAPTCHA_SITE_KEY:-}
+      - RECAPTCHA_SECRET_KEY=\${RECAPTCHA_SECRET_KEY:-}
+      - PHP_DISPLAY_ERRORS=Off
+      - PHP_ERROR_REPORTING=E_ALL & ~E_DEPRECATED
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  cron:
+    image: ghcr.io/bphndigitalservice/ildis-cron:\${ILDIS_IMAGE_TAG:-latest}
+    container_name: ildis_cron
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - feed_data:/var/www/feed
+    environment:
+      - YII_ENV=\${YII_ENV:-prod}
+      - YII_DEBUG=\${YII_DEBUG:-false}
+      - DB_HOST=db
+      - DB_USER=\${DB_USER:-ildis}
+      - DB_PASSWORD=\${DB_PASSWORD}
+      - DB_DATABASE=\${DB_DATABASE:-ildis_v4}
+      - DB_DATABASE_PORT=\${DB_DATABASE_PORT:-3306}
+    networks:
+      - ildis_net
+EOF
+        fi
+
+        echo "${network_def}" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+
+        echo "" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+        echo "volumes:" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+        if [ "${DB_TYPE}" != "external" ]; then
+            echo "  mysql_data:" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+        fi
+        echo "  runtime:" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+        echo "  backend-assets:" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+        echo "  frontend-assets:" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+        echo "  backend-uploads:" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+        echo "  frontend-uploads:" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+        echo "  feed_data:" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+        echo "  app_logs:" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+        if [ "${SSL_MODE}" = "letsencrypt" ]; then
+            echo "  traefik_acme:" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+        fi
     fi
 
     success "${COMPOSE_FILE} dibuat"
@@ -708,6 +1144,259 @@ patch_recaptcha_support() {
     fi
 }
 
+# ── Generate nginx config ────────────────────────────────────────────────────
+generate_nginx_config() {
+    info "Membuat nginx/default.conf..."
+
+    mkdir -p "${INSTALL_DIR}/nginx"
+
+    local real_ip_directives=""
+    local hsts_header=""
+    local csp_value="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://cdn.jsdelivr.net https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com http://cdn.jsdelivr.net https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' https: data: https://fonts.gstatic.com; object-src 'none';"
+    local proxy_headers=""
+
+    if [ "${REVERSE_PROXY}" = true ]; then
+        real_ip_directives="
+    real_ip_header X-Forwarded-For;
+    real_ip_recursive on;
+    set_real_ip_from 172.16.0.0/12;
+    set_real_ip_from 10.0.0.0/8;
+    set_real_ip_from 192.168.0.0/16;"
+        proxy_headers="
+    proxy_set_header X-Forwarded-Proto \$http_x_forwarded_proto;"
+    fi
+
+    if [ "${SSL_MODE}" = "letsencrypt" ] || [ "${SSL_MODE}" = "manual" ]; then
+        hsts_header="
+    add_header Strict-Transport-Security \"max-age=31536000; includeSubDomains\" always;"
+        csp_value="${csp_value} upgrade-insecure-requests;"
+    elif [ "${REVERSE_PROXY}" = true ]; then
+        hsts_header="
+    add_header Strict-Transport-Security \"max-age=31536000; includeSubDomains\" always;"
+    fi
+
+    cat > "${INSTALL_DIR}/nginx/default.conf" <<NGINXEOF
+server {
+    listen 80;
+    server_name _;
+
+    access_log /var/log/nginx/ildis_access.log;
+    error_log  /var/log/nginx/ildis_error.log;
+
+    absolute_redirect off;
+
+    root /var/www;
+    index index.php;
+
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "geolocation=self" always;
+    add_header Content-Security-Policy "${csp_value}" always;${hsts_header}${real_ip_directives}
+
+    location ~ /\.(ht|svn|git|env|DS_Store) {
+        deny all;
+    }
+
+    location ~* \.(bak|bat|config|sql|fla|md|psd|ini|log|sh|inc|swp|dist)$ {
+        deny all;
+    }
+
+    location ^~ /backend/ {
+        try_files \$uri \$uri/ /backend/index.php\$is_args\$args;
+
+        location ~ \.php\$ {
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+            fastcgi_pass 127.0.0.1:9000;
+            try_files \$uri =404;
+        }${proxy_headers}
+    }
+
+    location = /backend {
+        return 301 /backend/;
+    }
+
+    location / {
+        try_files \$uri \$uri/ /index.php\$is_args\$args;
+    }
+
+    location ~ \.php\$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        fastcgi_pass 127.0.0.1:9000;
+        try_files \$uri =404;
+    }${proxy_headers}
+}
+NGINXEOF
+
+    chmod 644 "${INSTALL_DIR}/nginx/default.conf"
+    success "nginx/default.conf dibuat"
+}
+
+# ── Generate Traefik config ──────────────────────────────────────────────────
+generate_traefik_config() {
+    info "Membuat konfigurasi Traefik..."
+
+    mkdir -p "${INSTALL_DIR}/traefik"
+    mkdir -p "${INSTALL_DIR}/logs/traefik"
+
+    local entrypoints_websecure=""
+    local acme_config=""
+
+    if [ "${SSL_MODE}" = "letsencrypt" ] || [ "${SSL_MODE}" = "manual" ]; then
+        entrypoints_websecure="
+  websecure:
+    address: \":443\""
+    fi
+
+    if [ "${SSL_MODE}" = "letsencrypt" ]; then
+        acme_config="
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: \"${SSL_EMAIL}\"
+      storage: \"/etc/traefik/acme/acme.json\"
+      tlsChallenge: {}"
+    fi
+
+    cat > "${INSTALL_DIR}/traefik/traefik.yml" <<TRAEFIKEOF
+api:
+  insecure: false
+
+providers:
+  docker:
+    exposedByDefault: false
+  file:
+    filename: "/etc/traefik/config/dynamic.yml"
+
+entryPoints:
+  web:
+    address: ":80"${entrypoints_websecure}
+
+log:
+  filePath: "/var/log/traefik/traefik.log"
+  level: INFO
+
+accessLog:
+  filePath: "/var/log/traefik/access.log"
+  bufferingSize: 100${acme_config}
+TRAEFIKEOF
+
+    local dynamic_tls=""
+
+    if [ "${SSL_MODE}" = "letsencrypt" ]; then
+        dynamic_tls="
+http:
+  routers:
+    ildis:
+      entryPoints:
+        - web
+      rule: \"Host(\`${SSL_DOMAIN}\`)\"
+      middlewares:
+        - redirect-to-https
+      service: ildis
+    ildis-secure:
+      entryPoints:
+        - websecure
+      rule: \"Host(\`${SSL_DOMAIN}\`)\"
+      tls:
+        certResolver: letsencrypt
+      service: ildis
+  services:
+    ildis:
+      loadBalancer:
+        servers:
+          - url: \"http://ildis_app:80\"
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true"
+    elif [ "${SSL_MODE}" = "manual" ]; then
+        dynamic_tls="
+http:
+  routers:
+    ildis:
+      entryPoints:
+        - web
+      rule: \"Host(\`${SSL_DOMAIN}\`)\"
+      middlewares:
+        - redirect-to-https
+      service: ildis
+    ildis-secure:
+      entryPoints:
+        - websecure
+      rule: \"Host(\`${SSL_DOMAIN}\`)\"
+      tls:
+        certificates:
+          - certFile: \"/etc/traefik/certs/${SSL_CERT_PATH##*/}\"
+            keyFile: \"/etc/traefik/certs/${SSL_KEY_PATH##*/}\"
+      service: ildis
+  services:
+    ildis:
+      loadBalancer:
+        servers:
+          - url: \"http://ildis_app:80\"
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true"
+    else
+        dynamic_tls="
+http:
+  routers:
+    ildis:
+      entryPoints:
+        - web
+      rule: \"Host(\`${SSL_DOMAIN}\`)\"
+      service: ildis
+  services:
+    ildis:
+      loadBalancer:
+        servers:
+          - url: \"http://ildis_app:80\""
+    fi
+
+    cat > "${INSTALL_DIR}/traefik/config.yml" <<DYNAMICEOF
+${dynamic_tls}
+DYNAMICEOF
+
+    chmod 644 "${INSTALL_DIR}/traefik/traefik.yml"
+    chmod 644 "${INSTALL_DIR}/traefik/config.yml"
+    success "Konfigurasi Traefik dibuat"
+}
+
+# ── Create superadmin ────────────────────────────────────────────────────────
+create_superadmin() {
+    info "Membuat akun superadmin..."
+
+    local create_ok=false
+    if run_compose exec -T app php /var/www/yii user/create \
+        --username="${ADMIN_USERNAME}" \
+        --password="${ADMIN_PASSWORD}" \
+        --role=superadmin \
+        --non-interactive=1 2>&1; then
+        create_ok=true
+    elif run_compose exec -T app php /var/www/yii user/create \
+        --username="${ADMIN_USERNAME}" \
+        --password="${ADMIN_PASSWORD}" \
+        --role=superadmin \
+        --non-interactive=1 -n 2>&1; then
+        create_ok=true
+    fi
+
+    if [ "${create_ok}" = true ]; then
+        success "Superadmin '${ADMIN_USERNAME}' berhasil dibuat"
+    else
+        warn "Gagal membuat superadmin secara otomatis."
+        warn "Buat manual dengan:"
+        warn "  ${COMPOSE_CMD} -f ${INSTALL_DIR}/${COMPOSE_FILE} exec app php yii user/create --username=${ADMIN_USERNAME} --role=superadmin --non-interactive=1"
+    fi
+}
+
 # ── Install ──────────────────────────────────────────────────────────────────
 do_install() {
     if ! mkdir -p "${INSTALL_DIR}" 2>/dev/null; then
@@ -719,6 +1408,12 @@ do_install() {
 
     generate_env
     generate_compose
+    generate_nginx_config
+
+    if [ "${REVERSE_PROXY}" = false ]; then
+        generate_traefik_config
+        mkdir -p "${INSTALL_DIR}/ssl"
+    fi
 
     info "Mengunduh image ILDIS..."
     if ! run_compose pull 2>&1; then
@@ -793,15 +1488,72 @@ do_install() {
         success "ILDIS merespons di http://localhost:${app_port}"
     fi
 
+    create_superadmin
+
     echo ""
     echo -e "${GREEN}╔══════════════════════════════════════════╗${NC}"
     echo -e "${GREEN}║       ILDIS Berhasil Dipasang!            ║${NC}"
     echo -e "${GREEN}╚══════════════════════════════════════════╝${NC}"
     echo ""
-    echo "  URL:           http://localhost:${app_port}"
+
+    local frontend_url=""
+    local backend_url=""
+    local ssl_info=""
+
+    if [ "${REVERSE_PROXY}" = true ]; then
+        frontend_url="${PUBLIC_DOMAIN}"
+        backend_url="${PUBLIC_DOMAIN}/backend"
+        ssl_info="dikelola reverse proxy"
+    elif [ "${SSL_MODE}" = "letsencrypt" ]; then
+        frontend_url="https://${SSL_DOMAIN}"
+        backend_url="https://${SSL_DOMAIN}/backend"
+        ssl_info="Let's Encrypt (otomatis)"
+    elif [ "${SSL_MODE}" = "manual" ]; then
+        frontend_url="https://${SSL_DOMAIN}"
+        backend_url="https://${SSL_DOMAIN}/backend"
+        ssl_info="sertifikat manual"
+    else
+        if [ -n "${SSL_DOMAIN}" ] && [ "${SSL_DOMAIN}" != "localhost" ]; then
+            frontend_url="http://${SSL_DOMAIN}"
+            backend_url="http://${SSL_DOMAIN}/backend"
+        else
+            frontend_url="http://localhost:${app_port}"
+            backend_url="http://localhost:${app_port}/backend"
+        fi
+        ssl_info="tidak ada (HTTP)"
+    fi
+
+    echo "  Frontend:      ${frontend_url}"
+    echo "  Backend/CMS:   ${backend_url}"
+    echo "  Superadmin:    ${ADMIN_USERNAME}"
+    if [ -n "${DB_PORT_EXPOSE}" ] && [ "${DB_TYPE}" != "external" ]; then
+        echo "  DB (host):     localhost:${DB_PORT_EXPOSE}"
+    fi
+    echo ""
     echo "  Direktori:     ${INSTALL_DIR}"
     echo "  Konfigurasi:   ${INSTALL_DIR}/${ENV_FILE}"
-    echo "  Compose:        ${INSTALL_DIR}/${COMPOSE_FILE}"
+    echo "  Compose:       ${INSTALL_DIR}/${COMPOSE_FILE}"
+    echo "  Nginx:         ${INSTALL_DIR}/nginx/default.conf"
+
+    if [ "${REVERSE_PROXY}" = false ]; then
+        echo "  Traefik:       ${INSTALL_DIR}/traefik/"
+        echo "  SSL:           ${ssl_info}"
+        echo "  Domain:        ${SSL_DOMAIN}"
+        if [ "${SSL_MODE}" = "letsencrypt" ]; then
+            echo "  Email LE:      ${SSL_EMAIL}"
+        fi
+    else
+        echo "  SSL:           ${ssl_info}"
+    fi
+
+    echo ""
+    echo "  Log:"
+    echo "    Nginx:     ${INSTALL_DIR}/logs/nginx/"
+    echo "    Aplikasi:  ${COMPOSE_CMD} -f ${INSTALL_DIR}/${COMPOSE_FILE} exec app cat /var/www/runtime/logs/app.log"
+    if [ "${REVERSE_PROXY}" = false ]; then
+        echo "    Traefik:   ${INSTALL_DIR}/logs/traefik/"
+    fi
+
     echo ""
     echo "  Perintah berguna:"
     echo "    ${COMPOSE_CMD} -f ${INSTALL_DIR}/${COMPOSE_FILE} logs -f       # Ikuti log"
@@ -809,6 +1561,21 @@ do_install() {
     echo "    ${COMPOSE_CMD} -f ${INSTALL_DIR}/${COMPOSE_FILE} pull          # Perbarui image"
     echo ""
     echo -e "  ${CYAN}Untuk memperbarui ILDIS, jalankan: ./install.sh --update${NC}"
+
+    if [ "${SSL_MODE}" = "manual" ]; then
+        local cert_file="${INSTALL_DIR}/${SSL_CERT_PATH}"
+        local key_file="${INSTALL_DIR}/${SSL_KEY_PATH}"
+        if [ ! -f "${cert_file}" ] || [ ! -f "${key_file}" ]; then
+            echo ""
+            echo -e "${YELLOW}⚠ PERINGATAN: Sertifikat SSL belum ditemukan!${NC}"
+            echo "  Taruh file SSL ke:"
+            echo "    ${cert_file}"
+            echo "    ${key_file}"
+            echo "  Lalu restart Traefik:"
+            echo "    ${COMPOSE_CMD} -f ${INSTALL_DIR}/${COMPOSE_FILE} restart traefik"
+        fi
+    fi
+
     print_recaptcha_env_help "${INSTALL_DIR}/${ENV_FILE}"
 }
 
@@ -821,6 +1588,42 @@ do_update() {
         fail "Instalasi ILDIS tidak ditemukan di ${INSTALL_DIR}. Jalankan ./install.sh tanpa --update untuk pemasangan baru."
     fi
 
+    info "Memeriksa pembaruan install.sh..."
+    local self_update_url="https://raw.githubusercontent.com/${GITHUB_REPO}/main/install.sh"
+    local self_path
+    self_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+    local new_self="${INSTALL_DIR}/install.sh.new"
+
+    if command -v curl &>/dev/null; then
+        if curl -fsSL "${self_update_url}" -o "${new_self}" 2>/dev/null && [ -s "${new_self}" ]; then
+            local old_md5 new_md5
+            if command -v md5sum &>/dev/null; then
+                old_md5=$(md5sum "${self_path}" 2>/dev/null | awk '{print $1}')
+                new_md5=$(md5sum "${new_self}" 2>/dev/null | awk '{print $1}')
+            elif command -v md5 &>/dev/null; then
+                old_md5=$(md5 -q "${self_path}" 2>/dev/null)
+                new_md5=$(md5 -q "${new_self}" 2>/dev/null)
+            else
+                old_md5=""
+                new_md5="different"
+            fi
+            if [ "${old_md5}" != "${new_md5}" ]; then
+                chmod +x "${new_self}"
+                mv "${new_self}" "${self_path}"
+                success "install.sh diperbarui, menjalankan versi terbaru..."
+                exec "${self_path}" --update --dir "${INSTALL_DIR}"
+            else
+                rm -f "${new_self}"
+                success "install.sh sudah terbaru"
+            fi
+        else
+            rm -f "${new_self}" 2>/dev/null || true
+            warn "Tidak dapat mengunduh pembaruan install.sh. Melanjutkan dengan versi saat ini."
+        fi
+    else
+        warn "curl tidak ditemukan. Melewatkan pembaruan install.sh."
+    fi
+
     info "Memuat konfigurasi yang ada..."
     while IFS='=' read -r key value; do
         case "$key" in
@@ -828,6 +1631,13 @@ do_update() {
         esac
         [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] && export "$key=$value"
     done < "${env_file}"
+
+    REVERSE_PROXY="${BEHIND_REVERSE_PROXY:-false}"
+    SSL_MODE="${SSL_MODE:-none}"
+    SSL_DOMAIN="${SSL_DOMAIN:-}"
+    SSL_EMAIL="${SSL_EMAIL:-}"
+    SSL_CERT_PATH="${SSL_CERT_PATH:-ssl/server.crt}"
+    SSL_KEY_PATH="${SSL_KEY_PATH:-ssl/server.key}"
 
     local current_version="unknown"
     if [ -f "${INSTALL_DIR}/${VERSION_FILE}" ]; then
@@ -900,6 +1710,13 @@ do_update() {
         fail "Gagal mengunduh image."
     fi
     success "Image diperbarui"
+
+    if [ -f "${INSTALL_DIR}/nginx/default.conf" ]; then
+        generate_nginx_config
+    fi
+    if [ -d "${INSTALL_DIR}/traefik" ]; then
+        generate_traefik_config
+    fi
 
     info "Memulai ulang container ILDIS..."
     if ! run_compose_update "${compose_file}" "${env_file}" up -d 2>&1; then
@@ -1034,6 +1851,26 @@ main() {
         RECAPTCHA_ENABLED="${RECAPTCHA_ENABLED:-false}"
         RECAPTCHA_SITE_KEY="${RECAPTCHA_SITE_KEY:-}"
         RECAPTCHA_SECRET_KEY="${RECAPTCHA_SECRET_KEY:-}"
+        REVERSE_PROXY="${BEHIND_REVERSE_PROXY:-false}"
+        SSL_MODE="${SSL_MODE:-none}"
+        SSL_DOMAIN="${SSL_DOMAIN:-}"
+        SSL_EMAIL="${SSL_EMAIL:-}"
+        SSL_CERT_PATH="${SSL_CERT_PATH:-ssl/server.crt}"
+        SSL_KEY_PATH="${SSL_KEY_PATH:-ssl/server.key}"
+        ADMIN_USERNAME="${ADMIN_USERNAME:-admin}"
+        if [ -z "${ADMIN_PASSWORD}" ]; then
+            fail "ADMIN_PASSWORD wajib diisi untuk mode non-interactive."
+        fi
+        if [ "${REVERSE_PROXY}" = false ] && [ "${SSL_MODE}" = "letsencrypt" ]; then
+            if [ -z "${SSL_DOMAIN}" ] || [ -z "${SSL_EMAIL}" ]; then
+                fail "SSL_DOMAIN dan SSL_EMAIL wajib diisi untuk mode Let's Encrypt."
+            fi
+        fi
+        if [ "${REVERSE_PROXY}" = false ] && [ "${SSL_MODE}" = "manual" ]; then
+            if [ -z "${SSL_DOMAIN}" ]; then
+                fail "SSL_DOMAIN wajib diisi untuk mode manual SSL."
+            fi
+        fi
     else
         run_wizard
     fi

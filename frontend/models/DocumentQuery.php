@@ -34,6 +34,6 @@ class DocumentQuery extends \yii\db\ActiveQuery
 
      public function total($id)
      {
-        return $this->andWhere(['tipe_dokumen' => $id])->count();
+        return $this->andWhere(['tipe_dokumen' => $id, 'is_publish' => 1])->count();
      }     
 }

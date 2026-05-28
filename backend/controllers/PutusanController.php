@@ -290,6 +290,26 @@ class PutusanController extends Controller
         }
     }
 
+    /**
+     * Unpublish a Putusan document (flips is_publish to 0).
+     * Mirrors the toggle counterpart of catatan-verifikasi/putusan.
+     */
+    public function actionInactive($id)
+    {
+        $model = $this->findModel($id);
+        $model->is_publish = 0;
+        if ($model->save(false)) {
+            Yii::$app->session->setFlash('danger', 'Verifikasi Putusan dibatalkan');
+        } else {
+            Yii::error(
+                '[putusan/inactive] Failed to save model: ' . json_encode($model->getErrors()),
+                __METHOD__
+            );
+            Yii::$app->session->setFlash('error', 'Gagal membatalkan verifikasi Putusan.');
+        }
+        return $this->redirect(['index']);
+    }
+
 
 
     /**

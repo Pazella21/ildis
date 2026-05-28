@@ -11,11 +11,14 @@
 !README.md
 LICENSE
 CHANGELOG.md
+docs/
 
 # Docker
 Dockerfile
-docker-compose.yml
+Dockerfile.cron
+docker-compose*.yml
 .dockerignore
+.devcontainer/
 
 # Environment
 .env
@@ -49,3 +52,21 @@ Thumbs.db
 
 # Backups (database dumps)
 backups/
+
+# Host-side scripts (not for container)
+install.sh
+scripts/
+
+# Agent/assistant configs
+.agents/
+.opencode/
+.claude/
+
+# CI/CD
+.github/
+
+# Vagrant
+vagrant/
+
+# Version file (not needed in image)
+VERSION

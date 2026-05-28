@@ -1,0 +1,19 @@
+<?php
+
+use yii\helpers\Html;
+
+/* @var $this yii\web\View */
+/* @var $model backend\models\Peraturan */
+
+$this->title = 'Ubah Data Dokumen Pembentukan PUU';
+$this->params['breadcrumbs'][] = ['label' => 'Dokumen Pembentukan PUU', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->jenis_peraturan, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = 'Update';
+?>
+<div class="box-body no-padding">
+
+    <?= $this->render('_form-update', [
+        'model' => $model,
+    ]) ?>
+
+</div>

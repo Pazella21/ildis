@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use Yii;
 use backend\models\CatatanVerifikasi;
+use backend\models\DokumenJdih;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -105,57 +106,47 @@ class CatatanVerifikasiController extends Controller
 
     public function actionPeraturan($id)
     {
-        $model = new CatatanVerifikasi();
-
-        $model->dokumen_id = $id;
-
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                Yii::$app->session->setFlash('success', "Catatan Verifikasi sudah dibuat");
-                return $this->redirect(['peraturan/index']);
-            }
-        } else {
-            $model->loadDefaultValues();
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        return $this->renderCatatanAndPublish($id, 'peraturan/index');
     }
-
 
     public function actionMonografi($id)
     {
-        $model = new CatatanVerifikasi();
-
-        $model->dokumen_id = $id;
-
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                Yii::$app->session->setFlash('success', "Catatan Verifikasi sudah dibuat");
-                return $this->redirect(['monografi/index']);
-            }
-        } else {
-            $model->loadDefaultValues();
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        return $this->renderCatatanAndPublish($id, 'monografi/index');
     }
 
     public function actionArtikel($id)
     {
+        return $this->renderCatatanAndPublish($id, 'artikel/index');
+    }
+
+    public function actionPutusan($id)
+    {
+        return $this->renderCatatanAndPublish($id, 'putusan/index');
+    }
+
+    /**
+     * Renders the verification-note form. On valid POST it saves the note and
+     * flips the related document to is_publish = 1 atomically, then redirects
+     * back to the type-specific index.
+     *
+     * @param int $dokumenId target document id
+     * @param string $redirectRoute Yii route to redirect to on success (e.g. 'peraturan/index')
+     * @return \yii\web\Response|string
+     */
+    private function renderCatatanAndPublish($dokumenId, string $redirectRoute)
+    {
         $model = new CatatanVerifikasi();
+        $model->dokumen_id = $dokumenId;
 
-        $model->dokumen_id = $id;
-
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                Yii::$app->session->setFlash('success', "Catatan Verifikasi sudah dibuat");
-                return $this->redirect(['artikel/index']);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            if ($this->saveCatatanAndPublish($model, $dokumenId, $redirectRoute)) {
+                Yii::$app->session->setFlash(
+                    'success',
+                    'Catatan Verifikasi sudah dibuat dan dokumen telah diverifikasi.'
+                );
+                return $this->redirect([$redirectRoute]);
             }
-        } else {
+        } elseif (!$this->request->isPost) {
             $model->loadDefaultValues();
         }
 
@@ -164,24 +155,42 @@ class CatatanVerifikasiController extends Controller
         ]);
     }
 
-    public function actionPutusan($id)
+    /**
+     * Save a verification note and flip the related document to is_publish = 1 atomically.
+     * Returns true on commit, false on rollback (flash error already set).
+     *
+     * @throws NotFoundHttpException when the related document does not exist
+     */
+    private function saveCatatanAndPublish(CatatanVerifikasi $model, int $dokumenId, string $logTag): bool
     {
-        $model = new CatatanVerifikasi();
-
-        $model->dokumen_id = $id;
-
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                Yii::$app->session->setFlash('success', "Catatan Verifikasi sudah dibuat");
-                return $this->redirect(['putusan/index']);
-            }
-        } else {
-            $model->loadDefaultValues();
+        $dokumen = DokumenJdih::findOne($dokumenId);
+        if ($dokumen === null) {
+            throw new NotFoundHttpException('Dokumen tidak ditemukan.');
         }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            if (!$model->save()) {
+                throw new \RuntimeException(
+                    'Gagal menyimpan catatan verifikasi: ' . json_encode($model->getErrors())
+                );
+            }
+
+            $dokumen->is_publish = 1;
+            if (!$dokumen->save(false)) {
+                throw new \RuntimeException(
+                    'Gagal memverifikasi dokumen: ' . json_encode($dokumen->getErrors())
+                );
+            }
+
+            $transaction->commit();
+            return true;
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            Yii::error('[catatan-verifikasi/' . $logTag . '] ' . $e->getMessage(), __METHOD__);
+            Yii::$app->session->setFlash('error', $e->getMessage());
+            return false;
+        }
     }
 
     /**
