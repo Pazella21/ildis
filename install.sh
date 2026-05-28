@@ -803,6 +803,13 @@ COMPOSEEOF
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_DATABASE=${DB_DATABASE:-ildis_v4}
       - DB_DATABASE_PORT=${DB_DATABASE_PORT:-3306}
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "test", "-f", "/var/www/feed/document.json"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
 
 volumes:
   runtime:
@@ -886,6 +893,13 @@ ${db_ports}
       - DB_PASSWORD=\${DB_PASSWORD}
       - DB_DATABASE=\${DB_DATABASE:-ildis_v4}
       - DB_DATABASE_PORT=\${DB_DATABASE_PORT:-3306}
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "test", "-f", "/var/www/feed/document.json"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
 
 volumes:
   mysql_data:
@@ -950,6 +964,13 @@ services:${traefik_service}
       - DB_PASSWORD=\${DB_PASSWORD}
       - DB_DATABASE=\${DB_DATABASE:-ildis_v4}
       - DB_DATABASE_PORT=\${DB_DATABASE_PORT:-3306}
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "test", "-f", "/var/www/feed/document.json"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
 COMPOSEEOF
         else
             cat > "${INSTALL_DIR}/${COMPOSE_FILE}" <<EOF
@@ -1025,6 +1046,13 @@ ${traefik_service}
       - DB_PASSWORD=\${DB_PASSWORD}
       - DB_DATABASE=\${DB_DATABASE:-ildis_v4}
       - DB_DATABASE_PORT=\${DB_DATABASE_PORT:-3306}
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "test", "-f", "/var/www/feed/document.json"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
     networks:
       - ildis_net
 EOF
