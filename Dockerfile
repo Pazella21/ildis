@@ -115,6 +115,8 @@ RUN chmod 755 /etc/s6-overlay/s6-rc.d/ildis-init/up \
     && mkdir -p /etc/s6-overlay/s6-rc.d/php-fpm/dependencies.d \
     && touch /etc/s6-overlay/s6-rc.d/php-fpm/dependencies.d/ildis-init
 
+RUN touch /var/www/.ildis_patched
+
 EXPOSE 80
 
 ENTRYPOINT ["/init"]
