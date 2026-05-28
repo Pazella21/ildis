@@ -149,6 +149,15 @@ class UserController extends BaseUserController
 
 
 
+    public function actionPasswordReset($id)
+    {
+        $model = $this->findModel($id);
+        $model->setPassword(\Yii::$app->security->generateRandomString());
+        $model->save(false);
+        \Yii::$app->session->setFlash('success', 'Password user berhasil direset');
+        return $this->redirect(['index']);
+    }
+
     /**
         * Request password reset
      * @throws NotFoundHttpException if the model cannot be found

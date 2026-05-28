@@ -113,7 +113,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     } 
                         },
                     'reset' => function ($url, $model) {
-                        $url = Url::to(['requestPasswordResetToken', 'id' => $model->id]);
+                        $url = Url::to(['password-reset', 'id' => $model->id]);
                         return Html::a('<span class="fa fa-pencil-square-o">', $url, [
                             'title'        => 'reset password',
                             'class' => 'btn btn-danger btn-sm',
