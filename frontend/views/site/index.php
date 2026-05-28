@@ -20,8 +20,8 @@ $totalMonografi = Dokumen::find()->total(2);
 $totalArtikel   = Dokumen::find()->total(3);
 $totalPutusan   = Dokumen::find()->total(4);
 
-$totalBerlaku       = Dokumen::find()->where(['status' => 'Berlaku', 'is_publish' => 1])->count();
-$totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_publish' => 1])->count();
+$totalBerlaku       = Dokumen::find()->where(['status' => 'Berlaku', 'is_publish' => 1, 'tipe_dokumen' => Dokumen::TYPE_PERATURAN])->count();
+$totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_publish' => 1, 'tipe_dokumen' => Dokumen::TYPE_PERATURAN])->count();
 
 ?>
 

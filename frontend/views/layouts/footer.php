@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use backend\models\FrontendConfig;
+use common\models\FooterSection;
 use common\models\VisitorStats;
 
 // Fetch visitor stats
@@ -21,20 +22,31 @@ $monthVisits = $monthStat ? (int)$monthStat->unique_visits : 0;
 $yearVisits = $yearStat ? (int)$yearStat->unique_visits : 0;
 
 $logo = FrontendConfig::findOne(3);
-$fb = FrontendConfig::findOne(13);
-$yt = FrontendConfig::findOne(14);
-$ig = FrontendConfig::findOne(15);
 $instansi = FrontendConfig::findOne(2);
 $deskripsi = FrontendConfig::findOne(4);
 $alamat = FrontendConfig::findOne(5);
 $nomor = FrontendConfig::findOne(6);
 $email = FrontendConfig::findOne(7);
 
-// Clean up HTML from configs
 $cleanInstansi = $instansi ? trim(strip_tags($instansi->isi_konfig)) : 'Badan Pembinaan Hukum Nasional - Kementerian Hukum R.I';
 $cleanAlamat = $alamat ? trim(strip_tags($alamat->isi_konfig)) : 'Jl. Mayjend Sutoyo, Cililitan, Jakarta Timur';
 $cleanNomor = $nomor ? trim(strip_tags($nomor->isi_konfig)) : 'Telp +62-21 8091909 (hunting) Faks +62-21 8011753';
 $cleanEmail = $email ? trim(strip_tags($email->isi_konfig)) : 'humas@bphn.go.id · bphn.humaskerjasamantu@gmail.com';
+
+$sections = FooterSection::getActiveSections();
+$navSections = [];
+$socialSections = [];
+foreach ($sections as $section) {
+    if ($section->type === FooterSection::TYPE_NAV) {
+        $navSections[] = $section;
+    } elseif ($section->type === FooterSection::TYPE_SOCIAL) {
+        $socialSections[] = $section;
+    }
+}
+
+$hasDynamicContent = !empty($navSections) || !empty($socialSections);
+$socialSection = !empty($socialSections) ? $socialSections[0] : null;
+$socialLinks = $socialSection ? $socialSection->activeLinks : [];
 
 ?>
 
@@ -61,7 +73,25 @@ $cleanEmail = $email ? trim(strip_tags($email->isi_konfig)) : 'humas@bphn.go.id 
         </p>
       </div>
 
-      <!-- Layanan -->
+<?php if ($hasDynamicContent): ?>
+    <?php foreach ($navSections as $section): ?>
+      <?php if (!empty($section->activeLinks)): ?>
+      <div class="col-lg-3 col-md-6 mb-4 mb-md-0 ps-lg-5">
+        <h6 class="fw-bold mb-4 text-white" style="letter-spacing: 0.5px; font-size: 0.9rem;"><?= Html::encode($section->title) ?></h6>
+        <ul class="list-unstyled mb-0" style="line-height: 2.2;">
+          <?php foreach ($section->activeLinks as $link): ?>
+            <li><?= Html::a(Html::encode($link->label), Html::encode($link->url), array_filter([
+                'class' => 'footer-link',
+                'target' => $link->open_in_new_tab ? '_blank' : null,
+                'rel' => $link->open_in_new_tab ? 'noopener noreferrer' : null,
+            ])) ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+      <?php endif; ?>
+    <?php endforeach; ?>
+<?php else: ?>
+      <!-- Fallback: hardcoded content -->
       <div class="col-lg-3 col-md-6 mb-4 mb-md-0 ps-lg-5">
         <h6 class="fw-bold mb-4 text-white" style="letter-spacing: 0.5px; font-size: 0.9rem;">LAYANAN</h6>
         <ul class="list-unstyled mb-0" style="line-height: 2.2;">
@@ -70,7 +100,6 @@ $cleanEmail = $email ? trim(strip_tags($email->isi_konfig)) : 'humas@bphn.go.id 
         </ul>
       </div>
 
-      <!-- Tentang -->
       <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
         <h6 class="fw-bold mb-4 text-white" style="letter-spacing: 0.5px; font-size: 0.9rem;">TENTANG</h6>
         <ul class="list-unstyled mb-0" style="line-height: 2.2;">
@@ -79,6 +108,8 @@ $cleanEmail = $email ? trim(strip_tags($email->isi_konfig)) : 'humas@bphn.go.id 
           <li><a href="#" class="footer-link">Kontak Kami</a></li>
         </ul>
       </div>
+<?php endif; ?>
+
     </div>
 
     <!-- Divider -->
@@ -128,14 +159,38 @@ $cleanEmail = $email ? trim(strip_tags($email->isi_konfig)) : 'humas@bphn.go.id 
         </div>
         
         <div class="d-flex border-start ps-4 align-items-center gap-4" style="border-color: rgba(255, 255, 255, 0.1) !important; font-size: 1.15rem;">
-          <a href="<?= isset($fb->isi_konfig) ? Html::encode(strip_tags($fb->isi_konfig)) : '#' ?>" class="footer-social"><i class="bi bi-facebook"></i></a>
-          <a href="<?= isset($ig->isi_konfig) ? Html::encode(strip_tags($ig->isi_konfig)) : '#' ?>" class="footer-social"><i class="bi bi-instagram"></i></a>
+<?php if (!empty($socialLinks)): ?>
+    <?php foreach ($socialLinks as $link): ?>
+          <?php
+          $linkOptions = ['class' => 'footer-social'];
+          if ($link->open_in_new_tab) {
+              $linkOptions['target'] = '_blank';
+              $linkOptions['rel'] = 'noopener noreferrer';
+          }
+          ?>
+          <?php if ($link->icon_class === 'bi bi-twitter-x'): ?>
+          <a href="<?= Html::encode($link->url) ?>" <?= Html::renderTagAttributes($linkOptions) ?>>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+              <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"/>
+            </svg>
+          </a>
+          <?php elseif ($link->icon_class): ?>
+          <a href="<?= Html::encode($link->url) ?>" <?= Html::renderTagAttributes($linkOptions) ?>><i class="<?= Html::encode($link->icon_class) ?>"></i></a>
+          <?php else: ?>
+          <a href="<?= Html::encode($link->url) ?>" <?= Html::renderTagAttributes($linkOptions) ?>><i class="bi bi-link-45deg"></i></a>
+          <?php endif; ?>
+    <?php endforeach; ?>
+<?php elseif ($hasDynamicContent): ?>
+<?php else: ?>
+          <a href="#" class="footer-social"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="footer-social"><i class="bi bi-instagram"></i></a>
           <a href="#" class="footer-social">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
               <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"/>
             </svg>
           </a>
-          <a href="<?= isset($yt->isi_konfig) ? Html::encode(strip_tags($yt->isi_konfig)) : '#' ?>" class="footer-social"><i class="bi bi-youtube"></i></a>
+          <a href="#" class="footer-social"><i class="bi bi-youtube"></i></a>
+<?php endif; ?>
         </div>
       </div>
     </div>

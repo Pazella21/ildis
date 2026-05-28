@@ -207,7 +207,7 @@ class DokumenController extends Controller
 
      public function actionTberlaku()
     {
-        $searchModel = new DokumenSearch(['status' => 'Tidak Berlaku']);
+        $searchModel = new DokumenSearch(['status' => 'Tidak Berlaku', 'tipe_dokumen' => Dokumen::TYPE_PERATURAN]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index-tberlaku', [

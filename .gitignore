@@ -59,3 +59,4 @@ node_modules/
 # backup files (database dumps from update.sh)
 /backups/*.sql.gz
 /backups/*.sql
+.superpowers/
