@@ -2,6 +2,7 @@
 
 namespace console\controllers;
 
+use backend\models\DataLampiran;
 use backend\models\DokumenJdih;
 use yii\console\Controller;
 use yii\helpers\FileHelper;
@@ -48,19 +49,48 @@ class FeedController extends Controller
                 return self::EXIT_CODE_ERROR;
             }
 
-            foreach ($dokumen as &$row) {
-                if (empty($row['abstrak'])) {
-                    $row['urlAbstrak'] = '';
-                } else {
-                    $row['urlAbstrak'] = \Yii::$app->urlManager->createAbsoluteUrl([
-                        'common/dokumen/' . $row['abstrak']
-                    ]);
+            $baseUrl = \Yii::getAlias('@imageurl');
+
+            $lampiranMap = [];
+            $allLampiran = DataLampiran::find()
+                ->select(['id_dokumen', 'dokumen_lampiran', 'url_lampiran'])
+                ->where(['id_dokumen' => array_column($dokumen, 'idData')])
+                ->orderBy(['urutan' => SORT_ASC, 'id' => SORT_ASC])
+                ->asArray()
+                ->all();
+
+            foreach ($allLampiran as $lampiran) {
+                $docId = $lampiran['id_dokumen'];
+                if (!isset($lampiranMap[$docId]) && !empty($lampiran['dokumen_lampiran'])) {
+                    $lampiranMap[$docId] = $lampiran;
                 }
+            }
+
+            foreach ($dokumen as &$row) {
+                if (!empty($row['abstrak'])) {
+                    $row['urlAbstrak'] = rtrim($baseUrl, '/') . '/common/dokumen/' . $row['abstrak'];
+                } else {
+                    $row['abstrak'] = '';
+                    $row['urlAbstrak'] = '';
+                }
+
                 $row['urlDetailPeraturan'] = \Yii::$app->urlManager->createAbsoluteUrl([
                     'dokumen/view', 'id' => $row['idData']
                 ]);
-                $row['fileDownload'] = '-';
-                $row['urlDownload'] = '-';
+
+                $docId = $row['idData'];
+                if (isset($lampiranMap[$docId])) {
+                    $row['fileDownload'] = $lampiranMap[$docId]['dokumen_lampiran'];
+                    if (!empty($lampiranMap[$docId]['url_lampiran'])) {
+                        $row['urlDownload'] = $lampiranMap[$docId]['url_lampiran'];
+                    } else {
+                        $row['urlDownload'] = rtrim($baseUrl, '/') . '/common/dokumen/' . $lampiranMap[$docId]['dokumen_lampiran'];
+                    }
+                } else {
+                    $row['fileDownload'] = '-';
+                    $row['urlDownload'] = '-';
+                }
+
                 $row['subjek'] = '';
                 $row['operasi'] = '4';
                 $row['display'] = '1';
