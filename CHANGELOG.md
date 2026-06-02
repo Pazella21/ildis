@@ -1,3 +1,9 @@
+## [4.6.6](https://github.com/bphndigitalservice/ildis/compare/v4.6.5...v4.6.6) (2026-06-02)
+
+### Bug Fixes
+
+* YAML parse error in generated docker-compose.yml — add newline before labels/networks blocks ([dacee31](https://github.com/bphndigitalservice/ildis/commit/dacee313bc2f7cf84444aeba2b268dbf637f14c7))
+
 ## [4.6.5](https://github.com/bphndigitalservice/ildis/compare/v4.6.4...v4.6.5) (2026-06-02)
 
 ### Bug Fixes
