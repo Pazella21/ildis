@@ -1,3 +1,9 @@
+## [4.6.5](https://github.com/bphndigitalservice/ildis/compare/v4.6.4...v4.6.5) (2026-06-02)
+
+### Bug Fixes
+
+* resolve YAML parse error and image pull failure in install.sh ([a157035](https://github.com/bphndigitalservice/ildis/commit/a1570356d8cebe778683e0d179899436e7c98940))
+
 ## [4.6.4](https://github.com/bphndigitalservice/ildis/compare/v4.6.3...v4.6.4) (2026-06-02)
 
 ### Bug Fixes
