@@ -52,7 +52,7 @@ services:
       - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY}
       - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
       - PHP_DISPLAY_ERRORS=Off
-      - PHP_ERROR_REPORTING="E_ALL & ~E_DEPRECATED"
+      - PHP_ERROR_REPORTING='E_ALL & ~E_DEPRECATED'
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost/" ]

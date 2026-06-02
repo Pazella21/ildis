@@ -749,7 +749,9 @@ networks:
             cat > "${INSTALL_DIR}/${COMPOSE_FILE}" <<'COMPOSEEOF'
 services:
   app:
-    image: ghcr.io/bphndigitalservice/ildis:${ILDIS_IMAGE_TAG:-latest}
+COMPOSEEOF
+            echo "    image: ghcr.io/bphndigitalservice/ildis:${ILDIS_IMAGE_TAG:-latest}" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+            cat >> "${INSTALL_DIR}/${COMPOSE_FILE}" <<'COMPOSEEOF'
     container_name: ildis_app
     restart: unless-stopped
 COMPOSEEOF
@@ -782,15 +784,19 @@ COMPOSEEOF
       - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY:-}
       - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY:-}
       - PHP_DISPLAY_ERRORS=Off
-      - PHP_ERROR_REPORTING="E_ALL & ~E_DEPRECATED"
+      - PHP_ERROR_REPORTING='E_ALL & ~E_DEPRECATED'
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost/" ]
       interval: 30s
       timeout: 10s
       retries: 3
 
+COMPOSEEOF
+            cat >> "${INSTALL_DIR}/${COMPOSE_FILE}" <<'COMPOSEEOF'
   cron:
-    image: ghcr.io/bphndigitalservice/ildis-cron:${ILDIS_IMAGE_TAG:-latest}
+COMPOSEEOF
+            echo "    image: ghcr.io/bphndigitalservice/ildis-cron:${ILDIS_IMAGE_TAG:-latest}" >> "${INSTALL_DIR}/${COMPOSE_FILE}"
+            cat >> "${INSTALL_DIR}/${COMPOSE_FILE}" <<'COMPOSEEOF'
     container_name: ildis_cron
     restart: unless-stopped
     volumes:
@@ -869,7 +875,7 @@ ${db_ports}
       - RECAPTCHA_SITE_KEY=\${RECAPTCHA_SITE_KEY:-}
       - RECAPTCHA_SECRET_KEY=\${RECAPTCHA_SECRET_KEY:-}
       - PHP_DISPLAY_ERRORS=Off
-      - PHP_ERROR_REPORTING="E_ALL & ~E_DEPRECATED"
+      - PHP_ERROR_REPORTING='E_ALL & ~E_DEPRECATED'
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost/" ]
       interval: 30s
@@ -943,7 +949,7 @@ services:${traefik_service}
       - RECAPTCHA_SITE_KEY=\${RECAPTCHA_SITE_KEY:-}
       - RECAPTCHA_SECRET_KEY=\${RECAPTCHA_SECRET_KEY:-}
       - PHP_DISPLAY_ERRORS=Off
-      - PHP_ERROR_REPORTING="E_ALL & ~E_DEPRECATED"
+      - PHP_ERROR_REPORTING='E_ALL & ~E_DEPRECATED'
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost/" ]
       interval: 30s
@@ -1022,7 +1028,7 @@ ${traefik_service}
       - RECAPTCHA_SITE_KEY=\${RECAPTCHA_SITE_KEY:-}
       - RECAPTCHA_SECRET_KEY=\${RECAPTCHA_SECRET_KEY:-}
       - PHP_DISPLAY_ERRORS=Off
-      - PHP_ERROR_REPORTING="E_ALL & ~E_DEPRECATED"
+      - PHP_ERROR_REPORTING='E_ALL & ~E_DEPRECATED'
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost/" ]
       interval: 30s
