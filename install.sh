@@ -925,7 +925,8 @@ services:${traefik_service}
   app:
     image: ghcr.io/bphndigitalservice/ildis:\${ILDIS_IMAGE_TAG:-latest}
     container_name: ildis_app
-    restart: unless-stopped${app_labels}${app_networks}
+    restart: unless-stopped
+${app_labels}${app_networks}
     volumes:
       - runtime:/var/www/runtime
       - backend-assets:/var/www/backend/web/assets
@@ -1004,7 +1005,8 @@ ${traefik_service}
     restart: unless-stopped
     depends_on:
       db:
-        condition: service_healthy${app_labels}${app_networks}
+        condition: service_healthy
+${app_labels}${app_networks}
     volumes:
       - runtime:/var/www/runtime
       - backend-assets:/var/www/backend/web/assets
