@@ -1,3 +1,256 @@
+## 1.0.0 (2026-06-09)
+
+### ⚠ BREAKING CHANGES
+
+* require PHP >=8.3; composer.lock refreshes Symfony,
+Codeception 5, and PHPUnit.
+
+- fix(visitor-report): allow any authenticated backend user for
+dashboard access
+
+- fix(config): replace SwiftMailer with yii2-symfonymailer + MAILER_DSN
+in templates
+
+- chore(vagrant): provision PHP 8.3 FPM; nginx php8.3-fpm socket
+
+- chore(docker): use php 8.3 base images
+
+- chore(migrations): move visitor_* migrations from _next to
+console/migrations
+
+- test(codeception): Codeception 5 output paths; common unit suite
+bootstrap
+
+- docs: add VAGRANT-SETUP.md
+
+- chore: ignore docs/local-private/ for local notes
+
+- chore: simplify backend/frontend main-local, .htaccess, entry index
+tweaks;
+* require PHP >=8.3; composer.lock refreshes Symfony, Codeception 5, and PHPUnit.
+
+- fix(visitor-report): allow any authenticated backend user for dashboard access
+
+- fix(config): replace SwiftMailer with yii2-symfonymailer + MAILER_DSN in templates
+
+- chore(vagrant): provision PHP 8.3 FPM; nginx php8.3-fpm socket
+
+- chore(docker): use php 8.3 base images
+
+- chore(migrations): move visitor_* migrations from _next to console/migrations
+
+- test(codeception): Codeception 5 output paths; common unit suite bootstrap
+
+- docs: add VAGRANT-SETUP.md
+
+- chore: ignore docs/local-private/ for local notes
+
+- chore: simplify backend/frontend main-local, .htaccess, entry index tweaks;
+
+Co-authored-by: Cursor <cursoragent@cursor.com>
+
+### Features
+
+* add .env and docker-compose.yml generation to install.sh ([c6b7c94](https://github.com/Pazella21/ildis/commit/c6b7c9427ad6b3925233b35ddc43125079107b26))
+* add a comprehensive migration plan document and update Summernote's TypeScript configuration with `skipLibCheck` and `node_modules` exclusion. ([cfa8ed9](https://github.com/Pazella21/ildis/commit/cfa8ed94a869e390e94c8632e2ee23f4ff847b48))
+* add analyze-yii2-project skill for Yii2 codebase analysis ([ec6d7ad](https://github.com/Pazella21/ildis/commit/ec6d7ad15f35d22e7aad2d8c0c61efa84cb59de3))
+* add console/runtime and backups directories to Dockerfile permissions ([f214961](https://github.com/Pazella21/ildis/commit/f21496158c95fa4c709c50a072ca804780745fad))
+* add database migrations as first-class schema source ([4a5f39e](https://github.com/Pazella21/ildis/commit/4a5f39e2d5f27de1f4383a581c06a609b364a0cb))
+* add Docker CI/CD pipeline and cron container setup ([91c3f8d](https://github.com/Pazella21/ildis/commit/91c3f8dc459c385e88dc0c04fb683100f80e47cc))
+* add footer menu items to admin sidebar ([121fdd4](https://github.com/Pazella21/ildis/commit/121fdd4418e029ffc76ece87a3d11350e21448c8))
+* add footer_section and footer_link tables with seed data ([e612ff5](https://github.com/Pazella21/ildis/commit/e612ff5fd4690041b474921241290659c180844a))
+* add footer-link backend views ([b1c49c5](https://github.com/Pazella21/ildis/commit/b1c49c5e9fa61908a08607f203c6e3d50963208e))
+* add footer-section backend views ([ad61140](https://github.com/Pazella21/ildis/commit/ad611407333aa304b878eeae09515e5926a2641a))
+* add FooterSection and FooterLink backend controllers ([6e75525](https://github.com/Pazella21/ildis/commit/6e75525f45f50a27c4b44366c69128a7c3ae9544))
+* add FooterSection and FooterLink models ([2bba716](https://github.com/Pazella21/ildis/commit/2bba71660ada5053463a117f7854c4dc290e6d31))
+* add install, update, and main functions to install.sh ([fc1a7a4](https://github.com/Pazella21/ildis/commit/fc1a7a4b3190d0171c8f97bba9ec74fdb40fc9ca))
+* add install.sh with constants, helpers, and prerequisite checks ([1e88b85](https://github.com/Pazella21/ildis/commit/1e88b85362df7a827950c6f26abd7a887307dfd3))
+* add interactive wizard to install.sh ([e00f098](https://github.com/Pazella21/ildis/commit/e00f098ca1645e5eecebfcdde996d84d4f5182bf))
+* add Podman support to install.sh — auto-detects docker compose, podman compose, or podman-compose ([481b254](https://github.com/Pazella21/ildis/commit/481b2549aea33ee658af2e4968a142de5730f070))
+* add query caching with invalidation for footer sections ([9282ca5](https://github.com/Pazella21/ildis/commit/9282ca52656dc8618570b770de6d85a40de551a2))
+* add update.sh and console/runtime to init environment config ([ba2c0bc](https://github.com/Pazella21/ildis/commit/ba2c0bcda105e14b27aa0d0d4e3afe57085790cf))
+* add update.sh script for non-technical ILDIS updates ([b226be8](https://github.com/Pazella21/ildis/commit/b226be884662e37cc92e3757b6839bd6658d753c))
+* add VERSION file for update tracking ([8f3a247](https://github.com/Pazella21/ildis/commit/8f3a247be776bf334fa15057e81d89db9173b985))
+* configure Yii2 migration path and add baseline + update_log migrations ([ca39661](https://github.com/Pazella21/ildis/commit/ca3966164f6b2561e34f618a5fb5d8fc26a1215e))
+* **console:** add non-interactive flags to user/create command ([3674be5](https://github.com/Pazella21/ildis/commit/3674be58a4398a891a7044ff24bc3142426df870))
+* **docker:** add MySQL service to docker-compose ([5c91078](https://github.com/Pazella21/ildis/commit/5c910787a0897fdce31e6c6d952df86f64087d7b))
+* **docker:** implement s6-overlay properly with nginx ([d79bdba](https://github.com/Pazella21/ildis/commit/d79bdba22c17348132b61cb3c3ee2339a2f7a3ad))
+* **docker:** separate nginx container from PHP-FPM ([2f6f572](https://github.com/Pazella21/ildis/commit/2f6f57291407bb2b28af180914bd3fbe55aaa119))
+* **docker:** use environment variables instead of .env file ([3f708f0](https://github.com/Pazella21/ildis/commit/3f708f07928379c08d4f1139180335d976b8ad58))
+* **dokumen:** implement Dokumen Pembentukan PUU with slug-based URLs and dynamic sidebar ([8cbd6ac](https://github.com/Pazella21/ildis/commit/8cbd6acedf74db9b2b77110cc33b0453f8496429))
+* dynamic footer rendering from footer_section and footer_link tables ([347d2d2](https://github.com/Pazella21/ildis/commit/347d2d29141a92d0822f48bc3daada851d83a142))
+* Implement SEO metatags and refine document detail page layouts and styling across various document types. ([aacf81e](https://github.com/Pazella21/ildis/commit/aacf81e987340f7778f5c91efef0b3535910f22f))
+* initial public release of ILDIS (Indonesian Law Documentation Information System) ([3e5eddf](https://github.com/Pazella21/ildis/commit/3e5eddf617de1d9ae9cb5daf0591a09304f5c8a4))
+* initialize project using Yii2 init script ([1311c66](https://github.com/Pazella21/ildis/commit/1311c66347a424b4b01cfd746aabdeaa04a1b1ab))
+* **install:** add Traefik, SSL, superadmin creation, nginx config, logging, and expanded post-install ([c43a3a9](https://github.com/Pazella21/ildis/commit/c43a3a93f0ef6350aa2ef868ecf6aaa7958b312a))
+* **install:** self-update install.sh before running --update ([cf4cf20](https://github.com/Pazella21/ildis/commit/cf4cf2057d179613050a077769b240f3d53eec91))
+* Introduce comprehensive migration plan, add cookie key generation script, and enhance Docker Nginx configuration loading. ([3f4d0f8](https://github.com/Pazella21/ildis/commit/3f4d0f81e28cd18aeb3a5b183a8652282ff568dc))
+* **nginx:** add access_log and error_log directives ([0e91de8](https://github.com/Pazella21/ildis/commit/0e91de87b7d79985316950d23d7fb56919209f02))
+* **puu:** add DokumenPembentukanPuuController with scoped CRUD and 4 sub-entity actions ([328f1e7](https://github.com/Pazella21/ildis/commit/328f1e79a76a573f0357af693a3b41ac2e12bf7e))
+* **puu:** add DokumenPembentukanPuuSearch model scoped to legislation_formation types ([2ee0ae6](https://github.com/Pazella21/ildis/commit/2ee0ae618ddbfac3685d2ec1a55f65dc92731071))
+* **puu:** add RBAC migration for DokumenPembentukanPuu controller routes and menu entry ([adbbff3](https://github.com/Pazella21/ildis/commit/adbbff3f312f084e1fcd9c9af5a22cf4f3a87bc9))
+* **puu:** add view files for Dokumen Pembentukan PUU management page ([924a881](https://github.com/Pazella21/ildis/commit/924a88137f98d853bc2b6a6d5b84136bb9d92475))
+* **puu:** update sidebar links to point to dedicated Dokumen Pembentukan PUU controller ([406b6bc](https://github.com/Pazella21/ildis/commit/406b6bc77d87204608c98accef1346f51388a7ae))
+* **recaptcha:** make backend login reCAPTCHA optional via env ([a11e91a](https://github.com/Pazella21/ildis/commit/a11e91af78166c68155c795fd0aded6d34157fb5))
+* redesign visitor counter and switch fonts to Inter ([11f5b4e](https://github.com/Pazella21/ildis/commit/11f5b4e1973dd77534da4b6272f8f265436e80b5))
+* replace year text inputs with dropdown selection in document forms ([7949da4](https://github.com/Pazella21/ildis/commit/7949da46c02176909dd8d25b54b8393fc045e29e))
+* restore index.phps in environment folder ([ff1d0db](https://github.com/Pazella21/ildis/commit/ff1d0dbe61b640a7ff864d0c0f3f1a1d832e8edf))
+* set up local development using devcontainer & vscode ([d158a62](https://github.com/Pazella21/ildis/commit/d158a6228b13d1b387270f4568d7f4fba292c46e))
+* translate install.sh, update.sh, and README to Bahasa Indonesia ([53e1daa](https://github.com/Pazella21/ildis/commit/53e1daad3366f18fc4e7b11b686d5b09b424d439))
+* use migrations for database setup, add auto-migration on container startup ([1a3ca7d](https://github.com/Pazella21/ildis/commit/1a3ca7da8a4e5713239304ca9bcc339a6f97c7ac))
+* **visitor-counter:** add dashboard views and Chart.js trend chart ([bad86b5](https://github.com/Pazella21/ildis/commit/bad86b5449d763cada5972d377bf76321700a791))
+* **visitor-counter:** add deduplication, trackVisit, realtime stat updates + tests ([8fdc12b](https://github.com/Pazella21/ildis/commit/8fdc12b46e454925af7842158aeee3c9952f5f4e))
+* **visitor-counter:** add menu migration for visitor report ([6f4df0f](https://github.com/Pazella21/ildis/commit/6f4df0fa41f8068146675d184978d9bb7a6ba30b))
+* **visitor-counter:** add nightly aggregation console command ([69ffa4e](https://github.com/Pazella21/ildis/commit/69ffa4e530e6ce6fd978080b59e2c297c832de1a))
+* **visitor-counter:** add visitor stats to frontend footer ([0ff4189](https://github.com/Pazella21/ildis/commit/0ff4189694328fe34c973f5af94058d0a10d920e))
+* **visitor-counter:** add visitor_log and visitor_stats migrations ([05bf15e](https://github.com/Pazella21/ildis/commit/05bf15ea9cd07148cb5291dc162979faab60fcf0))
+* **visitor-counter:** add VisitorCounter with fingerprint and cookie logic ([94b29d7](https://github.com/Pazella21/ildis/commit/94b29d71bd31ee03d0c52d53932adc5d4256a55e))
+* **visitor-counter:** add VisitorLog and VisitorStats AR models ([9e34965](https://github.com/Pazella21/ildis/commit/9e349659767a44d82bf3d3169cfe3986bceb0232))
+* **visitor-counter:** add VisitorReportController with dashboard and chart endpoint ([6909219](https://github.com/Pazella21/ildis/commit/6909219e327b60b16f43c1234b9554cfb5d2fb20))
+* **visitor-counter:** register VisitorCounter in frontend config ([e8d6675](https://github.com/Pazella21/ildis/commit/e8d667571ec81277faadffd2374a7b8dc95d32e5))
+
+### Bug Fixes
+
+* add .ildis_patched marker to skip runtime patching on new images ([41c60b2](https://github.com/Pazella21/ildis/commit/41c60b2af11c74d5857f0aedcffc515d66183ba7))
+* add AUTO_INCREMENT to pcounter_users id column in UserCounter auto-install schema ([79c3b0e](https://github.com/Pazella21/ildis/commit/79c3b0efcd51fac12ab3ee7b362f0682698d10b6))
+* add calendar php extension ([a714c6a](https://github.com/Pazella21/ildis/commit/a714c6aa18242b6fbe860a2fac5aaff2441ff42c))
+* add is_publish filter to Berlaku/Tidak Berlaku badge counts ([d7cf2f1](https://github.com/Pazella21/ildis/commit/d7cf2f1851eb5ddf1f8106923ad652987e2655cd))
+* add is_publish filter to DocumentQuery::total() ([0148649](https://github.com/Pazella21/ildis/commit/014864941401c2ba0a7524e2ee08f2f74cf1ee15))
+* add missing actionPasswordReset for admin user password reset ([5944a71](https://github.com/Pazella21/ildis/commit/5944a71981ab0826b4e020aacb4a443f8cccae25))
+* add missing namespace to m260527_120000 migration ([fd6b026](https://github.com/Pazella21/ildis/commit/fd6b02625e99d0c8469e8ade2a9004857ff4b6d4))
+* add stop_grace_period and healthcheck to cron service in generated compose ([e79241b](https://github.com/Pazella21/ildis/commit/e79241b6caca3788e1128196af1f82eaf0b09ca4))
+* add wait-for-db entrypoint, healthcheck, and retry to cron container ([82a9653](https://github.com/Pazella21/ildis/commit/82a9653680a194ad5031139a435071f1a91e3024))
+* address code review findings ([698da5f](https://github.com/Pazella21/ildis/commit/698da5fa6a6c22d0ef71021ca28dffb69de4377e))
+* **assets:** use kartik SummernoteAsset CDN instead of missing local dist files ([5df6c51](https://github.com/Pazella21/ildis/commit/5df6c514801791be2a5361b36934baf35be0205e))
+* atomic write + error handling in FeedController::actionGenerateDocument ([5d4ca48](https://github.com/Pazella21/ildis/commit/5d4ca483128497f64298cdddd33dc0fb546126a0))
+* **backend,frontend:** peraturan jenis options, save penandatanganan, back-to-top ([4695b59](https://github.com/Pazella21/ildis/commit/4695b59b18065f0a399ac57b18a7b42d43917ce8))
+* berita update status dropdown value and update portal text to JDIH ([7e0522d](https://github.com/Pazella21/ildis/commit/7e0522d8738cc9119fdc090ceb09787dca35b173))
+* **berita:** filter published news on OPAC list and block draft detail URLs ([ee3aba7](https://github.com/Pazella21/ildis/commit/ee3aba7f2c3bd63a64ce8301568417bccc66deaa))
+* **berita:** filter published news on OPAC list and block draft detail URLs ([#36](https://github.com/Pazella21/ildis/issues/36)) ([61c7354](https://github.com/Pazella21/ildis/commit/61c735484ad6d67eebb6b323061b79b7d77884c8))
+* **config:** correct typo in `.releaserc.json` filename ([dc0a0ae](https://github.com/Pazella21/ildis/commit/dc0a0aea67631c0caa761c89baf5cb77161ea561))
+* **csp:** allow CDN resources needed by AdminLTE ([3174dc7](https://github.com/Pazella21/ildis/commit/3174dc77f024ebcc02fc813349bfd01505950319))
+* disable innodb_strict_mode to allow import `DATABASE/ildis_v4.sql` into mariadb ([7672a66](https://github.com/Pazella21/ildis/commit/7672a665d344d586df1556774129581696562c01))
+* **docker:** add --ignore-platform-reqs to composer install ([84e233f](https://github.com/Pazella21/ildis/commit/84e233ffe15e5f2deff24b42e183c29f4a1ea0e3))
+* **docker:** add MySQL user config with root password ([1607f78](https://github.com/Pazella21/ildis/commit/1607f78da4eb856023eaa3d2eb49be4c185892ad))
+* **docker:** create directories before setting permissions ([5f86932](https://github.com/Pazella21/ildis/commit/5f86932941bef60b7b08a382de2e85a6bf138588))
+* **docker:** create supervisor conf.d directory before config ([d2c8f61](https://github.com/Pazella21/ildis/commit/d2c8f61c588e6c74cdfd8cf4159b6ceecc8f612c))
+* **docker:** fix nginx and php-fpm s6 service scripts ([863aa80](https://github.com/Pazella21/ildis/commit/863aa80b58497483cba48ade11da1f051f5c4b83))
+* **docker:** nginx must run in foreground with daemon off ([854ff40](https://github.com/Pazella21/ildis/commit/854ff4011a3a399246c30064829d48310778bd0f))
+* **docker:** proper s6-overlay implementation with execlineb ([3fa17c3](https://github.com/Pazella21/ildis/commit/3fa17c399edea80ee67e518dc0fb8eeccab60e44))
+* **docker:** provide default MySQL password ([cf9bc27](https://github.com/Pazella21/ildis/commit/cf9bc2796a77f1258411bb3cc4144a27be2207de))
+* **docker:** remove invalid finish script creation ([3e9527a](https://github.com/Pazella21/ildis/commit/3e9527acdf54a01a6f7c9efc1c6c4d8f14b9c089))
+* **docker:** remove MYSQL_USER for root user ([7aa9c52](https://github.com/Pazella21/ildis/commit/7aa9c5261498c255934f3560971fd66c0be16cf5))
+* **docker:** restore dokumen_data_subyek view and align document validation ([be738a6](https://github.com/Pazella21/ildis/commit/be738a6855366492510af77d598d9472a5e3aee7))
+* **docker:** run php init for Yii2 config bootstrap ([5e4ad9d](https://github.com/Pazella21/ildis/commit/5e4ad9d12f8edfda9b2a7b08030b9ae00ad77a56))
+* **docker:** use -dev packages for compiling PHP extensions ([ddcd50e](https://github.com/Pazella21/ildis/commit/ddcd50ed3f40b8450fcdcf20fc632361cf1b97ed))
+* **docker:** use bash script instead of s6-overlay ([b0d2847](https://github.com/Pazella21/ildis/commit/b0d2847a211c1fb08eb9b0f4682aea811fdcbcd9))
+* **docker:** use correct s6-overlay v3.2.2.0 with tar.xz files ([f7e5d0a](https://github.com/Pazella21/ildis/commit/f7e5d0a7bb245aa0778ff07c3c7076dc0a32d796))
+* **docker:** use s6-overlay instead of supervisord ([8ec69a3](https://github.com/Pazella21/ildis/commit/8ec69a350bfb8173535c5f7eb0050860734b5938))
+* **docker:** use simple startup script instead of s6-overlay ([ca995fe](https://github.com/Pazella21/ildis/commit/ca995fe04d0dc49c4385793a31d79b12cd168f38))
+* generate lampiran URL and abstract values in document.json feed ([b307003](https://github.com/Pazella21/ildis/commit/b3070031c8d592669c1b80818e077d2cf2501194))
+* handle unbound BASH_SOURCE when running via pipe (curl | bash) ([afb3328](https://github.com/Pazella21/ildis/commit/afb3328b7879594a058985a769452a9715954d06))
+* **install:** docker install and migration reliability ([212cc61](https://github.com/Pazella21/ildis/commit/212cc615d62f7d68fb059592d8d41b9154bd0dc4))
+* **install:** docker install and migration reliability ([#40](https://github.com/Pazella21/ildis/issues/40)) ([1d80712](https://github.com/Pazella21/ildis/commit/1d80712bf56a04372276cf0a736c5e253b1e8fee))
+* **install:** fallback to current directory when /opt/ildis is not writable ([6c167a6](https://github.com/Pazella21/ildis/commit/6c167a64c7e3f5dc2c892e8f39f8abe9d1d35bd2))
+* **install:** read interactive input from /dev/tty ([1436fba](https://github.com/Pazella21/ildis/commit/1436fbad4c620704fbefc4e975cb17d50e1f1274))
+* **install:** use direct read for password prompts to prevent infinite loop ([7bd4e38](https://github.com/Pazella21/ildis/commit/7bd4e386dba3ddeb4b689f2fed9ef737860da587))
+* **install:** use mkdir probe instead of -w to detect /opt writability ([d892a26](https://github.com/Pazella21/ildis/commit/d892a26c6c536bf2194f8bba3b2ae4177b219689))
+* **install:** wire RECAPTCHA_ENABLED and patch GHCR image until rebuild ([b1c86f4](https://github.com/Pazella21/ildis/commit/b1c86f4756f9ab15e4642c63acf6568ded6d1970))
+* **menu:** double menu ([516ed61](https://github.com/Pazella21/ildis/commit/516ed6118d5241bc2bd880053c245ec5d1196ecb))
+* multi-stage Dockerfile.cron to include icu-dev for intl extension build ([807758f](https://github.com/Pazella21/ildis/commit/807758fcd9a0d23446027c3a30f50137ae1a6117))
+* non-fatal migration failure in ildis-init to prevent php-fpm crash ([2d39843](https://github.com/Pazella21/ildis/commit/2d39843d7609a572ce5f21ed38a8c8e3cc1b8bad))
+* ordered update flow - stop cron first, migrate, then restart cron ([3388f34](https://github.com/Pazella21/ildis/commit/3388f34f2189dd94a23664caafb9e1582760ad44))
+* quote PHP_ERROR_REPORTING value to fix YAML parse error ([58adc86](https://github.com/Pazella21/ildis/commit/58adc86e66773133eb09eb9b54e86520d1a8f320))
+* resolve YAML parse error and image pull failure in install.sh ([a157035](https://github.com/Pazella21/ildis/commit/a1570356d8cebe778683e0d179899436e7c98940))
+* review fixes - typo regression, init message logic, healthcheck -s flag, app restart after patching ([8778bda](https://github.com/Pazella21/ildis/commit/8778bda7a0eebd46b760ca57a5187a315fa0c5e4))
+* scope Berlaku/Tidak Berlaku counts to peraturan type only ([32055b6](https://github.com/Pazella21/ildis/commit/32055b6219fdb5d640fc25e5823783eed1cc688d))
+* security hardening - fix 2 CRITICAL and 11 HIGH vulnerabilities ([fa1d94b](https://github.com/Pazella21/ildis/commit/fa1d94bac260d9aac27b189346a5235e46425674))
+* **seed:** remove hard-coded user accounts from seed data ([868df18](https://github.com/Pazella21/ildis/commit/868df184ec0160bd8c3671539e405ecf04b72040))
+* self-heal update.sh downloads install.sh if missing ([da024fd](https://github.com/Pazella21/ildis/commit/da024fdfd65f66a75d5692b4a46c210961d197f2))
+* self-save install.sh to disk when run via pipe ([96e6551](https://github.com/Pazella21/ildis/commit/96e6551f6b4f11be637f653f176b1947f663f268))
+* **seo:** critical SEO fixes - robots.txt, canonical tags, sitemap, structured data ([7f71ad9](https://github.com/Pazella21/ildis/commit/7f71ad993869da434979a9c3e32cb149939f1995))
+* **sidebar:** merge Dokumen Pembentukan PUU under Dokumen Hukum parent menu ([6db80af](https://github.com/Pazella21/ildis/commit/6db80afeff7e5f0c1619cf84c2c626cb6781b35b))
+* skip runtime patching when image contains .ildis_patched marker ([77e5f9e](https://github.com/Pazella21/ildis/commit/77e5f9e5de1bb66f096f7b6d93c3f306f778751c))
+* summer notes built ([b20ced4](https://github.com/Pazella21/ildis/commit/b20ced494825f8f4d5b7ff53ec8842e52a4198a0))
+* use exact match for is_publish filter instead of LIKE ([88ed241](https://github.com/Pazella21/ildis/commit/88ed241c661e78d96988528538b5b5bd65733d78))
+* visitor counter fixed ([d5b17e2](https://github.com/Pazella21/ildis/commit/d5b17e2ae0bf950f8dee92ebc438d6c746853034))
+* visitor counter fixed ([#37](https://github.com/Pazella21/ildis/issues/37)) ([c6ad38c](https://github.com/Pazella21/ildis/commit/c6ad38c693834a9c6dbe779b263ea3e688a3556f))
+* YAML parse error in generated docker-compose.yml — add newline before labels/networks blocks ([dacee31](https://github.com/Pazella21/ildis/commit/dacee313bc2f7cf84444aeba2b268dbf637f14c7))
+
+### Refactoring
+
+*  Docker infrastructure to s6-overlay v3 with external Nginx configuration, update composer dependencies, add calendar PHP extension, improve .env parsing, and include a cookie key generation script. ([d59b729](https://github.com/Pazella21/ildis/commit/d59b7291a0955331be8c8a6220963971a074652c))
+* clean up footer layouts — add version from package.json, restyle user/role display, remove dead links ([021c54c](https://github.com/Pazella21/ildis/commit/021c54c0e731a3c7d644425dbc4d281e09d9fde2))
+* **config:** use environment variables in production configuration ([c51dd11](https://github.com/Pazella21/ildis/commit/c51dd1143c9ffb647b6a72f887edfe13c713ab95))
+* major clean code fixes across 24 files ([7764541](https://github.com/Pazella21/ildis/commit/7764541d2f29080e982ec2c4dc50fce4452631b2))
+* replace magic numbers with model constants, replace getTanggal with DateHelper, fix naming ([4bd81c1](https://github.com/Pazella21/ildis/commit/4bd81c15fe97dfa4ef3b7740c5878b50f6dc95d0))
+* update.sh becomes thin wrapper for install.sh --update ([f02960a](https://github.com/Pazella21/ildis/commit/f02960a87b8b4a0037b7f589187541d301bb83bb))
+* **visitor-counter:** redesign footer analytics strip with polished UI ([ed18aad](https://github.com/Pazella21/ildis/commit/ed18aad54901098c5dfc7a88d7b9ae0bf4048a3c))
+
+### Documentation
+
+* add design spec and implementation plan for badge count fix ([20aef9f](https://github.com/Pazella21/ildis/commit/20aef9fe5b2cefa46f01247679f03fd289d596bb))
+* add design spec and implementation plan for install/update/cron robustness fix ([0e7c4f0](https://github.com/Pazella21/ildis/commit/0e7c4f0b094226b3b26fe68f3e3a2e7366358050))
+* add design spec for Traefik, SSL, superadmin, and logging in install.sh ([cc6a2f0](https://github.com/Pazella21/ildis/commit/cc6a2f07870a07db62b63e4e76f261f2fea16f8d))
+* add footer CMS design spec ([9605562](https://github.com/Pazella21/ildis/commit/9605562055b466d198af9d03bf683fbf48956e05))
+* add footer CMS implementation plan ([7e8b920](https://github.com/Pazella21/ildis/commit/7e8b920c847edeb2b95c30f185970f9d5ad1a849))
+* add implementation plan for Traefik, SSL, superadmin, and logging ([6cdbd2d](https://github.com/Pazella21/ildis/commit/6cdbd2d06b0ea8858e1cb3780ef3f5cd94124105))
+* add one-click install design ([9681ac7](https://github.com/Pazella21/ildis/commit/9681ac7bdff2f9a5b536312274e61a889882846a))
+* add one-click install implementation plan ([968611f](https://github.com/Pazella21/ildis/commit/968611f9516f75a5a8db0fc523ef6668b45057a4))
+* add quick install instructions to README ([8124afd](https://github.com/Pazella21/ildis/commit/8124afdcebd76bbb44167e6866ffd2b5097bec64))
+* add update mechanism implementation plan ([623019c](https://github.com/Pazella21/ildis/commit/623019c4ed67a3842db95126b8ec924d6f55b721))
+* **plans:** add implementation plan for Dokumen Pembentukan PUU management page ([8d9a578](https://github.com/Pazella21/ildis/commit/8d9a57801d950516670eddb64456bb75c1a72e7a))
+* **specs:** add Dokumen Pembentukan PUU backend management page design ([f87c6f2](https://github.com/Pazella21/ildis/commit/f87c6f2c23f070a4caf10392a852e9ce170934fc))
+* **specs:** add Dokumen Pembentukan PUU design ([eecdd22](https://github.com/Pazella21/ildis/commit/eecdd22b9cad6e04ce585d1317a216e59f89b839))
+* **specs:** rename Naskah Akademik Kemenkumham to Kemenkum ([7da1275](https://github.com/Pazella21/ildis/commit/7da1275dcb3c078f06378dbd9f4b1dbcd4f04629))
+* **specs:** use slug-based URLs for Dokumen Pembentukan PUU frontend ([9ca2b51](https://github.com/Pazella21/ildis/commit/9ca2b51fdf6e9e5a7484e84e2dd3a266a43f4dc1))
+* **visitor-counter:** add implementation plan ([a8d8c03](https://github.com/Pazella21/ildis/commit/a8d8c03ca110449ab6b59ec0ca07e47b54b9c02c))
+* **visitor-counter:** production-grade visitor counter design document ([44933f3](https://github.com/Pazella21/ildis/commit/44933f378cbb466f9f0b95d4b4362d64434351fd))
+
+### Maintenance
+
+* add .superpowers to gitignore ([bd46078](https://github.com/Pazella21/ildis/commit/bd46078b64a4496b13e6c1e326865d61c444f2ec))
+* align dev stack with PHP 8.3 and Symfony Mailer ([b8029dc](https://github.com/Pazella21/ildis/commit/b8029dc008ebc31dde04fb51d05e1da931329182))
+* align dev stack with PHP 8.3 and Symfony Mailer ([#35](https://github.com/Pazella21/ildis/issues/35)) ([136f95c](https://github.com/Pazella21/ildis/commit/136f95c468cea4a8a45903cf05957fc1c1010fca))
+* **auth:** implement detailed logging for login failures ([f1b145e](https://github.com/Pazella21/ildis/commit/f1b145e97ce3aefe1a5d06a0405c36de1388f372))
+* **config, layout:** enable debug mode in `.env.example` and fix footer HTML structure ([ec7c680](https://github.com/Pazella21/ildis/commit/ec7c6807c18e9080bd9a2c8ca4c629c6bd4355bf))
+* **config:** add `.releaserc.json` for semantic-release configuration ([6e399c8](https://github.com/Pazella21/ildis/commit/6e399c80d6043344add6461117e7a7c281f406db))
+* CSP ([8738984](https://github.com/Pazella21/ildis/commit/873898429381b366fb6b4a39979d72ae142fde68))
+* **dependencies:** update `package-lock.json` with latest versions ([6bade7a](https://github.com/Pazella21/ildis/commit/6bade7a2296eca74bbd16115afbc6522db801eb6))
+* exclude host-side and dev files from Docker image ([aac7ac7](https://github.com/Pazella21/ildis/commit/aac7ac72f1106911e03122b1430081a163c3594f))
+* **husky:** remove pre-push hook ([6bc5bad](https://github.com/Pazella21/ildis/commit/6bc5bada3c472a34dc0a3b3af238619d4549cd3a))
+* **migration:** move scripts to _next due to incomplete reverse migration ([561f3d6](https://github.com/Pazella21/ildis/commit/561f3d6ce5ead52b89f326bf9c3d517f272a166d))
+* release script ([9a1b4c0](https://github.com/Pazella21/ildis/commit/9a1b4c04d5126084d79a3ad53ab3afa4c059d99c))
+* release script fix ([c200119](https://github.com/Pazella21/ildis/commit/c200119d4195e2bb24e1ce332e4eb064f9b5149d))
+* **release:** 1.0.0 [skip ci] ([c98937a](https://github.com/Pazella21/ildis/commit/c98937a8458e057a49eec690fff617971958c4a5))
+* **release:** 4.1.0 [skip ci] ([b9ad0cf](https://github.com/Pazella21/ildis/commit/b9ad0cf1d38784abe78b75d21a9e46763961aa89)), closes [#31](https://github.com/Pazella21/ildis/issues/31)
+* **release:** 4.1.1 [skip ci] ([4a86e88](https://github.com/Pazella21/ildis/commit/4a86e8821759af6249172495f9e8e8dcbd9a3db2))
+* **release:** 4.1.2 [skip ci] ([14471dd](https://github.com/Pazella21/ildis/commit/14471ddb582ca98d978ea1de65381624dc5b9ace))
+* **release:** 4.1.3 [skip ci] ([ef340bc](https://github.com/Pazella21/ildis/commit/ef340bc2541eb4bc060bcf4a88b4de1abc75b02c)), closes [#36](https://github.com/Pazella21/ildis/issues/36)
+* **release:** 4.1.4 [skip ci] ([890b783](https://github.com/Pazella21/ildis/commit/890b783970882d5c67d993024e9f2eccc5037d38))
+* **release:** 4.2.0 [skip ci] ([5b89dd9](https://github.com/Pazella21/ildis/commit/5b89dd96e2d951f09f7cb5ffc8be653ff7852198)), closes [#37](https://github.com/Pazella21/ildis/issues/37) [#35](https://github.com/Pazella21/ildis/issues/35)
+* **release:** 4.2.1 [skip ci] ([030f8df](https://github.com/Pazella21/ildis/commit/030f8df65604a147c120bd14d3e7bdf0dc5fbf9c))
+* **release:** 4.3.0 [skip ci] ([a4bbc22](https://github.com/Pazella21/ildis/commit/a4bbc222f25875b69232327d1be3f56fadaa0d53)), closes [#40](https://github.com/Pazella21/ildis/issues/40)
+* **release:** 4.3.1 [skip ci] ([f9c8c6c](https://github.com/Pazella21/ildis/commit/f9c8c6c0fb4cd09703cd4774aa460e63ec396358))
+* **release:** 4.3.2 [skip ci] ([49b847c](https://github.com/Pazella21/ildis/commit/49b847c7506f1a7c100dbb0e106e5157b0af3566))
+* **release:** 4.3.3 [skip ci] ([a7db098](https://github.com/Pazella21/ildis/commit/a7db098781bb39b729c81c86fbd3bef175d2ecdf))
+* **release:** 4.3.4 [skip ci] ([41f6642](https://github.com/Pazella21/ildis/commit/41f6642923cab808b498a60a52e68ba456a692c7))
+* **release:** 4.4.0 [skip ci] ([71fe773](https://github.com/Pazella21/ildis/commit/71fe773bc192b6d97b4359859a071312998f93d9))
+* **release:** 4.4.1 [skip ci] ([1e1d198](https://github.com/Pazella21/ildis/commit/1e1d198a673a253a0a607431c648768e6b0ea911))
+* **release:** 4.5.0 [skip ci] ([0a78c37](https://github.com/Pazella21/ildis/commit/0a78c37d1a95411e2f94dcaf006ec5e272a4f111))
+* **release:** 4.6.0 [skip ci] ([1a8ec5e](https://github.com/Pazella21/ildis/commit/1a8ec5e820eed488d7c2ef08b80efa67d2cc9557))
+* **release:** 4.6.1 [skip ci] ([37dd774](https://github.com/Pazella21/ildis/commit/37dd774d98f6c42e568179e8f9723cde7d9b31de))
+* **release:** 4.6.2 [skip ci] ([3a7788c](https://github.com/Pazella21/ildis/commit/3a7788cc81287f2c64f0b66d1a5e7a24aebc3a39))
+* **release:** 4.6.3 [skip ci] ([a57cbdc](https://github.com/Pazella21/ildis/commit/a57cbdc91159d5e5670d7a485968703ecf108c9c))
+* **release:** 4.6.4 [skip ci] ([9b93f91](https://github.com/Pazella21/ildis/commit/9b93f91c24d8b379876dff104d32a0c5dec25a59))
+* **release:** 4.6.5 [skip ci] ([18768e7](https://github.com/Pazella21/ildis/commit/18768e792b5aeba0aacddae50e37b676e44cc2ae))
+* **release:** 4.6.6 [skip ci] ([29101f6](https://github.com/Pazella21/ildis/commit/29101f66fb70a3630f3f99f41fecccd49a13eb10))
+* remove old approach json output ([da814fa](https://github.com/Pazella21/ildis/commit/da814fa0044a4baaa3f70a9deb39124aecfa21a1))
+* semantic release fix ([62a5f42](https://github.com/Pazella21/ildis/commit/62a5f4207d9a68cccd3d99c8774336fa59a0d922))
+* semantic release fix ([#31](https://github.com/Pazella21/ildis/issues/31)) ([1002a4e](https://github.com/Pazella21/ildis/commit/1002a4ead8d07363259d186c897bda194fe29545))
+* update composer deps to php8.x ([b540a93](https://github.com/Pazella21/ildis/commit/b540a933e6ce6a39b578a3a32229ae3cdb3774d5))
+* **workflow:** replace release.yml with semantic-release.yml ([14aeb68](https://github.com/Pazella21/ildis/commit/14aeb68f3d99ad4de43ab6a9ab285ee7453ebf67))
+
 ## [4.6.6](https://github.com/bphndigitalservice/ildis/compare/v4.6.5...v4.6.6) (2026-06-02)
 
 ### Bug Fixes
