@@ -1,3 +1,9 @@
+## [4.9.1](https://github.com/bphndigitalservice/ildis/compare/v4.9.0...v4.9.1) (2026-06-11)
+
+### Bug Fixes
+
+* implement collapsible search sidebar and pagination for document listings ([dec061e](https://github.com/bphndigitalservice/ildis/commit/dec061e80cc6baf33d44252262bea7969f10168a))
+
 ## [4.9.0](https://github.com/bphndigitalservice/ildis/compare/v4.8.0...v4.9.0) (2026-06-11)
 
 ### Features
