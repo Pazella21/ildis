@@ -1,3 +1,13 @@
+## [4.7.0](https://github.com/bphndigitalservice/ildis/compare/v4.6.7...v4.7.0) (2026-06-11)
+
+### Features
+
+* add Apache virtual host configuration for jdih.kemenkum.go.id ([363d7b1](https://github.com/bphndigitalservice/ildis/commit/363d7b16199bdc5e888affc3ca99b81853123250))
+
+### Maintenance
+
+* update Apache configuration for jdih.kemenkum.go.id ([7f3bd9d](https://github.com/bphndigitalservice/ildis/commit/7f3bd9df49ab72947232d6766d8a60120a031ae9))
+
 ## [4.6.7](https://github.com/bphndigitalservice/ildis/compare/v4.6.6...v4.6.7) (2026-06-11)
 
 ### Bug Fixes
