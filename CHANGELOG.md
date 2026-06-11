@@ -1,3 +1,9 @@
+## [4.6.7](https://github.com/bphndigitalservice/ildis/compare/v4.6.6...v4.6.7) (2026-06-11)
+
+### Bug Fixes
+
+* add suspended_until property to User model and migration ([4594be0](https://github.com/bphndigitalservice/ildis/commit/4594be01f6a8dac15a386d49917a1fa3bcbab6ad))
+
 ## [4.6.6](https://github.com/bphndigitalservice/ildis/compare/v4.6.5...v4.6.6) (2026-06-02)
 
 ### Bug Fixes
