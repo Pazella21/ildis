@@ -12,7 +12,12 @@ $this->description = 'Jaringan Dokumentasi dan Informasi Hukum';
 $this->keywords = ['Jaringan', 'Dokumentasi', 'Informasi', 'Hukum'];
 
 $instansi = FrontendConfig::findOne(2);
-$instansiName = $instansi ? $instansi->isi_konfig : 'JDIH';
+$rawInstansi = $instansi ? $instansi->isi_konfig : '';
+$instansiText = trim(strip_tags(str_ireplace(['<br>', '<br/>', '<br />'], ' ', $rawInstansi)));
+$instansiText = preg_replace('/^JDIH[\s\-–—]*/iu', '', $instansiText);
+if ($instansiText === '' || strcasecmp($instansiText, 'JDIH') === 0) {
+    $instansiText = '';
+}
 
 // Get totals using the existing helper method
 $totalPeraturan = Dokumen::find()->total(1);
@@ -56,13 +61,40 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
         z-index: 2;
     }
 
-    .search-logo-title {
-        font-size: 2.5rem;
-        font-weight: 700;
+    .hero-brand {
+        font-size: clamp(2.5rem, 9vw, 3.75rem);
+        font-weight: 800;
         color: #ffffff;
-        margin-bottom: 2rem;
-        letter-spacing: -0.5px;
+        margin: 0 0 2rem;
+        letter-spacing: 0.02em;
+        line-height: 1.05;
         text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-brand .hero-instansi {
+        display: block;
+        margin-top: 0.45em;
+        font-size: 0.36em;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        line-height: 1.35;
+        color: rgba(255, 255, 255, 0.9);
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+        max-width: 22em;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    @media screen and (max-width: 576px) {
+        .hero-brand {
+            font-size: clamp(2.25rem, 11vw, 2.75rem);
+            margin-bottom: 1.75rem;
+        }
+
+        .hero-brand .hero-instansi {
+            font-size: 0.34em;
+            max-width: 18em;
+        }
     }
 
     .search-input-wrapper {
@@ -177,8 +209,11 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
     <main>
         <div class="search-landing-container" style="background: url('<?= Url::to('@web/images/hero-bg.png') ?>') no-repeat center center; background-size: cover;">
 
-            <h1 class="search-logo-title" data-aos="fade-up">
-                <?= Html::encode($instansiName) ?>
+            <h1 class="hero-brand" data-aos="fade-up">
+                JDIH
+                <?php if ($instansiText !== ''): ?>
+                    <span class="hero-instansi"><?= Html::encode($instansiText) ?></span>
+                <?php endif; ?>
             </h1>
 
             <form action="<?= Url::to(['dokumen/index']) ?>" method="GET" class="w-100" data-aos="fade-up" data-aos-delay="100">
