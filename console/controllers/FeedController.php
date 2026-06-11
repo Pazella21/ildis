@@ -4,16 +4,47 @@ namespace console\controllers;
 
 use backend\models\DataLampiran;
 use backend\models\DokumenJdih;
+use backend\models\JenisPeraturan;
+use common\components\FeedExportFilter;
 use yii\console\Controller;
+use yii\console\ExitCode;
 use yii\db\ActiveQuery;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Console;
 use yii\helpers\FileHelper;
 
 class FeedController extends Controller
 {
+    public $tipe;
+    public $typeId;
+    public $dateField;
+    public $from;
+    public $to;
+    public $output;
+    public $nonInteractive = false;
+    public $yes = false;
+
+    public function options($actionID)
+    {
+        return array_merge(parent::options($actionID), [
+            'tipe', 'typeId', 'dateField', 'from', 'to', 'output',
+            'nonInteractive', 'yes',
+        ]);
+    }
+
+    public function optionAliases()
+    {
+        return array_merge(parent::optionAliases(), [
+            't' => 'tipe',
+            'o' => 'output',
+            'n' => 'nonInteractive',
+            'y' => 'yes',
+        ]);
+    }
+
     public function actionGenerateDocument()
     {
         $filePath = \Yii::getAlias('@feed/document.json');
-        $tempPath = $filePath . '.tmp.' . getmypid();
 
         try {
             $dokumen = $this->fetchDocuments($this->buildBaseQuery());
@@ -33,12 +64,127 @@ class FeedController extends Controller
         } catch (\Exception $e) {
             \Yii::error("[feed] Gagal generate document.json: " . $e->getMessage(), 'feed');
             echo "[feed] ERROR: " . $e->getMessage() . "\n";
-
-            if (file_exists($tempPath)) {
-                @unlink($tempPath);
-            }
             return self::EXIT_CODE_ERROR;
         }
+    }
+
+    public function actionExportDocument()
+    {
+        $filter = $this->nonInteractive
+            ? $this->buildFilterFromFlags()
+            : $this->buildFilterInteractively();
+
+        if (!$filter->validate()) {
+            foreach ($filter->getErrors() as $field => $messages) {
+                Console::error("{$field}: " . implode(', ', $messages));
+            }
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
+        $query = $this->buildBaseQuery();
+        FeedExportFilter::applyToQuery($query, $filter);
+
+        $count = (int) $query->count();
+        $outputPath = $filter->resolveOutputPath();
+
+        if (!$this->yes && !$this->nonInteractive) {
+            $this->printExportSummary($filter, $count, $outputPath);
+            if (!$this->confirm('Lanjutkan export?')) {
+                Console::output('Export dibatalkan.');
+                return ExitCode::OK;
+            }
+        }
+
+        if ($count === 0) {
+            Console::error('[feed] Peringatan: Tidak ada dokumen yang cocok. File tidak ditulis.');
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
+        try {
+            $dokumen = $this->enrichRows($this->fetchDocuments($query));
+            $bytes = $this->writeJsonFile($outputPath, $dokumen);
+            Console::output("[feed] Berhasil: {$outputPath} ({$count} dokumen, {$bytes} bytes)");
+            return ExitCode::OK;
+        } catch (\Exception $e) {
+            \Yii::error('[feed] Gagal export: ' . $e->getMessage(), 'feed');
+            Console::error('[feed] ERROR: ' . $e->getMessage());
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+    }
+
+    private function buildFilterFromFlags(): FeedExportFilter
+    {
+        return new FeedExportFilter([
+            'tipe' => $this->tipe,
+            'typeId' => $this->typeId,
+            'dateField' => $this->dateField,
+            'from' => $this->from,
+            'to' => $this->to,
+            'output' => $this->output,
+        ]);
+    }
+
+    private function buildFilterInteractively(): FeedExportFilter
+    {
+        $tipeOptions = [
+            '' => 'Semua',
+            (string) DokumenJdih::TYPE_PERATURAN => 'Peraturan',
+            (string) DokumenJdih::TYPE_MONOGRAFI => 'Monografi',
+            (string) DokumenJdih::TYPE_ARTIKEL => 'Artikel',
+            (string) DokumenJdih::TYPE_PUTUSAN => 'Putusan',
+        ];
+        $tipe = $this->select('Pilih tipe dokumen:', $tipeOptions);
+
+        $typeId = null;
+        if ($tipe === (string) DokumenJdih::TYPE_PERATURAN) {
+            $types = JenisPeraturan::find()
+                ->where(['parent_id' => 1])
+                ->orderBy(['name' => SORT_ASC])
+                ->all();
+            $typeOptions = ['' => 'Semua'] + ArrayHelper::map($types, 'id', 'name');
+            $selected = $this->select('Pilih jenis peraturan:', $typeOptions);
+            $typeId = $selected !== '' ? (int) $selected : null;
+        }
+
+        $dateFieldOptions = [
+            '' => 'Tanpa filter tanggal',
+            'updated_at' => 'Tanggal diperbarui (updated_at)',
+            'tanggal_pengundangan' => 'Tanggal pengundangan',
+            'tanggal_penetapan' => 'Tanggal penetapan',
+        ];
+        $dateField = $this->select('Pilih field tanggal:', $dateFieldOptions);
+
+        $from = null;
+        $to = null;
+        if ($dateField !== '') {
+            $from = $this->prompt('Dari tanggal (Y-m-d, kosongkan untuk abaikan):', ['default' => '']);
+            $to = $this->prompt('Sampai tanggal (Y-m-d, kosongkan untuk abaikan):', ['default' => '']);
+            $from = $from !== '' ? $from : null;
+            $to = $to !== '' ? $to : null;
+        }
+
+        return new FeedExportFilter([
+            'tipe' => $tipe !== '' ? (int) $tipe : null,
+            'typeId' => $typeId,
+            'dateField' => $dateField !== '' ? $dateField : null,
+            'from' => $from,
+            'to' => $to,
+            'output' => $this->output,
+        ]);
+    }
+
+    private function printExportSummary(FeedExportFilter $filter, int $count, string $outputPath): void
+    {
+        Console::output('');
+        Console::output('Ringkasan export:');
+        Console::output('  Tipe       : ' . ($filter->tipe ?? 'Semua'));
+        Console::output('  Type ID    : ' . ($filter->typeId ?? 'Semua'));
+        Console::output('  Date field : ' . ($filter->dateField ?? '-'));
+        Console::output('  From       : ' . ($filter->from ?? '-'));
+        Console::output('  To         : ' . ($filter->to ?? '-'));
+        Console::output('  Output     : ' . $outputPath);
+        Console::output('  Dokumen    : ' . $count);
+        Console::output('');
     }
 
     /**
@@ -140,22 +286,29 @@ class FeedController extends Controller
     {
         $tempPath = $filePath . '.tmp.' . getmypid();
 
-        FileHelper::createDirectory(dirname($filePath));
+        try {
+            FileHelper::createDirectory(dirname($filePath));
 
-        $json = json_encode($dokumen, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        if ($json === false) {
-            throw new \RuntimeException('Gagal encode JSON: ' . json_last_error_msg());
+            $json = json_encode($dokumen, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            if ($json === false) {
+                throw new \RuntimeException('Gagal encode JSON: ' . json_last_error_msg());
+            }
+
+            $bytes = file_put_contents($tempPath, $json);
+            if ($bytes === false) {
+                throw new \RuntimeException("Gagal menulis file temporer: {$tempPath}");
+            }
+
+            if (!rename($tempPath, $filePath)) {
+                throw new \RuntimeException("Gagal rename {$tempPath} ke {$filePath}");
+            }
+
+            return $bytes;
+        } catch (\Exception $e) {
+            if (file_exists($tempPath)) {
+                @unlink($tempPath);
+            }
+            throw $e;
         }
-
-        $bytes = file_put_contents($tempPath, $json);
-        if ($bytes === false) {
-            throw new \RuntimeException("Gagal menulis file temporer: {$tempPath}");
-        }
-
-        if (!rename($tempPath, $filePath)) {
-            throw new \RuntimeException("Gagal rename {$tempPath} ke {$filePath}");
-        }
-
-        return $bytes;
     }
 }
