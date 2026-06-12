@@ -1047,7 +1047,7 @@ body.mobile-nav-active {
   margin-bottom: 10px;
 }
 
-.footer a {
+.footer:not(.bphn-footer) a {
   color: #000;
 }
 

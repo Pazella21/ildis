@@ -271,24 +271,30 @@ $socialLinks = $socialSection ? $socialSection->activeLinks : [];
       margin-top: 0.15rem;
     }
 
-    .footer-link,
-    .footer-link-muted,
-    .footer-social {
-      color: #b8c5db;
+    .bphn-footer a.footer-link,
+    .bphn-footer a.footer-link-muted,
+    .bphn-footer a.footer-social {
+      color: #c8d4e8;
       text-decoration: none;
       transition: color 0.2s ease;
     }
 
-    .footer-link:hover,
-    .footer-link:focus-visible,
-    .footer-link-muted:hover,
-    .footer-link-muted:focus-visible,
-    .footer-social:hover,
-    .footer-social:focus-visible {
+    .bphn-footer a.footer-link:hover,
+    .bphn-footer a.footer-link:focus-visible,
+    .bphn-footer a.footer-link-muted:hover,
+    .bphn-footer a.footer-link-muted:focus-visible,
+    .bphn-footer a.footer-social:hover,
+    .bphn-footer a.footer-social:focus-visible {
       color: #f4f6fa;
     }
 
-    .footer-social svg {
+    .bphn-footer a.footer-social i,
+    .bphn-footer a.footer-social svg {
+      color: currentColor;
+      fill: currentColor;
+    }
+
+    .bphn-footer a.footer-social svg {
       vertical-align: middle;
       transform: translateY(-1px);
     }
