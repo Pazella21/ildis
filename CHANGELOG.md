@@ -1,3 +1,9 @@
+## [4.13.0](https://github.com/bphndigitalservice/ildis/compare/v4.12.0...v4.13.0) (2026-06-12)
+
+### Features
+
+* enhance document search functionality and layout ([817def8](https://github.com/bphndigitalservice/ildis/commit/817def84670823e329bcde63b6980db4dca37154))
+
 ## [4.12.0](https://github.com/bphndigitalservice/ildis/compare/v4.11.0...v4.12.0) (2026-06-12)
 
 ### Features
