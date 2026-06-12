@@ -59,37 +59,36 @@
   /**
    * Mobile nav toggle
    */
-  const setMobileNavState = (open) => {
-    const navbar = select('#navbar')
-    const header = select('#header')
-    const drawer = select('.mobile-nav-drawer')
-    if (!navbar) return
+  const isMobileNavOpen = () => document.body.classList.contains('mobile-nav-active')
 
-    navbar.classList.toggle('navbar-mobile', open)
+  const setMobileNavState = (open) => {
+    const header = select('#header')
+    const mobileNav = select('#mobile-nav')
+    const drawer = select('.mobile-nav-drawer')
+
+    document.body.classList.toggle('mobile-nav-active', open)
     if (header) {
       header.classList.toggle('mobile-nav-open', open)
     }
-    document.body.classList.toggle('mobile-nav-active', open)
-
+    if (mobileNav) {
+      mobileNav.setAttribute('aria-hidden', open ? 'false' : 'true')
+    }
     if (drawer) {
-      drawer.setAttribute('aria-hidden', open ? 'false' : 'true')
       drawer.setAttribute('aria-modal', open ? 'true' : 'false')
     }
 
-    if (!open) {
-      navbar.querySelectorAll('.dropdown-active').forEach((submenu) => {
+    if (!open && mobileNav) {
+      mobileNav.querySelectorAll('.dropdown-active').forEach((submenu) => {
         submenu.classList.remove('dropdown-active')
       })
-      navbar.querySelectorAll('.dropdown-open').forEach((item) => {
+      mobileNav.querySelectorAll('.dropdown-open').forEach((item) => {
         item.classList.remove('dropdown-open')
       })
     }
   }
 
   const toggleMobileNav = () => {
-    const navbar = select('#navbar')
-    if (!navbar) return
-    setMobileNavState(!navbar.classList.contains('navbar-mobile'))
+    setMobileNavState(!isMobileNavOpen())
   }
 
   on('click', '.mobile-nav-toggle', function(e) {
@@ -125,9 +124,8 @@
   /**
    * Mobile nav dropdowns activate
    */
-  on('click', '.navbar .dropdown > a', function(e) {
-    const navbar = select('#navbar')
-    if (!navbar || !navbar.classList.contains('navbar-mobile')) {
+  on('click', '#mobile-nav .dropdown > a', function(e) {
+    if (!isMobileNavOpen()) {
       return
     }
 
@@ -146,8 +144,7 @@
   }, true)
 
   on('keydown', document, function(e) {
-    const navbar = select('#navbar')
-    if (e.key === 'Escape' && navbar && navbar.classList.contains('navbar-mobile')) {
+    if (e.key === 'Escape' && isMobileNavOpen()) {
       setMobileNavState(false)
     }
   })

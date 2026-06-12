@@ -91,6 +91,11 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
     }
 
     @media screen and (max-width: 576px) {
+        .search-landing-container {
+            min-height: auto;
+            padding: 5.5rem 1rem 2.5rem;
+        }
+
         .hero-brand {
             font-size: clamp(2.25rem, 11vw, 2.75rem);
             margin-bottom: 1.75rem;
@@ -100,6 +105,25 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
             font-size: 0.34em;
             max-width: 18em;
         }
+
+        .quick-links {
+            margin-top: 1.75rem;
+            flex-direction: column;
+            align-items: stretch;
+            width: 100%;
+            max-width: 650px;
+        }
+
+        .quick-chip {
+            justify-content: flex-start;
+            width: 100%;
+        }
+    }
+
+    .hero-search-form {
+        width: 100%;
+        max-width: 650px;
+        margin: 0 auto;
     }
 
     .search-input-wrapper {
@@ -122,10 +146,11 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
         box-shadow: 0 4px 18px rgba(32, 33, 36, 0.16);
     }
 
-    .search-input {
-        flex: 1;
+    .search-landing-container .search-input {
+        flex: 1 1 0;
         min-width: 0;
-        width: auto;
+        width: 0;
+        max-width: 100%;
         padding: 0.875rem 0.75rem 0.875rem 2.75rem;
         font-size: 1.05rem;
         border: none;
@@ -182,7 +207,7 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
             font-size: 0.9rem;
         }
 
-        .search-input {
+        .search-landing-container .search-input {
             font-size: 1rem;
             padding-left: 2.5rem;
         }
@@ -413,22 +438,22 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
                 >
             </picture>
 
-            <h1 class="hero-brand" data-aos="fade-up">
+            <h1 class="hero-brand">
                 JDIH
                 <?php if ($instansiText !== ''): ?>
                     <span class="hero-instansi"><?= Html::encode($instansiText) ?></span>
                 <?php endif; ?>
             </h1>
 
-            <form action="<?= Url::to(['dokumen/index']) ?>" method="GET" class="w-100" data-aos="fade-up" data-aos-delay="100">
+            <form action="<?= Url::to(['dokumen/index']) ?>" method="GET" class="w-100 hero-search-form">
                 <div class="search-input-wrapper">
                     <i class="bi bi-search search-icon"></i>
-                    <input type="text" name="DokumenSearch[judul]" class="search-input" placeholder="Cari dokumen hukum, peraturan, putusan..." value="" autocomplete="off" autofocus>
+                    <input type="text" name="DokumenSearch[judul]" class="search-input" placeholder="Cari dokumen hukum, peraturan, putusan..." value="" autocomplete="off">
                     <button type="submit" class="btn search-btn">Cari</button>
                 </div>
             </form>
 
-            <div class="quick-links" data-aos="fade-up" data-aos-delay="200">
+            <div class="quick-links">
                 <a href="<?= Url::to(['dokumen/peraturan']) ?>" class="quick-chip">
                     <i class="bi bi-file-earmark-text"></i> Peraturan
                     <span class="badge-count"><?= number_format($totalPeraturan) ?></span>

@@ -56,7 +56,7 @@ if (empty($this->params['description'])) {
     <header id="header" class="fixed-top d-flex align-items-center">
         <div class="container d-flex justify-content-between align-items-center">
 
-<div class="logo">
+            <div class="logo">
               <?= Html::a(\common\components\LazyImage::img('@web/common/dokumen/' . $logo->isi_konfig, [
                   'id' => 'logo',
                   'alt' => Html::encode($siteName),
@@ -64,37 +64,48 @@ if (empty($this->params['description'])) {
             </div>
 
           <nav id="navbar" class="navbar">
-            <div class="mobile-nav-backdrop" aria-hidden="true"></div>
-            <div class="mobile-nav-drawer" role="dialog" aria-modal="false" aria-hidden="true" aria-label="Menu navigasi">
-              <div class="mobile-nav-header">
-                <div class="mobile-nav-header__brand">
-                  <span class="mobile-nav-header__icon" aria-hidden="true"><i class="bi bi-scales"></i></span>
-                  <span class="mobile-nav-header__title">Menu</span>
-                </div>
-                <button type="button" class="mobile-nav-close" aria-label="Tutup menu">
-                  <i class="bi bi-x-lg" aria-hidden="true"></i>
-                </button>
-              </div>
-              <form class="mobile-nav-search" action="<?= Url::to(['dokumen/index']) ?>" method="get" role="search">
-                <i class="bi bi-search mobile-nav-search__icon" aria-hidden="true"></i>
-                <input
-                  type="search"
-                  name="DokumenSearch[judul]"
-                  class="mobile-nav-search__input"
-                  placeholder="Cari dokumen..."
-                  autocomplete="off"
-                  aria-label="Cari dokumen"
-                >
-              </form>
-              <div class="mobile-nav-body">
-                <?= $this->render('menu.php') ?>
-              </div>
+            <div class="navbar-menu-desktop">
+              <?= $this->render('menu.php') ?>
             </div>
             <i class="bi bi-list mobile-nav-toggle" aria-label="Buka menu"></i>
           </nav><!-- .navbar -->
 
         </div>
     </header><!-- End Header -->
+
+    <div id="mobile-nav" class="mobile-nav" aria-hidden="true">
+      <div class="mobile-nav-backdrop" aria-hidden="true"></div>
+      <aside class="mobile-nav-drawer" role="dialog" aria-modal="false" aria-label="Menu navigasi">
+        <div class="mobile-nav-header">
+          <div class="mobile-nav-header__brand">
+            <a href="<?= Url::to(['/']) ?>" class="mobile-nav-header__logo-link">
+              <?= \common\components\LazyImage::img('@web/common/dokumen/' . $logo->isi_konfig, [
+                  'class' => 'mobile-nav-header__logo',
+                  'alt' => Html::encode($siteName),
+              ], false) ?>
+            </a>
+            <span class="mobile-nav-header__title">Menu</span>
+          </div>
+          <button type="button" class="mobile-nav-close" aria-label="Tutup menu">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <form class="mobile-nav-search" action="<?= Url::to(['dokumen/index']) ?>" method="get" role="search">
+          <i class="bi bi-search mobile-nav-search__icon" aria-hidden="true"></i>
+          <input
+            type="search"
+            name="DokumenSearch[judul]"
+            class="mobile-nav-search__input"
+            placeholder="Cari dokumen..."
+            autocomplete="off"
+            aria-label="Cari dokumen"
+          >
+        </form>
+        <div class="mobile-nav-body">
+          <?= $this->render('menu.php') ?>
+        </div>
+      </aside>
+    </div>
 
     <?= $content ?>
 
