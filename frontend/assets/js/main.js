@@ -11,26 +11,38 @@
    * Easy selector helper function
    */
   const select = (el, all = false) => {
-    el = el.trim()
-    if (all) {
-      return [...document.querySelectorAll(el)]
-    } else {
-      return document.querySelector(el)
+    if (typeof el !== 'string') {
+      return el
     }
+
+    const selector = el.trim()
+    if (all) {
+      return [...document.querySelectorAll(selector)]
+    }
+
+    return document.querySelector(selector)
   }
 
   /**
    * Easy event listener function
    */
   const on = (type, el, listener, all = false) => {
-    let selectEl = select(el, all)
-    if (selectEl) {
-      if (all) {
-        selectEl.forEach(e => e.addEventListener(type, listener))
-      } else {
-        selectEl.addEventListener(type, listener)
-      }
+    if (el instanceof EventTarget) {
+      el.addEventListener(type, listener)
+      return
     }
+
+    const selectEl = select(el, all)
+    if (!selectEl) {
+      return
+    }
+
+    if (all) {
+      selectEl.forEach((node) => node.addEventListener(type, listener))
+      return
+    }
+
+    selectEl.addEventListener(type, listener)
   }
 
   /**
