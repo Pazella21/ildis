@@ -46,7 +46,7 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                     <?php if ($model->image): ?>
                         <div class="berita-article__hero">
                             <?= LazyImage::img('@web/common/dokumen/' . $model->image, [
-                                'class' => 'berita-article__hero-image w-100 h-100 object-fit-cover',
+                                'class' => 'berita-article__hero-image',
                                 'alt' => $model->judul,
                             ], false) ?>
                         </div>
@@ -96,8 +96,17 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
 }
 
 .berita-article__hero {
-    height: 360px;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
+    background-color: #e8edf4;
+}
+
+.berita-article__hero-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
 }
 
 .berita-article__body {
