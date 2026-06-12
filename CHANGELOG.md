@@ -1,3 +1,9 @@
+## [4.11.0](https://github.com/bphndigitalservice/ildis/compare/v4.10.0...v4.11.0) (2026-06-12)
+
+### Features
+
+* implement lazy loading for images and enhance performance ([3d8a4b9](https://github.com/bphndigitalservice/ildis/commit/3d8a4b9fbfaf2d639883bb4191dd4bef3301947a))
+
 ## [4.10.0](https://github.com/bphndigitalservice/ildis/compare/v4.9.2...v4.10.0) (2026-06-12)
 
 ### Features
