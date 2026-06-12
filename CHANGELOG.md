@@ -1,3 +1,9 @@
+## [4.12.0](https://github.com/bphndigitalservice/ildis/compare/v4.11.0...v4.12.0) (2026-06-12)
+
+### Features
+
+* implement sidebar and shared styles for news search functionality ([fda2dc8](https://github.com/bphndigitalservice/ildis/commit/fda2dc8ad7d5ce4c3eb02638dea27d4d99dc88e8))
+
 ## [4.11.0](https://github.com/bphndigitalservice/ildis/compare/v4.10.0...v4.11.0) (2026-06-12)
 
 ### Features
