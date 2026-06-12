@@ -375,14 +375,15 @@ $socialLinks = $socialSection ? $socialSection->activeLinks : [];
       color: #dbe4f2;
     }
 
-    .footer-bottom__ildis {
+    .bphn-footer .footer-bottom__copy a.footer-bottom__ildis,
+    .bphn-footer .footer-bottom__copy a.footer-bottom__ildis:visited {
       color: #ffc107;
       text-decoration: none;
       font-weight: 600;
     }
 
-    .footer-bottom__ildis:hover,
-    .footer-bottom__ildis:focus-visible {
+    .bphn-footer .footer-bottom__copy a.footer-bottom__ildis:hover,
+    .bphn-footer .footer-bottom__copy a.footer-bottom__ildis:focus-visible {
       color: #ffd54f;
       text-decoration: underline;
       text-underline-offset: 2px;

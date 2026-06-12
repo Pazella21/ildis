@@ -1160,27 +1160,32 @@ body.mobile-nav-active {
   color: #fff;
 }
 
-.results-container, 
-.results-container .list-view,
-.results-list {
+.dokumen-index-wrapper .results-container {
     display: flex !important;
     flex-direction: column !important;
-    gap: 1.5rem !important;
+    gap: 1rem !important;
 }
 
-.results-list .item {
-    margin-bottom: 1.5rem !important;
+.dokumen-index-wrapper .results-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.625rem !important;
+}
+
+.dokumen-index-wrapper .results-list .item {
+    margin-bottom: 0 !important;
     display: block !important;
 }
 
-.results-list .item:last-child {
+.dokumen-index-wrapper .results-summary {
     margin-bottom: 0 !important;
+    padding-bottom: 0.75rem !important;
 }
 
 /* Dokumen listing — result card */
 .dokumen-index-wrapper .search-result-item {
     display: block;
-    padding: 1rem 1.125rem;
+    padding: 0.875rem 1rem;
     border: 1px solid #e8edf3;
     border-radius: 12px;
     transition: background-color 0.2s ease, border-color 0.2s ease;
@@ -1220,7 +1225,7 @@ body.mobile-nav-active {
 }
 
 .dokumen-index-wrapper .search-result-title {
-    margin: 0 0 0.875rem;
+    margin: 0;
     font-size: 1.0625rem;
     font-weight: 600;
     line-height: 1.5;
@@ -1251,6 +1256,22 @@ body.mobile-nav-active {
     display: flex;
     flex-wrap: wrap;
     gap: 0.625rem;
+    margin-top: 0.75rem;
+}
+
+.dokumen-index-wrapper .search-result-actions:empty {
+    display: none;
+    margin-top: 0;
+}
+
+@media (min-width: 768px) {
+    .dokumen-index-wrapper .results-list {
+        gap: 0.75rem !important;
+    }
+
+    .dokumen-index-wrapper .search-result-item {
+        padding: 1rem 1.125rem;
+    }
 }
 
 .dokumen-index-wrapper .btn-doc-action {
