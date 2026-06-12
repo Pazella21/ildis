@@ -1,3 +1,9 @@
+## [4.14.0](https://github.com/bphndigitalservice/ildis/compare/v4.13.0...v4.14.0) (2026-06-12)
+
+### Features
+
+* implement mobile navigation drawer and styles ([b3e8323](https://github.com/bphndigitalservice/ildis/commit/b3e8323f511f1ea06a10c70d96ec25a03ce3c95a))
+
 ## [4.13.0](https://github.com/bphndigitalservice/ildis/compare/v4.12.0...v4.13.0) (2026-06-12)
 
 ### Features
