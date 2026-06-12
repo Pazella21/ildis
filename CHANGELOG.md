@@ -1,3 +1,9 @@
+## [4.14.3](https://github.com/bphndigitalservice/ildis/compare/v4.14.2...v4.14.3) (2026-06-12)
+
+### Refactoring
+
+* enhance mobile navigation and footer layout ([a3c5f81](https://github.com/bphndigitalservice/ildis/commit/a3c5f8186de5ec08de4064c21a573d167507f857))
+
 ## [4.14.2](https://github.com/bphndigitalservice/ildis/compare/v4.14.1...v4.14.2) (2026-06-12)
 
 ### Refactoring
