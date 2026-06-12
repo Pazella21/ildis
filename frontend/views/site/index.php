@@ -232,74 +232,64 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
 
     .news-strip {
         background: #f8fafc;
-        padding: 4rem 0;
+        padding: 3.5rem 0;
         margin-top: 4rem;
         border-top: 1px solid #e8edf4;
     }
 
-    .news-strip__header {
-        margin-bottom: 2.5rem;
-    }
-
-    .news-strip__eyebrow {
-        display: block;
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: #64748b;
-        margin-bottom: 0.5rem;
-    }
-
     .news-strip__title {
-        font-size: clamp(1.5rem, 3vw, 1.875rem);
+        font-size: 2rem;
         font-weight: 700;
         color: #1a2752;
-        letter-spacing: -0.02em;
-        line-height: 1.2;
-        margin: 0;
+        letter-spacing: -0.5px;
+        margin-bottom: 0.75rem;
+    }
+
+    .news-strip__subtitle {
+        color: #64748b;
+        font-size: 1.05rem;
+        margin-bottom: 0;
+    }
+
+    .news-strip__accent {
+        height: 4px;
+        width: 60px;
+        background-color: #ffc107;
+        border-radius: 2px;
+        margin: 1rem auto 0;
     }
 
     .news-card {
-        transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease;
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: box-shadow 0.2s ease;
     }
 
     .news-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(26, 39, 82, 0.1) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
     }
 
     .news-card__image {
         height: 200px;
         object-fit: cover;
-        transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
-    }
-
-    .news-card:hover .news-card__image {
-        transform: scale(1.04);
     }
 
     .news-card__date {
-        display: block;
         font-size: 0.8125rem;
-        font-weight: 500;
         color: #64748b;
-        margin-bottom: 0.75rem;
-        letter-spacing: 0.01em;
+        margin-bottom: 0.5rem;
     }
 
     .news-card__title {
-        font-size: 1.125rem;
-        font-weight: 650;
-        line-height: 1.35;
-        letter-spacing: -0.015em;
-        margin-bottom: 0.75rem;
+        font-size: 1.0625rem;
+        font-weight: 600;
+        line-height: 1.4;
+        margin-bottom: 0.625rem;
     }
 
     .news-card__title a {
         color: #1a2752;
         text-decoration: none;
-        transition: color 0.2s ease;
     }
 
     .news-card__title a:hover {
@@ -307,51 +297,23 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
     }
 
     .news-card__excerpt {
-        font-size: 0.9375rem;
-        line-height: 1.65;
+        font-size: 0.9rem;
+        line-height: 1.6;
         color: #64748b;
-        margin-bottom: 0;
+        margin-bottom: 0.75rem;
     }
 
     .news-read-more {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
         font-size: 0.875rem;
         font-weight: 600;
         color: #1a2752;
         text-decoration: none;
-        transition: gap 0.25s cubic-bezier(0.25, 1, 0.5, 1), color 0.2s ease;
     }
 
     .news-read-more:hover {
         color: #274685;
-        text-decoration: none;
-        gap: 0.6rem;
-    }
-
-    .news-read-more__icon {
-        font-size: 0.8em;
-        transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
-    }
-
-    .news-read-more:hover .news-read-more__icon {
-        transform: translateX(3px);
-    }
-
-    .news-strip__cta .btn-outline-primary {
-        color: #1a2752;
-        border-color: #1a2752;
-        font-weight: 600;
-        font-size: 0.9375rem;
-        letter-spacing: 0.01em;
-        transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
-    }
-
-    .news-strip__cta .btn-outline-primary:hover {
-        background-color: #1a2752;
-        border-color: #1a2752;
-        color: #f8fafc;
+        text-decoration: underline;
+        text-underline-offset: 2px;
     }
 
     /* Koleksi Kami Cards */
@@ -620,20 +582,21 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
         <?php if (!empty($berita)): ?>
             <section class="news-strip">
                 <div class="container">
-                    <header class="news-strip__header text-center">
-                        <span class="news-strip__eyebrow">Informasi Terkini</span>
-                        <h2 class="news-strip__title">Berita Terbaru</h2>
-                    </header>
+                    <div class="row text-center mb-5">
+                        <div class="col-12">
+                            <h2 class="news-strip__title">Berita Terbaru</h2>
+                            <p class="news-strip__subtitle">Informasi dan kegiatan terkini seputar hukum</p>
+                            <div class="news-strip__accent"></div>
+                        </div>
+                    </div>
                     <div class="row">
                         <?php foreach ($berita as $data): ?>
                             <div class="col-lg-4 mb-4">
                                 <article class="card h-100 border-0 shadow-sm rounded overflow-hidden news-card">
-                                    <div class="overflow-hidden">
-                                        <?= Html::a(LazyImage::img('@web/common/dokumen/' . $data->image, [
-                                            'class' => 'card-img-top news-card__image w-100',
-                                            'alt' => $data->judul,
-                                        ]), ['berita/view', 'id' => $data->id]); ?>
-                                    </div>
+                                    <?= Html::a(LazyImage::img('@web/common/dokumen/' . $data->image, [
+                                        'class' => 'card-img-top news-card__image w-100',
+                                        'alt' => $data->judul,
+                                    ]), ['berita/view', 'id' => $data->id]); ?>
                                     <div class="card-body p-4 d-flex flex-column">
                                         <time class="news-card__date" datetime="<?= Html::encode($data->tanggal) ?>">
                                             <?= \common\components\DateHelper::formatIndonesian($data->tanggal) ?>
@@ -644,20 +607,14 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
                                         <p class="news-card__excerpt flex-grow-1">
                                             <?= implode(' ', array_slice(explode(' ', strip_tags($data->isi)), 0, 18)) . '…' ?>
                                         </p>
-                                        <div class="mt-3 pt-3" style="border-top: 1px solid #f1f5f9;">
-                                            <?= Html::a(
-                                                'Baca selengkapnya <i class="ti-arrow-right news-read-more__icon"></i>',
-                                                ['berita/view', 'id' => $data->id],
-                                                ['class' => 'news-read-more']
-                                            ) ?>
-                                        </div>
+                                        <?= Html::a('Baca selengkapnya →', ['berita/view', 'id' => $data->id], ['class' => 'news-read-more mt-auto']) ?>
                                     </div>
                                 </article>
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    <div class="text-center mt-4 news-strip__cta">
-                        <?= Html::a('Lihat semua berita <i class="ti-arrow-right ml-1"></i>', ['berita/index'], ['class' => 'btn btn-outline-primary rounded-pill px-4 py-2']); ?>
+                    <div class="text-center mt-3">
+                        <?= Html::a('Lihat semua berita <i class="bi bi-arrow-right"></i>', ['berita/index'], ['class' => 'btn btn-outline-primary rounded-pill px-4']); ?>
                     </div>
                 </div>
             </section>

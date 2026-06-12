@@ -17,31 +17,26 @@ $this->registerMetaTag(['name' => 'robots', 'content' => 'index, follow']);
         <div class="row">
             <!-- Sidebar (Search) -->
             <div class="col-lg-3 mb-4">
-                <div class="side-bar sticky-top" style="top: 120px;">
-                    <div class="card border-0 rounded-4 shadow-sm overflow-hidden">
-                        <div class="card-header border-0 py-3" style="background-color: #f1f5f9;">
-                            <h5 class="card-title fw-bold mb-0 text-dark-blue small text-uppercase tracking-wider">
-                                <i class="ti-search mr-2"></i> Cari Berita
-                            </h5>
-                        </div>
-                        <div class="card-body p-4">
-                            <?= $this->render('_search', ['model' => $searchModel]); ?>
-                        </div>
+                <div class="side-bar sticky-top berita-sidebar" style="top: 120px;">
+                    <div class="berita-sidebar__panel">
+                        <h2 class="berita-sidebar__title">
+                            <i class="bi bi-search" aria-hidden="true"></i> Cari berita
+                        </h2>
+                        <?= $this->render('_search', ['model' => $searchModel]); ?>
                     </div>
                 </div>
             </div>
 
             <!-- News List -->
             <div class="col-lg-9">
-                <header class="berita-page-header mb-4 d-flex flex-wrap justify-content-between align-items-end gap-3">
-                    <div>
-                        <span class="berita-page-header__eyebrow">Informasi Terkini</span>
+                <div class="berita-page-header mb-4 pb-3">
+                    <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
                         <h1 class="berita-page-header__title mb-0"><?= Html::encode($this->title) ?></h1>
+                        <span class="berita-page-header__count">
+                            <?= number_format($dataProvider->getTotalCount()) ?> berita
+                        </span>
                     </div>
-                    <p class="berita-page-header__count mb-0">
-                        <?= number_format($dataProvider->getTotalCount()) ?> berita ditemukan
-                    </p>
-                </header>
+                </div>
 
                 <?= ListView::widget([
                     'dataProvider' => $dataProvider,
@@ -65,48 +60,112 @@ $this->registerMetaTag(['name' => 'robots', 'content' => 'index, follow']);
 </div>
 
 <style>
-.text-dark-blue { color: #1a2752; }
-.tracking-wider { letter-spacing: 0.05em; }
+.berita-sidebar__panel {
+    background: #ffffff;
+    border: 1px solid #e8edf4;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+}
+
+.berita-sidebar__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a2752;
+    margin: 0 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.berita-search-form .input-group {
+    align-items: stretch;
+}
+
+.berita-search-form__input {
+    border: 1px solid #e2e8f0;
+    border-right: 0;
+    border-radius: 0.5rem 0 0 0.5rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9375rem;
+    background: #f8fafc;
+}
+
+.berita-search-form__input:focus {
+    background: #ffffff;
+    border-color: #1a2752;
+    box-shadow: none;
+}
+
+.berita-search-form__submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1rem;
+    border: 1px solid #1a2752;
+    border-radius: 0 0.5rem 0.5rem 0;
+    background: #1a2752;
+    color: #ffffff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.berita-search-form__submit:hover {
+    background: #243566;
+    border-color: #243566;
+    color: #ffffff;
+}
+
+.berita-page-header {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.berita-page-header__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a2752;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+}
+
+.berita-page-header__count {
+    font-size: 0.875rem;
+    color: #64748b;
+    white-space: nowrap;
+}
 
 .news-list-card {
-    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease;
-    border: 1px solid #f1f5f9 !important;
+    background: #ffffff;
+    border: 1px solid #e8edf4 !important;
+    border-radius: 0.75rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .news-item .news-list-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 28px rgba(26, 39, 82, 0.08) !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 4px 16px rgba(26, 39, 82, 0.06) !important;
 }
 
 .news-image-wrapper {
-    min-height: 200px;
+    min-height: 180px;
     overflow: hidden;
 }
 
 .news-list-card__image {
     object-fit: cover;
-    transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.news-item .news-list-card:hover .news-list-card__image {
-    transform: scale(1.04);
 }
 
 .news-list-card__date {
-    display: block;
     font-size: 0.8125rem;
-    font-weight: 500;
     color: #64748b;
-    margin-bottom: 0.625rem;
-    letter-spacing: 0.01em;
+    margin-bottom: 0.5rem;
 }
 
 .news-list-card__title {
-    font-size: clamp(1.0625rem, 2vw, 1.25rem);
-    font-weight: 650;
-    line-height: 1.35;
-    letter-spacing: -0.015em;
-    margin: 0 0 0.875rem;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 0.625rem;
 }
 
 .news-list-card__title a {
@@ -116,7 +175,6 @@ $this->registerMetaTag(['name' => 'robots', 'content' => 'index, follow']);
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    transition: color 0.2s ease;
 }
 
 .news-list-card__title a:hover {
@@ -124,70 +182,27 @@ $this->registerMetaTag(['name' => 'robots', 'content' => 'index, follow']);
 }
 
 .news-list-card__excerpt {
-    font-size: 0.9375rem;
-    line-height: 1.65;
+    font-size: 0.9rem;
+    line-height: 1.6;
     color: #64748b;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.news-list-card__footer {
-    padding-top: 1rem;
-    border-top: 1px solid #f1f5f9;
-}
-
 .news-read-more {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
     font-size: 0.875rem;
     font-weight: 600;
     color: #1a2752;
     text-decoration: none;
-    transition: gap 0.25s cubic-bezier(0.25, 1, 0.5, 1), color 0.2s ease;
 }
 
 .news-read-more:hover {
     color: #274685;
-    text-decoration: none;
-    gap: 0.6rem;
-}
-
-.news-read-more__icon {
-    font-size: 0.8em;
-    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.news-read-more:hover .news-read-more__icon {
-    transform: translateX(3px);
-}
-
-.berita-page-header__eyebrow {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #64748b;
-    margin-bottom: 0.375rem;
-}
-
-.berita-page-header__title {
-    font-size: clamp(1.5rem, 3vw, 1.875rem);
-    font-weight: 700;
-    color: #1a2752;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-}
-
-.berita-page-header__count {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #64748b;
-    letter-spacing: 0.01em;
+    text-decoration: underline;
+    text-underline-offset: 2px;
 }
 
 .pagination .page-item.active .page-link {

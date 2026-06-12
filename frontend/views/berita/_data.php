@@ -6,8 +6,8 @@ use yii\helpers\Html;
 /* @var $model frontend\models\Berita */
 ?>
 
-<div class="news-item mb-4">
-    <article class="card border-0 rounded-4 shadow-sm h-100 overflow-hidden news-list-card">
+<div class="news-item mb-3">
+    <article class="card border-0 h-100 overflow-hidden news-list-card">
         <div class="row g-0 h-100">
             <div class="col-md-4">
                 <div class="news-image-wrapper h-100 position-relative">
@@ -28,21 +28,19 @@ use yii\helpers\Html;
                         <?= \common\components\DateHelper::formatIndonesian($model->tanggal) ?>
                     </time>
 
-                    <h2 class="news-list-card__title">
+                    <h3 class="news-list-card__title">
                         <?= Html::a(Html::encode($model->judul), ['view', 'id' => $model->id]) ?>
-                    </h2>
+                    </h3>
 
                     <p class="news-list-card__excerpt flex-grow-1">
                         <?= strip_tags($model->isi) ?>
                     </p>
 
-                    <div class="news-list-card__footer mt-auto">
-                        <?= Html::a(
-                            'Baca selengkapnya <i class="ti-arrow-right news-read-more__icon"></i>',
-                            ['view', 'id' => $model->id],
-                            ['class' => 'news-read-more']
-                        ) ?>
-                    </div>
+                    <?= Html::a(
+                        'Baca selengkapnya →',
+                        ['view', 'id' => $model->id],
+                        ['class' => 'news-read-more mt-auto']
+                    ) ?>
                 </div>
             </div>
         </div>

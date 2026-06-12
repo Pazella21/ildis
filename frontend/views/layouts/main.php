@@ -60,8 +60,6 @@ if (empty($this->params['description'])) {
               <?= Html::a(\common\components\LazyImage::img('@web/common/dokumen/' . $logo->isi_konfig, [
                   'id' => 'logo',
                   'alt' => Html::encode($siteName),
-                  'width' => 200,
-                  'height' => 60,
               ], false), ['/'], ['class' => 'navbar-brand width-200px sm-width-180px xs-width-150px']); ?>
             </div>
 
