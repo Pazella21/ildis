@@ -1473,3 +1473,36 @@ section {
         color: #64748b;
     }
 }
+
+/* JDIH search submit — solid navy, matches listing & filter UI */
+.jdih-search-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border: none;
+    border-radius: 0.75rem;
+    background-color: #1a2752;
+    color: #ffffff;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    box-shadow: none;
+    transition: background-color 0.2s ease, transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.jdih-search-submit:hover,
+.jdih-search-submit:focus-visible {
+    background-color: #243566;
+    color: #ffffff;
+    box-shadow: none;
+    transform: translateY(-1px);
+}
+
+.jdih-search-submit:active {
+    background-color: #141d3d;
+    color: #ffffff;
+    transform: translateY(0);
+}

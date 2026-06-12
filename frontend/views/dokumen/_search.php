@@ -65,7 +65,7 @@ use yii\helpers\Url;
     <?= $form->field($model, 'nama_pengarang')->textInput(['placeholder' => 'Ketik pengarang...']) ?>
 
     <div class="form-group mt-4 pt-2">
-        <?= Html::submitButton('<i class="bi bi-search me-2"></i> Terapkan Filter', ['class' => 'btn w-100 py-2 rounded-3 text-white fw-bold', 'style' => 'background-color: #1a2752;']) ?>
+        <?= Html::submitButton('<i class="bi bi-search"></i> Terapkan Filter', ['class' => 'btn jdih-search-submit w-100 py-2']) ?>
         <?= Html::a('<i class="bi bi-arrow-counterclockwise"></i> Reset', ['index'], ['class' => 'btn btn-link w-100 text-muted text-decoration-none small mt-2']) ?>
     </div>
 

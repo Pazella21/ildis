@@ -27,7 +27,7 @@ use yii\widgets\ActiveForm;
     ])->label(false) ?>
 
     <div class="d-grid">
-        <?= Html::submitButton('<i class="ti-search mr-2"></i> Cari', ['class' => 'btn btn-primary font-weight-600 rounded-3 py-2']) ?>
+        <?= Html::submitButton('<i class="bi bi-search"></i> Cari', ['class' => 'btn jdih-search-submit w-100 py-2']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

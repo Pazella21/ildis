@@ -99,26 +99,41 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
 
     .search-input-wrapper {
         position: relative;
+        display: flex;
+        align-items: center;
         width: 100%;
         max-width: 650px;
         margin: 0 auto;
+        background: #ffffff;
+        border: 1px solid #dfe1e5;
+        border-radius: 999px;
+        box-shadow: 0 2px 12px rgba(32, 33, 36, 0.12);
+        padding: 5px;
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .search-input-wrapper:focus-within {
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 18px rgba(32, 33, 36, 0.16);
     }
 
     .search-input {
-        width: 100%;
-        padding: 1rem 1.5rem 1rem 3rem;
-        font-size: 1.1rem;
-        border: 1px solid #dfe1e5;
-        border-radius: 24px;
-        box-shadow: 0 1px 6px rgba(32, 33, 36, 0.1);
-        transition: all 0.2s ease;
+        flex: 1;
+        min-width: 0;
+        width: auto;
+        padding: 0.875rem 0.75rem 0.875rem 2.75rem;
+        font-size: 1.05rem;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
         outline: none;
     }
 
     .search-input:focus,
     .search-input:hover {
-        box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
-        border-color: rgba(223, 225, 229, 0);
+        box-shadow: none;
+        border-color: transparent;
     }
 
     .search-icon {
@@ -126,17 +141,46 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
         left: 20px;
         top: 50%;
         transform: translateY(-50%);
-        color: #9aa0a6;
-        font-size: 1.2rem;
+        color: #94a3b8;
+        font-size: 1.15rem;
+        pointer-events: none;
     }
 
     .search-btn {
-        position: absolute;
-        right: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        border-radius: 20px;
-        padding: 0.5rem 1.5rem;
+        flex-shrink: 0;
+        border-radius: 999px;
+        padding: 0.7rem 1.6rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        color: #ffffff;
+        background-color: #1a2752;
+        border: none;
+        box-shadow: none;
+        transition: background-color 0.2s ease;
+    }
+
+    .search-btn:hover,
+    .search-btn:focus-visible {
+        background-color: #243566;
+        color: #ffffff;
+        box-shadow: none;
+    }
+
+    .search-btn:active {
+        background-color: #141d3d;
+    }
+
+    @media screen and (max-width: 480px) {
+        .search-btn {
+            padding: 0.65rem 1.15rem;
+            font-size: 0.9rem;
+        }
+
+        .search-input {
+            font-size: 1rem;
+            padding-left: 2.5rem;
+        }
     }
 
     .quick-links {
@@ -284,7 +328,7 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
                 <div class="search-input-wrapper">
                     <i class="bi bi-search search-icon"></i>
                     <input type="text" name="DokumenSearch[judul]" class="search-input" placeholder="Cari dokumen hukum, peraturan, putusan..." value="" autocomplete="off" autofocus>
-                    <button type="submit" class="btn btn-primary search-btn">Cari</button>
+                    <button type="submit" class="btn search-btn">Cari</button>
                 </div>
             </form>
 

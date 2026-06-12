@@ -13,7 +13,7 @@ $this->title = $model->judul;
 
 // --- SEO Metatags & Open Graph ---
 $baseUrl = Url::to(['/'], true);
-$currentUrl = Url::current([], true);
+$currentUrl = Url::to(['/dokumen/view', 'id' => $model->id], true);
 $desc = !empty($model->abstrak) ? strip_tags($model->abstrak) : $model->judul;
 $desc = mb_strimwidth($desc, 0, 160, "...");
 

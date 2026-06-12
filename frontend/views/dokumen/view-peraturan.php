@@ -18,7 +18,7 @@ $this->title = $title . ' - JDIH';
 
 // --- SEO Metatags & Open Graph ---
 $baseUrl = Url::to(['/'], true);
-$currentUrl = Url::current([], true);
+$currentUrl = Url::to(['/dokumen/view', 'id' => $model->id], true);
 $desc = !empty($model->abstrak) ? strip_tags($model->abstrak) : $deskripsi;
 $desc = mb_strimwidth($desc, 0, 160, "...");
 $fallbackImage = $baseUrl . 'assets/img/jdih-default.png';
