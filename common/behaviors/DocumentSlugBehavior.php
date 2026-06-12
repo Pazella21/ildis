@@ -20,10 +20,21 @@ class DocumentSlugBehavior extends Behavior
     {
         $owner = $this->owner;
 
-        if (!empty($owner->slug) || empty($owner->judul)) {
+        if (empty($owner->slug)) {
+            if (empty($owner->judul)) {
+                return;
+            }
+
+            $owner->slug = DocumentSlug::fromDocument(
+                (int) $owner->tipe_dokumen,
+                $owner->judul,
+                $owner->singkatan_jenis ?? null,
+                $owner->nomor_peraturan ?? null,
+                $owner->tahun_terbit ?? null
+            );
             return;
         }
 
-        $owner->slug = DocumentSlug::fromJudul($owner->judul);
+        $owner->slug = DocumentSlug::normalize($owner->slug);
     }
 }

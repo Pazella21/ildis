@@ -180,10 +180,16 @@ class Dokumen extends \yii\db\ActiveRecord
     public function getUrlSlug(): string
     {
         if (!empty($this->slug)) {
-            return $this->slug;
+            return DocumentSlug::normalize($this->slug);
         }
 
-        return DocumentSlug::fromJudul($this->judul ?? 'dokumen');
+        return DocumentSlug::fromDocument(
+            (int) $this->tipe_dokumen,
+            $this->judul ?? '',
+            $this->singkatan_jenis ?? null,
+            $this->nomor_peraturan ?? null,
+            $this->tahun_terbit ?? null
+        );
     }
 
     /**
