@@ -1,3 +1,19 @@
+## [4.15.0](https://github.com/bphndigitalservice/ildis/compare/v4.14.4...v4.15.0) (2026-06-12)
+
+### Features
+
+* implement cache-busting for frontend assets ([895848b](https://github.com/bphndigitalservice/ildis/commit/895848b5fc351dc200b174f30344ecf67fda9054))
+
+### Bug Fixes
+
+* enforce WAF-safe document slugs with structured peraturan format ([f0a7926](https://github.com/bphndigitalservice/ildis/commit/f0a7926296f0eb25ba0781062661dce2234b1b66))
+* wire WAF-safe slugs through behavior, model, and console ([a4c1012](https://github.com/bphndigitalservice/ildis/commit/a4c1012c49140d834a385bb8cc91d0308cb6b5b8))
+
+### Documentation
+
+* add design spec for WAF-safe document slugs ([abc5335](https://github.com/bphndigitalservice/ildis/commit/abc533540661d2ad47b0edee692518dab3232f84))
+* add implementation plan for WAF-safe document slugs ([0f9ef01](https://github.com/bphndigitalservice/ildis/commit/0f9ef0118bd7d2759ad2468d31d993d2ed3218a7))
+
 ## [4.14.4](https://github.com/bphndigitalservice/ildis/compare/v4.14.3...v4.14.4) (2026-06-12)
 
 ### Refactoring
