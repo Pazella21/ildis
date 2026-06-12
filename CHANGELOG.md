@@ -1,3 +1,9 @@
+## [4.14.2](https://github.com/bphndigitalservice/ildis/compare/v4.14.1...v4.14.2) (2026-06-12)
+
+### Refactoring
+
+* enhance mobile navigation and layout ([e17b0e8](https://github.com/bphndigitalservice/ildis/commit/e17b0e8895b6164f382e6bd4b64fdd2969ed1d4f))
+
 ## [4.14.1](https://github.com/bphndigitalservice/ildis/compare/v4.14.0...v4.14.1) (2026-06-12)
 
 ### Bug Fixes
