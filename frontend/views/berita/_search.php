@@ -14,30 +14,22 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
         'options' => [
             'data-pjax' => 1,
-            'class' => 'search-form'
+            'class' => 'berita-search-form',
         ],
     ]); ?>
 
-    <?= $form->field($model, 'judul', [
-        'options' => ['class' => 'form-group mb-3'],
-    ])->textInput([
-        'placeholder' => 'Cari berita...',
-        'class' => 'form-control rounded-3 py-2 px-3 border-light-gray',
-        'style' => 'background-color: #f8fafc;'
-    ])->label(false) ?>
-
-    <div class="d-grid">
-        <?= Html::submitButton('<i class="ti-search mr-2"></i> Cari', ['class' => 'btn btn-primary font-weight-600 rounded-3 py-2']) ?>
+    <div class="input-group">
+        <?= Html::activeTextInput($model, 'judul', [
+            'class' => 'form-control berita-search-form__input',
+            'placeholder' => 'Cari berita...',
+        ]) ?>
+        <?= Html::button('<i class="bi bi-search" aria-hidden="true"></i>', [
+            'type' => 'submit',
+            'class' => 'berita-search-form__submit',
+            'title' => 'Cari',
+            'aria-label' => 'Cari berita',
+        ]) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
 </div>
-
-<style>
-.berita-search-widget .form-control:focus {
-    background-color: #fff;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-}
-.border-light-gray { border-color: #e2e8f0; }
-</style>

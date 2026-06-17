@@ -184,7 +184,7 @@ $this->title = $model->judul;
 
 // --- SEO Metatags & Open Graph ---
 $baseUrl = Url::to(['/'], true);
-$currentUrl = Url::current([], true);
+$currentUrl = Url::to(['/dokumen/view', 'id' => $model->id, 'slug' => $model->getUrlSlug()], true);
 $desc = !empty($model->abstrak) ? strip_tags($model->abstrak) : $model->judul;
 $desc = mb_strimwidth($desc, 0, 160, "...");
 
@@ -280,7 +280,7 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                                 $teu = DataPengarang::find()->where(['id_dokumen' => $model->id])->all();
                                 if (!empty($teu)): ?>
                                     <div class="table-responsive">
-                                        <table class="table table-sm table-borderless align-middle mb-0">
+                                        <table class="table table-sm table-borderless align-middle mb-0 teu-table">
                                             <tbody class="small">
                                                 <?php foreach ($teu as $data): ?>
                                                     <tr class="border-bottom border-light">
@@ -302,7 +302,7 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                                 if (!empty($subjek)): ?>
                                     <div class="d-flex flex-wrap gap-2">
                                         <?php foreach ($subjek as $data): ?>
-                                            <span class="badge bg-light text-dark border px-3 py-2 font-weight-500 rounded-pill">
+                                            <span class="badge bg-light text-dark border px-3 py-2 font-weight-500 rounded-pill subjek-badge">
                                                 <?= Html::encode($data->subyek) ?>
                                             </span>
                                         <?php endforeach; ?>
@@ -328,21 +328,34 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                             <?php
                             $lampiran = DataLampiran::find()->where(['id_dokumen' => $model->id])->all();
                             if (!empty($lampiran)): 
-                                foreach ($lampiran as $data): ?>
-                                    <?= Html::a('<i class="ti-file mr-2"></i> ' . Html::encode($data['dokumen_lampiran']), ['/common/dokumen/' . $data->dokumen_lampiran], [
-                                        'class' => 'btn btn-outline-primary text-left font-weight-600 rounded-3 py-2 px-3',
-                                        'target' => '_blank',
-                                        'title' => 'Lihat Lampiran'
-                                    ]) ?>
+                                foreach ($lampiran as $data):
+                                    $fileName = $data['dokumen_lampiran'];
+                                ?>
+                                    <?= Html::a(
+                                        '<i class="ti-file lampiran-link__icon" aria-hidden="true"></i><span class="lampiran-link__name">' . Html::encode($fileName) . '</span>',
+                                        ['/common/dokumen/' . $data->dokumen_lampiran],
+                                        [
+                                            'class' => 'lampiran-link btn btn-outline-primary font-weight-600 rounded-3 py-2 px-3',
+                                            'target' => '_blank',
+                                            'title' => Html::encode($fileName),
+                                        ]
+                                    ) ?>
                                 <?php endforeach; ?>
                             <?php endif; ?>
 
                             <?php if (!empty($model->abstrak)): ?>
-                                <?= Html::a('<i class="ti-book mr-2"></i> Abstrak', ['/common/dokumen/' . $model->abstrak], [
-                                    'class' => 'btn btn-primary font-weight-600 rounded-3 py-2',
-                                    'target' => '_blank',
-                                    'title' => 'Lihat Abstrak'
-                                ]) ?>
+                                <?= Html::a(
+                                    '<i class="ti-book" style="font-size: 1.1rem; margin-right: 8px;"></i> <span style="font-weight: 500; font-size: 15px;">Lihat Abstrak</span>',
+                                    ['/common/dokumen/' . $model->abstrak],
+                                    [
+                                        'class' => 'btn w-100 d-flex align-items-center justify-content-center mb-2',
+                                        'style' => 'background-color: #1e264c; color: #ffffff; border-radius: 12px; padding: 12px 20px; border: none; box-shadow: none; transition: background-color 0.2s ease;',
+                                        'onmouseover' => 'this.style.backgroundColor="#161d3a"',
+                                        'onmouseout' => 'this.style.backgroundColor="#1e264c"',
+                                        'target' => '_blank',
+                                        'title' => 'Lihat Abstrak'
+                                    ]
+                                ) ?>
                             <?php endif; ?>
 
                             <?php if (empty($lampiran) && empty($model->abstrak)): ?>

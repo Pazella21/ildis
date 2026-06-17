@@ -649,6 +649,17 @@ section {
   backdrop-filter: blur(10px);
 }
 
+/* backdrop-filter on #header creates a containing block that traps
+   .navbar-mobile inside the 80px header when the page is scrolled */
+#header.mobile-nav-open {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+body.mobile-nav-active {
+  overflow: hidden;
+}
+
 #header .logo h1 {
   font-size: 24px;
   margin: 0;
@@ -668,6 +679,8 @@ section {
   padding: 0;
   margin: 0;
   max-height: 44px;
+  width: auto;
+  height: auto;
 }
 
 /*--------------------------------------------------------------
@@ -1034,7 +1047,7 @@ section {
   margin-bottom: 10px;
 }
 
-.footer a {
+.footer:not(.bphn-footer) a {
   color: #000;
 }
 
@@ -1147,62 +1160,828 @@ section {
   color: #fff;
 }
 
-/* pagination */
-.pagination {
-  border-radius: 0;
-  padding: 0;
-  margin: 0; }
-  .pagination ul {
-    display: inline-block;
-    *display: inline;
-    *zoom: 1;
-    margin: 0 auto;
-    padding: 0; }
-  .pagination li {
-    display: inline; }
-  .pagination a {
-    float: left;
-    padding: 0 18px;
-    line-height: 40px;
-    text-decoration: none;
-    border: 1px solid #dbdbdb;
-    border-left-width: 0;
-    background: #fff; }
-    .pagination a:hover {
-      background-color: #5DADE2;
-      color: #fff; }
-  .pagination .active a {
-    background-color: #f7f7f7;
-    color: #999;
-    cursor: default; }
-  .pagination .disabled span {
-    color: #999;
-    background-color: transparent;
-    cursor: default; }
-  .pagination .disabled a {
-    color: #999;
-    background-color: transparent;
-    cursor: default; }
-    .pagination .disabled a:hover {
-      color: #999;
-      background-color: transparent;
-      cursor: default; }
-  .pagination li:first-child a {
-    border-left-width: 1px; }
-  
-.results-container, 
-.results-container .list-view,
-.results-list {
+.dokumen-index-wrapper .results-container {
     display: flex !important;
     flex-direction: column !important;
-    gap: 1.5rem !important;
+    gap: 1rem !important;
 }
 
-.results-list .item {
-    margin-bottom: 1.5rem !important;
+.dokumen-index-wrapper .results-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.625rem !important;
+}
+
+.dokumen-index-wrapper .results-list .item {
+    margin-bottom: 0 !important;
     display: block !important;
 }
 
-.results-list .item:last-child {
+.dokumen-index-wrapper .results-summary {
     margin-bottom: 0 !important;
+    padding-bottom: 0.75rem !important;
+}
+
+/* Dokumen listing — result card */
+.dokumen-index-wrapper .search-result-item {
+    display: block;
+    padding: 0.875rem 1rem;
+    border: 1px solid #e8edf3;
+    border-radius: 12px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.dokumen-index-wrapper .search-result-item:hover {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.dokumen-index-wrapper .search-result-meta {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1.3;
+    color: #94a3b8;
+}
+
+.dokumen-index-wrapper .meta-badge {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.dokumen-index-wrapper .search-result-meta__sep {
+    color: #cbd5e1;
+}
+
+.dokumen-index-wrapper .search-result-meta__year {
+    font-variant-numeric: tabular-nums;
+    color: #94a3b8;
+}
+
+.dokumen-index-wrapper .search-result-title {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    color: #1a2752;
+    text-wrap: pretty;
+}
+
+@media (min-width: 768px) {
+    .dokumen-index-wrapper .search-result-title {
+        font-size: 1.125rem;
+        line-height: 1.45;
+    }
+}
+
+.dokumen-index-wrapper .search-result-title a {
+    color: inherit;
+    font-weight: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.dokumen-index-wrapper .search-result-title a:hover {
+    color: #2d71a1;
+}
+
+.dokumen-index-wrapper .search-result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin-top: 0.75rem;
+}
+
+.dokumen-index-wrapper .search-result-actions:empty {
+    display: none;
+    margin-top: 0;
+}
+
+@media (min-width: 768px) {
+    .dokumen-index-wrapper .results-list {
+        gap: 0.75rem !important;
+    }
+
+    .dokumen-index-wrapper .search-result-item {
+        padding: 1rem 1.125rem;
+    }
+}
+
+.dokumen-index-wrapper .btn-doc-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4375rem 1rem;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.3;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.dokumen-index-wrapper .btn-doc-primary {
+    background-color: #f8fafc;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+}
+
+.dokumen-index-wrapper .btn-doc-primary:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #1a2752;
+    transform: translateY(-1px);
+}
+
+.dokumen-index-wrapper .btn-doc-outline {
+    background-color: transparent;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+}
+
+.dokumen-index-wrapper .btn-doc-outline:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    color: #1a2752;
+    transform: translateY(-1px);
+}
+
+/* Dokumen listing — search sidebar */
+.dokumen-index-wrapper .dokumen-search-sidebar {
+    top: 100px;
+}
+
+.dokumen-index-wrapper .dokumen-search-card {
+    overflow: hidden;
+    border-radius: 1rem;
+    background: #fcfdfe;
+    box-shadow: 0 1px 3px rgba(26, 39, 82, 0.06), 0 8px 24px rgba(26, 39, 82, 0.05);
+}
+
+.dokumen-index-wrapper .dokumen-search-card__header {
+    padding: 1rem 1.25rem;
+    background: #fcfdfe;
+    border-bottom: 1px solid #e8edf3;
+}
+
+.dokumen-index-wrapper .dokumen-search-card__title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
+}
+
+.dokumen-index-wrapper .dokumen-search-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    background: #eef2f8;
+    color: #1a2752;
+    font-size: 0.9375rem;
+}
+
+.dokumen-index-wrapper .dokumen-search-card__title-text {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.dokumen-index-wrapper .dokumen-search-card__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: #1a2752;
+}
+
+.dokumen-index-wrapper .dokumen-search-card__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    background: #e8eef8;
+    color: #1a2752;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+}
+
+.dokumen-index-wrapper .dokumen-search-card__form {
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.dokumen-index-wrapper .dokumen-search-toggle {
+    color: inherit;
+}
+
+.dokumen-index-wrapper .dokumen-search-toggle__hint {
+    flex-basis: 100%;
+    margin: 0 0 0 2.625rem;
+    font-size: 0.75rem;
+    line-height: 1.35;
+    color: #64748b;
+}
+
+.dokumen-index-wrapper .dokumen-search-toggle__icon {
+    color: #1a2752;
+    font-size: 1rem;
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.dokumen-index-wrapper .dokumen-search-toggle[aria-expanded="true"] .dokumen-search-toggle__icon {
+    transform: rotate(180deg);
+}
+
+.dokumen-index-wrapper .dokumen-search-toggle[aria-expanded="true"] .dokumen-search-toggle__hint {
+    display: none;
+}
+
+.dokumen-index-wrapper .dokumen-search-section + .dokumen-search-section {
+    margin-top: 1.125rem;
+    padding-top: 1.125rem;
+    border-top: 1px solid #eef2f6;
+}
+
+.dokumen-index-wrapper .dokumen-search-section__heading {
+    margin: 0 0 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+
+.dokumen-index-wrapper .dokumen-search-field {
+    margin-bottom: 0.75rem;
+}
+
+.dokumen-index-wrapper .dokumen-search-field:last-child {
+    margin-bottom: 0;
+}
+
+.dokumen-index-wrapper .dokumen-search-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: #475569;
+}
+
+.dokumen-index-wrapper .dokumen-search-input {
+    width: 100%;
+    min-width: 0;
+    padding: 0.5625rem 0.875rem;
+    border: 1px solid #dde4ee;
+    border-radius: 0.625rem;
+    background: #f8fafc;
+    color: #1e293b;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dokumen-index-wrapper .dokumen-search-input::placeholder {
+    color: #94a3b8;
+}
+
+.dokumen-index-wrapper .dokumen-search-input:hover {
+    border-color: #cbd5e1;
+    background: #fcfdfe;
+}
+
+.dokumen-index-wrapper .dokumen-search-input:focus {
+    border-color: #1a2752;
+    background: #fcfdfe;
+    box-shadow: 0 0 0 3px rgba(26, 39, 82, 0.1);
+    outline: none;
+}
+
+.dokumen-index-wrapper .dokumen-search-select {
+    padding-right: 2.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%23475569' d='M4.646 5.646a.5.5 0 0 1 .708 0L8 8.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 0.75rem;
+    appearance: none;
+    cursor: pointer;
+}
+
+.dokumen-index-wrapper .dokumen-search-row .dokumen-search-field {
+    margin-bottom: 0;
+}
+
+.dokumen-index-wrapper .dokumen-search-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    padding-top: 1.125rem;
+    border-top: 1px solid #eef2f6;
+}
+
+.dokumen-index-wrapper .dokumen-search-reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 0.625rem;
+    background: transparent;
+    color: #64748b;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.3;
+    text-decoration: none;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.dokumen-index-wrapper .dokumen-search-reset:hover,
+.dokumen-index-wrapper .dokumen-search-reset:focus-visible {
+    color: #1a2752;
+    background: #f1f5f9;
+    text-decoration: none;
+}
+
+.dokumen-index-wrapper .dokumen-search-reset--active {
+    color: #1a2752;
+    font-weight: 600;
+}
+
+@media screen and (max-width: 991.98px) {
+    .dokumen-index-wrapper .dokumen-search-sidebar {
+        position: static !important;
+        top: auto;
+    }
+
+    .dokumen-index-wrapper .dokumen-search-card__body.collapsing,
+    .dokumen-index-wrapper .dokumen-search-card__body.collapse:not(.show) {
+        border-top: 1px solid #e8edf3;
+    }
+
+    .dokumen-index-wrapper .dokumen-search-card__body .dokumen-search-card__form {
+        padding-top: 0.875rem;
+    }
+}
+
+/* Dokumen listing pagination */
+.dokumen-index-wrapper .jdih-pagination {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 2rem !important;
+    margin-bottom: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+}
+
+.dokumen-index-wrapper .jdih-pagination .page-item .page-link {
+    float: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.65rem;
+    margin: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem !important;
+    border-left-width: 1px !important;
+    background: #ffffff;
+    color: #1a2752;
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.dokumen-index-wrapper .jdih-pagination .page-item .page-link:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #1a2752;
+    transform: translateY(-1px);
+}
+
+.dokumen-index-wrapper .jdih-pagination .page-item.active .page-link {
+    background: #1a2752;
+    border-color: #1a2752;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(26, 39, 82, 0.2);
+}
+
+.dokumen-index-wrapper .jdih-pagination .page-item.active .page-link:hover {
+    background: #1a2752;
+    color: #ffffff;
+    transform: none;
+}
+
+.dokumen-index-wrapper .jdih-pagination .page-item.disabled .page-link,
+.dokumen-index-wrapper .jdih-pagination .page-item.disabled > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.65rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem !important;
+    background: #f8fafc;
+    color: #94a3b8;
+    box-shadow: none;
+    transform: none;
+    cursor: not-allowed;
+}
+
+@media screen and (max-width: 576px) {
+    .dokumen-index-wrapper .jdih-pagination {
+        gap: 0.25rem;
+        justify-content: center !important;
+    }
+
+    .dokumen-index-wrapper .jdih-pagination .page-item .page-link,
+    .dokumen-index-wrapper .jdih-pagination .page-item.disabled > span {
+        min-width: 2.15rem;
+        height: 2.15rem;
+        padding: 0 0.45rem;
+        font-size: 0.8rem;
+        border-radius: 0.4rem !important;
+    }
+}
+
+/* Dokumen detail view — typography & contrast */
+.dokumen-view-wrapper {
+    background-color: #f4f6f9;
+    min-height: 100vh;
+    padding: 6.25rem 0 2.5rem;
+    color: #334155;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+}
+
+.dokumen-view-wrapper .dokumen-view-card,
+.dokumen-view-wrapper .dokumen-view-sidebar-panel {
+    background: #ffffff;
+    border: 1px solid #e8edf4;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px rgba(26, 39, 82, 0.04);
+}
+
+.dokumen-view-wrapper .dokumen-view-card {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .dokumen-view-wrapper .dokumen-view-card {
+        padding: 2rem 2.25rem;
+    }
+}
+
+.dokumen-view-wrapper .dokumen-view-sidebar-panel {
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.dokumen-view-wrapper .dokumen-view-title {
+    margin: 0;
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    color: #1a2752;
+    text-wrap: pretty;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+@media (min-width: 768px) {
+    .dokumen-view-wrapper .dokumen-view-title {
+        font-size: 1.625rem;
+        line-height: 1.3;
+    }
+}
+
+.dokumen-view-wrapper .dokumen-view-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.dokumen-view-wrapper .dokumen-view-value {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.45;
+    color: #1e293b;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.dokumen-view-wrapper .dokumen-view-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1.25rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #1a2752;
+}
+
+.dokumen-view-wrapper .dokumen-view-section-title i {
+    color: #2d71a1;
+    font-size: 1rem;
+}
+
+.dokumen-view-wrapper .dokumen-view-subsection-title {
+    margin: 0 0 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #334155;
+}
+
+.dokumen-view-wrapper .dokumen-view-sidebar-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1.125rem;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #1a2752;
+}
+
+.dokumen-view-wrapper .dokumen-view-sidebar-title i {
+    color: #2d71a1;
+}
+
+.dokumen-view-wrapper .dokumen-view-type-badge {
+    display: inline-block;
+    padding: 0.375rem 0.875rem;
+    border-radius: 999px;
+    background: rgba(26, 39, 82, 0.08);
+    color: #1a2752;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.dokumen-view-wrapper .dokumen-view-status-badge--active {
+    background: rgba(22, 101, 52, 0.1);
+    color: #166534;
+}
+
+.dokumen-view-wrapper .dokumen-view-status-badge--inactive {
+    background: rgba(185, 28, 28, 0.1);
+    color: #b91c1c;
+}
+
+.dokumen-view-wrapper .dokumen-view-meta-date {
+    margin: 0.75rem 0 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.dokumen-view-wrapper .dokumen-view-divider {
+    margin: 2rem 0;
+    border: 0;
+    border-top: 1px solid #e8edf4;
+}
+
+.dokumen-view-wrapper .dokumen-view-empty {
+    padding: 1rem 1.25rem;
+    border: 1px dashed #cbd5e1;
+    border-radius: 0.75rem;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.dokumen-view-wrapper .dokumen-view-link {
+    color: #1a2752;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.dokumen-view-wrapper .dokumen-view-link:hover {
+    color: #2d71a1;
+}
+
+.dokumen-view-wrapper .dokumen-view-annotation {
+    padding: 1rem 1.25rem;
+    border-radius: 0.75rem;
+    background: #f8fafc;
+    border: 1px solid #e8edf4;
+    color: #334155;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.65;
+}
+
+.dokumen-view-wrapper .text-muted,
+.dokumen-view-wrapper .italic.small {
+    color: #64748b !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.dokumen-view-wrapper .teu-table td {
+    font-size: 0.875rem;
+}
+
+.dokumen-view-wrapper .teu-table td.font-weight-600 {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.dokumen-view-wrapper .teu-table td.text-muted {
+    color: #64748b !important;
+    font-weight: 500;
+}
+
+.dokumen-view-wrapper .subjek-badge {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+    color: #334155 !important;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.dokumen-view-wrapper .lampiran-link {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1a2752;
+    border-color: #cbd5e1;
+}
+
+.dokumen-view-wrapper .lampiran-link:hover {
+    color: #1a2752;
+    background: #f8fafc;
+    border-color: #1a2752;
+}
+
+.dokumen-view-wrapper .btn-primary {
+    background-color: #1a2752;
+    border-color: #1a2752;
+    font-weight: 600;
+}
+
+.dokumen-view-wrapper .btn-primary:hover {
+    background-color: #243566;
+    border-color: #243566;
+}
+
+.dokumen-view-wrapper .space-y-3 > * + * {
+    margin-top: 0.75rem !important;
+}
+
+.dokumen-view-wrapper .space-y-4 > * + * {
+    margin-top: 1rem !important;
+}
+
+.dokumen-view-wrapper .space-y-5 > * + * {
+    margin-top: 2rem !important;
+}
+
+.dokumen-view-wrapper .metadata-value,
+.dokumen-view-wrapper .text-dark.font-weight-600 {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.dokumen-view-wrapper .table thead th {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.dokumen-view-wrapper .table tbody td {
+    font-size: 0.875rem;
+    color: #1e293b;
+}
+
+.dokumen-view-wrapper .lampiran-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 100%;
+    text-align: left;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    height: auto;
+}
+
+.dokumen-view-wrapper .lampiran-link__icon {
+    flex-shrink: 0;
+    margin-top: 0.15em;
+}
+
+.dokumen-view-wrapper .lampiran-link__name {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.45;
+}
+
+.dokumen-view-wrapper .subjek-badge {
+    white-space: normal;
+    word-break: break-word;
+    text-align: left;
+    max-width: 100%;
+    line-height: 1.4;
+}
+
+.dokumen-view-wrapper .teu-table td {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+@media screen and (max-width: 576px) {
+    .dokumen-view-wrapper .teu-table tr {
+        display: block;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .dokumen-view-wrapper .teu-table td {
+        display: block;
+        width: 100%;
+        padding-left: 0 !important;
+    }
+
+    .dokumen-view-wrapper .teu-table td:last-child {
+        padding-top: 0;
+        padding-bottom: 0.75rem;
+        color: #64748b;
+    }
+}
+
+/* JDIH search submit — solid navy, matches listing & filter UI */
+.jdih-search-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border: none;
+    border-radius: 0.75rem;
+    background-color: #1a2752;
+    color: #ffffff;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    box-shadow: none;
+    transition: background-color 0.2s ease, transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.jdih-search-submit:hover,
+.jdih-search-submit:focus-visible {
+    background-color: #243566;
+    color: #ffffff;
+    box-shadow: none;
+    transform: translateY(-1px);
+}
+
+.jdih-search-submit:active {
+    background-color: #141d3d;
+    color: #ffffff;
+    transform: translateY(0);
 }

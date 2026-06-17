@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
+use common\components\LazyImage;
 use backend\models\FrontendConfig;
 
 $sop = FrontendConfig::findOne(21);
@@ -84,7 +85,7 @@ $this->title = 'Standar Operasional Prosedur (SOP)';
     <div class="container">
         <div class="main-content-card">
             <div class="content-wrapper">
-                <?= Html::img('@web/common/dokumen/' . $sop->isi_konfig, ['class' => 'img-fluid rounded', 'alt' => 'SOP']); ?>
+                <?= LazyImage::img('@web/common/dokumen/' . $sop->isi_konfig, ['class' => 'img-fluid rounded', 'alt' => 'SOP']); ?>
             </div>
         </div>
     </div>

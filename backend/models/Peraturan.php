@@ -2,10 +2,10 @@
 
 namespace backend\models;
 
+use common\behaviors\DocumentSlugBehavior;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
-use yii\behaviors\SluggableBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
@@ -186,12 +186,9 @@ class Peraturan extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
-            // [
-            //     'class' => SluggableBehavior::className(),
-            //     'attribute' => 'judul',
-            //     //'immutable' => true,
-            //     //'ensureUnique' => true,
-            // ],
+            'documentSlug' => [
+                'class' => DocumentSlugBehavior::class,
+            ],
             'timestamp' => [
                 'class' => 'yii\behaviors\TimestampBehavior',
                 'attributes' => [

@@ -1,0 +1,60 @@
+/* Cover sections using inline img instead of CSS background */
+.lazy-cover {
+    position: relative;
+    overflow: hidden;
+    background-color: #1a2752;
+}
+
+.lazy-cover__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.lazy-cover > .container,
+.lazy-cover > *:not(.lazy-cover__img) {
+    position: relative;
+    z-index: 2;
+}
+
+/* Legacy data-background placeholders before JS applies the image */
+[data-background]:not(.is-bg-loaded),
+[data-bg]:not(.is-bg-loaded) {
+    background-color: #1a2752;
+}
+
+/* Homepage hero */
+.search-landing-container {
+    background: #1a2752;
+}
+
+.search-landing-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+.search-landing-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Berita thumbnails — stable aspect ratio, less CLS */
+.card-img-top,
+.news-image-wrapper img {
+    aspect-ratio: 16 / 10;
+}
+
+.news-hero-image img {
+    aspect-ratio: 16 / 9;
+}

@@ -17,26 +17,17 @@ $this->registerMetaTag(['name' => 'robots', 'content' => 'index, follow']);
         <div class="row">
             <!-- Sidebar (Search) -->
             <div class="col-lg-3 mb-4">
-                <div class="side-bar sticky-top" style="top: 120px;">
-                    <div class="card border-0 rounded-4 shadow-sm overflow-hidden">
-                        <div class="card-header border-0 py-3" style="background-color: #f1f5f9;">
-                            <h5 class="card-title fw-bold mb-0 text-dark-blue small text-uppercase tracking-wider">
-                                <i class="ti-search mr-2"></i> Cari Berita
-                            </h5>
-                        </div>
-                        <div class="card-body p-4">
-                            <?= $this->render('_search', ['model' => $searchModel]); ?>
-                        </div>
-                    </div>
-                </div>
+                <?= $this->render('_sidebar', ['searchModel' => $searchModel]) ?>
             </div>
 
             <!-- News List -->
             <div class="col-lg-9">
-                <div class="results-header mb-4 d-flex justify-content-between align-items-center">
-                    <h1 class="h3 font-weight-700 text-dark-blue mb-0"><?= Html::encode($this->title) ?></h1>
-                    <div class="small text-muted font-weight-500">
-                        <?= number_format($dataProvider->getTotalCount()) ?> Berita ditemukan
+                <div class="berita-page-header mb-4 pb-3">
+                    <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                        <h1 class="berita-page-header__title mb-0"><?= Html::encode($this->title) ?></h1>
+                        <span class="berita-page-header__count">
+                            <?= number_format($dataProvider->getTotalCount()) ?> berita
+                        </span>
                     </div>
                 </div>
 
@@ -61,17 +52,107 @@ $this->registerMetaTag(['name' => 'robots', 'content' => 'index, follow']);
     </div>
 </div>
 
+<?= $this->render('_berita-shared-styles') ?>
+
 <style>
-.text-dark-blue { color: #1e293b; }
-.font-weight-700 { font-weight: 700; }
-.font-weight-500 { font-weight: 500; }
-.tracking-wider { letter-spacing: 0.05em; }
+.berita-page-header {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.berita-page-header__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a2752;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+}
+
+.berita-page-header__count {
+    font-size: 0.875rem;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+.news-list-card {
+    background: #ffffff;
+    border: 1px solid #e8edf4 !important;
+    border-radius: 0.75rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.news-item .news-list-card:hover {
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 4px 16px rgba(26, 39, 82, 0.06) !important;
+}
+
+.news-image-wrapper {
+    min-height: 180px;
+    overflow: hidden;
+}
+
+.news-list-card__image {
+    object-fit: cover;
+}
+
+.news-list-card__date {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.news-list-card__title {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 0.625rem;
+}
+
+.news-list-card__title a {
+    color: #1a2752;
+    text-decoration: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-list-card__title a:hover {
+    color: #274685;
+}
+
+.news-list-card__excerpt {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #64748b;
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.news-read-more {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1a2752;
+    text-decoration: none;
+}
+
+.news-read-more:hover {
+    color: #274685;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
 .pagination .page-item.active .page-link {
-    background-color: #3b82f6;
-    border-color: #3b82f6;
+    background-color: #1a2752;
+    border-color: #1a2752;
 }
 .pagination .page-link {
     color: #475569;
     padding: 10px 16px;
+}
+.pagination .page-link:hover {
+    color: #1a2752;
 }
 </style>

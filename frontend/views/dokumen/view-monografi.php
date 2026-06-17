@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
+use common\components\LazyImage;
 use frontend\models\Eksemplar;
 use frontend\models\DataLampiran;
 use frontend\models\DataPengarang;
@@ -14,7 +15,7 @@ $this->title = $model->judul;
 
 // --- SEO Metatags & Open Graph ---
 $baseUrl = Url::to(['/'], true);
-$currentUrl = Url::current([], true);
+$currentUrl = Url::to(['/dokumen/view', 'id' => $model->id, 'slug' => $model->getUrlSlug()], true);
 $desc = !empty($model->abstrak) ? strip_tags($model->abstrak) : $model->judul;
 $desc = mb_strimwidth($desc, 0, 160, "...");
 
@@ -38,20 +39,20 @@ $this->params['breadcrumbs'][] = ['label' => 'Dokumen', 'url' => ['index']];
 $this->params['breadcrumbs'][] = Html::encode($this->title);
 ?>
 
-<div class="dokumen-view-wrapper" style="background-color: #f8fafc; min-height: 100vh; padding: 100px 0 40px 0;">
+<div class="dokumen-view-wrapper">
     <div class="container">
         <div class="row">
             <!-- Main Content Area -->
             <div class="col-lg-8">
-                <div class="bg-white rounded-4 shadow-sm p-4 p-md-5 mb-4">
+                <div class="dokumen-view-card">
                     <!-- Heading Section -->
                     <div class="mb-5">
                         <div class="d-flex align-items-center gap-2 mb-3">
-                            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill font-weight-600">
+                            <span class="dokumen-view-type-badge">
                                 <?= Html::encode($model->jenis_peraturan ?: 'Monografi') ?>
                             </span>
                         </div>
-                        <h1 class="h3 font-weight-700 text-dark-blue mb-0">
+                        <h1 class="dokumen-view-title">
                             <?= Html::encode($model->judul) ?>
                         </h1>
                     </div>
@@ -59,48 +60,48 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                     <!-- Metadata Grid -->
                     <div class="row g-4 mb-5">
                         <div class="col-sm-6">
-                            <label class="text-muted small text-uppercase font-weight-700 mb-1 d-block tracking-wider">ISBN</label>
-                            <div class="text-dark font-weight-600"><?= Html::encode($model->isbn ?: '-') ?></div>
+                            <label class="dokumen-view-label">ISBN</label>
+                            <div class="dokumen-view-value"><?= Html::encode($model->isbn ?: '-') ?></div>
                         </div>
                         <div class="col-sm-6">
-                            <label class="text-muted small text-uppercase font-weight-700 mb-1 d-block tracking-wider">Tahun Terbit</label>
-                            <div class="text-dark font-weight-600"><?= Html::encode($model->tahun_terbit ?: '-') ?></div>
+                            <label class="dokumen-view-label">Tahun Terbit</label>
+                            <div class="dokumen-view-value"><?= Html::encode($model->tahun_terbit ?: '-') ?></div>
                         </div>
                         <div class="col-sm-6">
-                            <label class="text-muted small text-uppercase font-weight-700 mb-1 d-block tracking-wider">Penerbit</label>
-                            <div class="text-dark font-weight-600"><?= Html::encode($model->penerbit ?: '-') ?></div>
+                            <label class="dokumen-view-label">Penerbit</label>
+                            <div class="dokumen-view-value"><?= Html::encode($model->penerbit ?: '-') ?></div>
                         </div>
                         <div class="col-sm-6">
-                            <label class="text-muted small text-uppercase font-weight-700 mb-1 d-block tracking-wider">Tempat Terbit</label>
-                            <div class="text-dark font-weight-600"><?= Html::encode($model->tempat_terbit ?: '-') ?></div>
+                            <label class="dokumen-view-label">Tempat Terbit</label>
+                            <div class="dokumen-view-value"><?= Html::encode($model->tempat_terbit ?: '-') ?></div>
                         </div>
                         <div class="col-sm-6">
-                            <label class="text-muted small text-uppercase font-weight-700 mb-1 d-block tracking-wider">Klasifikasi</label>
-                            <div class="text-dark font-weight-600"><?= Html::encode($model->klasifikasi ?: '-') ?></div>
+                            <label class="dokumen-view-label">Klasifikasi</label>
+                            <div class="dokumen-view-value"><?= Html::encode($model->klasifikasi ?: '-') ?></div>
                         </div>
                         <div class="col-sm-6">
-                            <label class="text-muted small text-uppercase font-weight-700 mb-1 d-block tracking-wider">Nomor Panggil</label>
-                            <div class="text-dark font-weight-600"><?= Html::encode($model->nomor_panggil ?: '-') ?></div>
+                            <label class="dokumen-view-label">Nomor Panggil</label>
+                            <div class="dokumen-view-value"><?= Html::encode($model->nomor_panggil ?: '-') ?></div>
                         </div>
                     </div>
 
                     <?php if (!empty($model->sumber)): ?>
                         <div class="mb-5">
-                            <label class="text-muted small text-uppercase font-weight-700 mb-2 d-block tracking-wider">Anotasi</label>
-                            <div class="p-4 bg-light bg-opacity-50 rounded-3 text-dark text-justify line-height-lg">
+                            <label class="dokumen-view-label">Anotasi</label>
+                            <div class="dokumen-view-annotation text-justify">
                                 <?= Html::encode($model->sumber) ?>
                             </div>
                         </div>
                     <?php endif; ?>
 
-                    <hr class="border-light-gray my-5">
+                    <hr class="dokumen-view-divider">
 
                     <!-- Relation Sections -->
                     <div class="space-y-5">
                         <!-- Eksemplar -->
                         <div class="mb-5">
-                            <h3 class="h5 font-weight-700 mb-4 d-flex align-items-center gap-2">
-                                <i class="ti-layers text-primary mt-1"></i> Data Eksemplar
+                            <h3 class="dokumen-view-section-title">
+                                <i class="ti-layers" aria-hidden="true"></i> Data Eksemplar
                             </h3>
                             <?php
                             $eksemplar = Eksemplar::find()->where(['id_dokumen' => $model->id])->all();
@@ -130,7 +131,7 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                                     </table>
                                 </div>
                             <?php else: ?>
-                                <div class="p-4 bg-light bg-opacity-50 rounded-3 text-muted text-center italic border border-dashed">
+                                <div class="dokumen-view-empty">
                                     Data eksemplar tidak tersedia
                                 </div>
                             <?php endif; ?>
@@ -139,12 +140,12 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                         <!-- Technical Information -->
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <h4 class="h6 font-weight-700 text-uppercase mb-3 tracking-wide">T.E.U Badan</h4>
+                                <h4 class="dokumen-view-subsection-title">T.E.U Badan</h4>
                                 <?php
                                 $teu = DataPengarang::find()->where(['id_dokumen' => $model->id])->all();
                                 if (!empty($teu)): ?>
                                     <div class="table-responsive">
-                                        <table class="table table-sm table-borderless align-middle mb-0">
+                                        <table class="table table-sm table-borderless align-middle mb-0 teu-table">
                                             <tbody class="small">
                                                 <?php foreach ($teu as $data): ?>
                                                     <tr class="border-bottom border-light">
@@ -160,13 +161,13 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                                 <?php endif; ?>
                             </div>
                             <div class="col-md-6">
-                                <h4 class="h6 font-weight-700 text-uppercase mb-3 tracking-wide">Subjek</h4>
+                                <h4 class="dokumen-view-subsection-title">Subjek</h4>
                                 <?php
                                 $subjek = DataSubyek::find()->where(['id_dokumen' => $model->id])->all();
                                 if (!empty($subjek)): ?>
                                     <div class="d-flex flex-wrap gap-2">
                                         <?php foreach ($subjek as $data): ?>
-                                            <span class="badge bg-light text-dark border px-3 py-2 font-weight-500 rounded-pill">
+                                            <span class="badge bg-light text-dark border px-3 py-2 font-weight-500 rounded-pill subjek-badge">
                                                 <?= Html::encode($data->subyek) ?>
                                             </span>
                                         <?php endforeach; ?>
@@ -185,42 +186,56 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                 <div class="sticky-top" style="top: 100px;">
                     <!-- Cover Card -->
                     <?php if (!empty($model->gambar_sampul)): ?>
-                        <div class="bg-white rounded-4 shadow-sm p-2 mb-4">
-                            <?= Html::img('@web/common/dokumen/' . $model->gambar_sampul, [
+                        <div class="dokumen-view-sidebar-panel p-2 mb-4">
+                            <?= LazyImage::img('@web/common/dokumen/' . $model->gambar_sampul, [
                                 'class' => 'img-fluid rounded-4 w-100',
-                                'style' => 'object-fit: cover; max-height: 480px;'
+                                'style' => 'object-fit: cover; max-height: 480px;',
+                                'alt' => $model->judul,
                             ]) ?>
                         </div>
                     <?php endif; ?>
 
                     <!-- Attachments Card -->
-                    <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
-                        <h4 class="h6 font-weight-700 mb-4 d-flex align-items-center gap-2">
-                            <i class="ti-download text-primary"></i> Lampiran & Berkas
+                    <div class="dokumen-view-sidebar-panel">
+                        <h4 class="dokumen-view-sidebar-title">
+                            <i class="ti-download" aria-hidden="true"></i> Lampiran & Berkas
                         </h4>
                         <div class="d-grid gap-2">
                             <?php
                             $lampiran = DataLampiran::find()->where(['id_dokumen' => $model->id])->all();
                             if (!empty($lampiran)): 
-                                foreach ($lampiran as $data): ?>
-                                    <?= Html::a('<i class="ti-file mr-2"></i> ' . Html::encode($data['dokumen_lampiran']), ['/common/dokumen/' . $data->dokumen_lampiran], [
-                                        'class' => 'btn btn-outline-primary text-left font-weight-600 rounded-3 py-2 px-3',
-                                        'target' => '_blank',
-                                        'title' => 'Lihat Lampiran'
-                                    ]) ?>
+                                foreach ($lampiran as $data):
+                                    $fileName = $data['dokumen_lampiran'];
+                                ?>
+                                    <?= Html::a(
+                                        '<i class="ti-file lampiran-link__icon" aria-hidden="true"></i><span class="lampiran-link__name">' . Html::encode($fileName) . '</span>',
+                                        ['/common/dokumen/' . $data->dokumen_lampiran],
+                                        [
+                                            'class' => 'lampiran-link btn btn-outline-primary font-weight-600 rounded-3 py-2 px-3',
+                                            'target' => '_blank',
+                                            'title' => Html::encode($fileName),
+                                        ]
+                                    ) ?>
                                 <?php endforeach; ?>
                             <?php endif; ?>
 
                             <?php if (!empty($model->abstrak)): ?>
-                                <?= Html::a('<i class="ti-book mr-2"></i> Abstrak', ['/common/dokumen/' . $model->abstrak], [
-                                    'class' => 'btn btn-primary font-weight-600 rounded-3 py-2',
-                                    'target' => '_blank',
-                                    'title' => 'Lihat Abstrak'
-                                ]) ?>
+                                <?= Html::a(
+                                    '<i class="ti-book" style="font-size: 1.1rem; margin-right: 8px;"></i> <span style="font-weight: 500; font-size: 15px;">Lihat Abstrak</span>',
+                                    ['/common/dokumen/' . $model->abstrak],
+                                    [
+                                        'class' => 'btn w-100 d-flex align-items-center justify-content-center mb-2',
+                                        'style' => 'background-color: #1e264c; color: #ffffff; border-radius: 12px; padding: 12px 20px; border: none; box-shadow: none; transition: background-color 0.2s ease;',
+                                        'onmouseover' => 'this.style.backgroundColor="#161d3a"',
+                                        'onmouseout' => 'this.style.backgroundColor="#1e264c"',
+                                        'target' => '_blank',
+                                        'title' => 'Lihat Abstrak'
+                                    ]
+                                ) ?>
                             <?php endif; ?>
 
                             <?php if (empty($lampiran) && empty($model->abstrak)): ?>
-                                <div class="text-center py-4 text-muted small italic border border-dashed rounded-3">
+                                <div class="dokumen-view-empty">
                                     Tidak ada berkas digital
                                 </div>
                             <?php endif; ?>
@@ -228,20 +243,20 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                     </div>
 
                     <!-- Additional Info Car -->
-                    <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
-                        <h4 class="h6 font-weight-700 mb-4">Informasi Tambahan</h4>
+                    <div class="dokumen-view-sidebar-panel">
+                        <h4 class="dokumen-view-sidebar-title">Informasi Tambahan</h4>
                         <div class="space-y-4">
                             <div>
-                                <label class="text-muted small text-uppercase font-weight-700 mb-1 d-block tracking-wider">Deskripsi Fisik</label>
-                                <p class="text-dark small mb-0"><?= Html::encode($model->deskripsi_fisik ?: '-') ?></p>
+                                <label class="dokumen-view-label">Deskripsi Fisik</label>
+                                <p class="dokumen-view-value mb-0"><?= Html::encode($model->deskripsi_fisik ?: '-') ?></p>
                             </div>
                             <div>
-                                <label class="text-muted small text-uppercase font-weight-700 mb-1 d-block tracking-wider">Bahasa</label>
-                                <p class="text-dark small mb-0"><?= Html::encode($model->bahasa ?: '-') ?></p>
+                                <label class="dokumen-view-label">Bahasa</label>
+                                <p class="dokumen-view-value mb-0"><?= Html::encode($model->bahasa ?: '-') ?></p>
                             </div>
                             <div>
-                                <label class="text-muted small text-uppercase font-weight-700 mb-1 d-block tracking-wider">Bidang Hukum</label>
-                                <p class="text-dark small mb-0"><?= Html::encode($model->bidang_hukum ?: '-') ?></p>
+                                <label class="dokumen-view-label">Bidang Hukum</label>
+                                <p class="dokumen-view-value mb-0"><?= Html::encode($model->bidang_hukum ?: '-') ?></p>
                             </div>
                         </div>
                     </div>
@@ -250,17 +265,3 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
         </div>
     </div>
 </div>
-
-<style>
-.space-y-3 > * + * { margin-top: 0.75rem !important; }
-.space-y-4 > * + * { margin-top: 1rem !important; }
-.space-y-5 > * + * { margin-top: 2.5rem !important; }
-.text-dark-blue { color: #1e293b; }
-.font-weight-600 { font-weight: 600; }
-.font-weight-700 { font-weight: 700; }
-.tracking-wide { letter-spacing: 0.025em; }
-.tracking-wider { letter-spacing: 0.05em; }
-.line-height-lg { line-height: 1.7; }
-.italic { font-style: italic; }
-.rounded-4 { border-radius: 1rem !important; }
-</style>

@@ -11,26 +11,38 @@
    * Easy selector helper function
    */
   const select = (el, all = false) => {
-    el = el.trim()
-    if (all) {
-      return [...document.querySelectorAll(el)]
-    } else {
-      return document.querySelector(el)
+    if (typeof el !== 'string') {
+      return el
     }
+
+    const selector = el.trim()
+    if (all) {
+      return [...document.querySelectorAll(selector)]
+    }
+
+    return document.querySelector(selector)
   }
 
   /**
    * Easy event listener function
    */
   const on = (type, el, listener, all = false) => {
-    let selectEl = select(el, all)
-    if (selectEl) {
-      if (all) {
-        selectEl.forEach(e => e.addEventListener(type, listener))
-      } else {
-        selectEl.addEventListener(type, listener)
-      }
+    if (el instanceof EventTarget) {
+      el.addEventListener(type, listener)
+      return
     }
+
+    const selectEl = select(el, all)
+    if (!selectEl) {
+      return
+    }
+
+    if (all) {
+      selectEl.forEach((node) => node.addEventListener(type, listener))
+      return
+    }
+
+    selectEl.addEventListener(type, listener)
   }
 
   /**
@@ -59,11 +71,47 @@
   /**
    * Mobile nav toggle
    */
+  const isMobileNavOpen = () => document.body.classList.contains('mobile-nav-active')
+
+  const setMobileNavState = (open) => {
+    const header = select('#header')
+    const mobileNav = select('#mobile-nav')
+    const drawer = select('.mobile-nav-drawer')
+
+    document.body.classList.toggle('mobile-nav-active', open)
+    if (header) {
+      header.classList.toggle('mobile-nav-open', open)
+    }
+    if (mobileNav) {
+      mobileNav.setAttribute('aria-hidden', open ? 'false' : 'true')
+    }
+    if (drawer) {
+      drawer.setAttribute('aria-modal', open ? 'true' : 'false')
+    }
+
+    if (!open && mobileNav) {
+      mobileNav.querySelectorAll('.dropdown-active').forEach((submenu) => {
+        submenu.classList.remove('dropdown-active')
+      })
+      mobileNav.querySelectorAll('.dropdown-open').forEach((item) => {
+        item.classList.remove('dropdown-open')
+      })
+    }
+  }
+
+  const toggleMobileNav = () => {
+    setMobileNavState(!isMobileNavOpen())
+  }
+
   on('click', '.mobile-nav-toggle', function(e) {
-    select('#navbar').classList.toggle('navbar-mobile')
-    this.classList.toggle('bi-list')
-    this.classList.toggle('bi-x')
+    e.preventDefault()
+    toggleMobileNav()
   })
+
+  on('click', '.mobile-nav-close, .mobile-nav-backdrop', function(e) {
+    e.preventDefault()
+    setMobileNavState(false)
+  }, true)
 
   /**
    * Back to top button
@@ -88,30 +136,51 @@
   /**
    * Mobile nav dropdowns activate
    */
-  on('click', '.navbar .dropdown > a', function(e) {
-    if (select('#navbar').classList.contains('navbar-mobile')) {
-      e.preventDefault()
-      this.nextElementSibling.classList.toggle('dropdown-active')
+  on('click', '#mobile-nav .dropdown > a', function(e) {
+    if (!isMobileNavOpen()) {
+      return
     }
+
+    const parentLink = this.classList.contains('mobile-menu-link--parent')
+    const submenu = this.nextElementSibling
+
+    if (!parentLink || !submenu || submenu.tagName !== 'UL') {
+      setMobileNavState(false)
+      return
+    }
+
+    e.preventDefault()
+    const parentItem = this.parentElement
+    const isOpen = submenu.classList.toggle('dropdown-active')
+    parentItem.classList.toggle('dropdown-open', isOpen)
   }, true)
+
+  on('keydown', document, function(e) {
+    if (e.key === 'Escape' && isMobileNavOpen()) {
+      setMobileNavState(false)
+    }
+  })
 
   /**
    * Testimonials slider
    */
-  new Swiper('.testimonials-slider', {
-    speed: 600,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    slidesPerView: 'auto',
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
-    }
-  });
+  const testimonialsSlider = select('.testimonials-slider')
+  if (testimonialsSlider) {
+    new Swiper('.testimonials-slider', {
+      speed: 600,
+      loop: true,
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false
+      },
+      slidesPerView: 'auto',
+      pagination: {
+        el: '.swiper-pagination',
+        type: 'bullets',
+        clickable: true
+      }
+    })
+  }
 
   /**
    * Animation on scroll

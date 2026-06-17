@@ -221,9 +221,13 @@ class DokumenController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
+    public function actionView($id, $slug = null)
     {
-        $model = Dokumen::findOne($id);
+        $model = $this->findModel($id);
+
+        if ($slug !== null && $slug !== $model->getUrlSlug()) {
+            return $this->redirect(['/dokumen/view', 'id' => $model->id, 'slug' => $model->getUrlSlug()], 301);
+        }
 
         $title = $model->judul;
         $deskripsi = $model->judul;
@@ -242,19 +246,19 @@ class DokumenController extends Controller
 
         switch ($model->tipe_dokumen) {
             case Dokumen::TYPE_PERATURAN:
-                return $this->render('view-peraturan', ['model' => $this->findModel($id), 'title' => $title, 'deskripsi' => $deskripsi, 'keywords' => $keywords]);
+                return $this->render('view-peraturan', ['model' => $model, 'title' => $title, 'deskripsi' => $deskripsi, 'keywords' => $keywords]);
                 break;
 
             case Dokumen::TYPE_MONOGRAFI:
-                return $this->render('view-monografi', ['model' => $this->findModel($id), 'title' => $title, 'deskripsi' => $deskripsi]);
+                return $this->render('view-monografi', ['model' => $model, 'title' => $title, 'deskripsi' => $deskripsi]);
                 break;
 
             case Dokumen::TYPE_ARTIKEL:
-                return $this->render('view-artikel', ['model' => $this->findModel($id), 'title' => $title, 'deskripsi' => $deskripsi]);
+                return $this->render('view-artikel', ['model' => $model, 'title' => $title, 'deskripsi' => $deskripsi]);
                 break;
 
             case Dokumen::TYPE_PUTUSAN:
-                return $this->render('view-putusan', ['model' => $this->findModel($id), 'title' => $title, 'deskripsi' => $deskripsi]);
+                return $this->render('view-putusan', ['model' => $model, 'title' => $title, 'deskripsi' => $deskripsi]);
                 break;
         }
     }

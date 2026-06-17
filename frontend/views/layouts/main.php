@@ -42,7 +42,7 @@ if (empty($this->params['description'])) {
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
 </head>
 
@@ -56,17 +56,56 @@ if (empty($this->params['description'])) {
     <header id="header" class="fixed-top d-flex align-items-center">
         <div class="container d-flex justify-content-between align-items-center">
 
-<div class="logo">
-              <?= Html::a(Html::img('@web/common/dokumen/' . $logo->isi_konfig, ['id' => 'logo', 'alt' => Html::encode($siteName)]), ['/'], ['class' => 'navbar-brand width-200px sm-width-180px xs-width-150px']); ?>
+            <div class="logo">
+              <?= Html::a(\common\components\LazyImage::img('@web/common/dokumen/' . $logo->isi_konfig, [
+                  'id' => 'logo',
+                  'alt' => Html::encode($siteName),
+              ], false), ['/'], ['class' => 'navbar-brand width-200px sm-width-180px xs-width-150px']); ?>
             </div>
 
           <nav id="navbar" class="navbar">
-            <?= $this->render('menu.php') ?>
-	    <i class="bi bi-list mobile-nav-toggle" style="color:blue"></i>
+            <div class="navbar-menu-desktop">
+              <?= $this->render('menu.php') ?>
+            </div>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Buka menu"></i>
           </nav><!-- .navbar -->
 
         </div>
     </header><!-- End Header -->
+
+    <div id="mobile-nav" class="mobile-nav" aria-hidden="true">
+      <div class="mobile-nav-backdrop" aria-hidden="true"></div>
+      <aside class="mobile-nav-drawer" role="dialog" aria-modal="false" aria-label="Menu navigasi">
+        <div class="mobile-nav-header">
+          <div class="mobile-nav-header__brand">
+            <a href="<?= Url::to(['/']) ?>" class="mobile-nav-header__logo-link">
+              <?= \common\components\LazyImage::img('@web/common/dokumen/' . $logo->isi_konfig, [
+                  'class' => 'mobile-nav-header__logo',
+                  'alt' => Html::encode($siteName),
+              ], false) ?>
+            </a>
+            <span class="mobile-nav-header__title">Menu</span>
+          </div>
+          <button type="button" class="mobile-nav-close" aria-label="Tutup menu">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <form class="mobile-nav-search" action="<?= Url::to(['dokumen/index']) ?>" method="get" role="search">
+          <i class="bi bi-search mobile-nav-search__icon" aria-hidden="true"></i>
+          <input
+            type="search"
+            name="DokumenSearch[judul]"
+            class="mobile-nav-search__input"
+            placeholder="Cari dokumen..."
+            autocomplete="off"
+            aria-label="Cari dokumen"
+          >
+        </form>
+        <div class="mobile-nav-body">
+          <?= $this->render('menu.php') ?>
+        </div>
+      </aside>
+    </div>
 
     <?= $content ?>
 

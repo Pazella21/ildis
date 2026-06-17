@@ -2,10 +2,11 @@
 
 namespace frontend\models;
 
+use common\behaviors\DocumentSlugBehavior;
+use common\components\DocumentSlug;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
-use yii\behaviors\SluggableBehavior;
 use yii\behaviors\BlameableBehavior;
 
 /**
@@ -71,6 +72,7 @@ use yii\behaviors\BlameableBehavior;
  * @property string|null $catatan_status_peraturan
  * @property int|null $hit_see
  * @property int|null $hit_download
+ * @property string|null $slug
  * 
  * @property DataSubyek[] $dataSubyek
  */
@@ -100,7 +102,7 @@ class Dokumen extends \yii\db\ActiveRecord
             [['tipe_dokumen', 'daerah', 'hit_see', 'hit_download'], 'integer'],
             [['judul', 'teu', 'bentuk_peraturan', 'singkatan_jenis', 'tempat_terbit', 'penerbit', 'sumber', 'bahasa', 'bidang_hukum', 'pernyataan_tanggung_jawab', 'abstrak'], 'string'],
             [['tanggal_penetapan', 'tanggal_dibacakan', 'created_at', 'updated_at', 'tanggal_pengundangan'], 'safe'],
-            [['nomor_peraturan', 'nomor_panggil', 'jenis_peraturan', 'cetakan', 'deskripsi_fisik', 'isbn', 'nomor_induk_buku', 'singkatan_bentuk', 'tipe_koleksi_nomor_eksemplar', 'pola_nomor_eksemplar', 'jumlah_eksemplar', 'kala_terbit', 'tahun_terbit', 'edisi', 'gmd', 'judul_seri', 'klasifikasi', 'info_detil_spesifik', 'gambar_sampul', 'label', 'sembunyikan_di_opac', 'promosikan_ke_beranda', 'status_terakhir', 'status', '_created_by', '_updated_by', 'inisiatif', 'pemrakarsa', 'penandatanganan', 'lembaga_peradilan', 'pemohon', 'termohon', 'jenis_perkara', 'sub_klasifikasi', 'amar_status', 'berkekuatan_hukum_tetap', 'urusan_pemerintahan', 'catatan_status_peraturan'], 'string', 'max' => 255],
+            [['nomor_peraturan', 'nomor_panggil', 'jenis_peraturan', 'cetakan', 'deskripsi_fisik', 'isbn', 'nomor_induk_buku', 'singkatan_bentuk', 'tipe_koleksi_nomor_eksemplar', 'pola_nomor_eksemplar', 'jumlah_eksemplar', 'kala_terbit', 'tahun_terbit', 'edisi', 'gmd', 'judul_seri', 'klasifikasi', 'info_detil_spesifik', 'gambar_sampul', 'label', 'sembunyikan_di_opac', 'promosikan_ke_beranda', 'status_terakhir', 'status', '_created_by', '_updated_by', 'inisiatif', 'pemrakarsa', 'penandatanganan', 'lembaga_peradilan', 'pemohon', 'termohon', 'jenis_perkara', 'sub_klasifikasi', 'amar_status', 'berkekuatan_hukum_tetap', 'urusan_pemerintahan', 'catatan_status_peraturan', 'slug'], 'string', 'max' => 255],
             [['integrasi'], 'string', 'max' => 11],
         ];
     }
@@ -171,7 +173,23 @@ class Dokumen extends \yii\db\ActiveRecord
             'catatan_status_peraturan' => 'Catatan Status Peraturan',
             'hit_see' => 'Hit See',
             'hit_download' => 'Hit Download',
+            'slug' => 'Slug',
         ];
+    }
+
+    public function getUrlSlug(): string
+    {
+        if (!empty($this->slug)) {
+            return DocumentSlug::normalize($this->slug);
+        }
+
+        return DocumentSlug::fromDocument(
+            (int) $this->tipe_dokumen,
+            $this->judul ?? '',
+            $this->singkatan_jenis ?? null,
+            $this->nomor_peraturan ?? null,
+            $this->tahun_terbit ?? null
+        );
     }
 
     /**
@@ -186,6 +204,9 @@ class Dokumen extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
+            'documentSlug' => [
+                'class' => DocumentSlugBehavior::class,
+            ],
             'timestamp' => [
                 'class' => 'yii\behaviors\TimestampBehavior',
                 'attributes' => [

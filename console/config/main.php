@@ -52,6 +52,7 @@ return [
             'hostInfo' => getenv('public_domain'),
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+            'rules' => require __DIR__ . '/../../common/config/document-url-rules.php',
         ],
 
     ],

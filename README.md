@@ -100,7 +100,7 @@ Untuk update ke versi terbaru:
 - [x] Panduan pengembangan lokal
 - [x] Update ke Versi Yii 2.0.52
 - [x] Update ke PHP 8.3
-- [ ] Migration Script untuk database yang sudah ada
+- [x] Migration Script untuk database yang sudah ada
 - [ ] Headless mode untuk flexibilitas frontend
 - [ ] Dokumentasi API yang lebih lengkap
 

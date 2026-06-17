@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
+use common\components\LazyImage;
 use backend\models\FrontendConfig;
 
 $strukturbaghukum = FrontendConfig::findOne(20);
@@ -84,7 +85,7 @@ $this->title = 'Struktur Organisasi';
     <div class="container">
         <div class="main-content-card">
             <div class="content-wrapper">
-                <?= Html::img('@web/common/dokumen/' . $strukturbaghukum->isi_konfig, ['class' => 'img-fluid rounded', 'alt' => 'Struktur Organisasi JDIH Instansi']); ?>
+                <?= LazyImage::img('@web/common/dokumen/' . $strukturbaghukum->isi_konfig, ['class' => 'img-fluid rounded', 'alt' => 'Struktur Organisasi JDIH Instansi']); ?>
             </div>
         </div>
     </div>

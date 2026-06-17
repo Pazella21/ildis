@@ -15,21 +15,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Peraturan'];
     <div class="container py-5">
         <h1 class="sr-only">Peraturan Hukum Indonesia</h1>
         <div class="row">
-            <!-- Sidebar (Search Filters) -->
-            <div class="col-lg-3 mb-4">
-                <div class="side-bar sticky-top" style="top: 100px;">
-                    <div class="card border-0 rounded-4 shadow-sm" style="overflow: hidden;">
-                        <div class="card-header border-0 py-3" style="background-color: #f1f5f9;">
-                            <h5 class="card-title fw-bold mb-0" style="color: #1a2752; font-size: 1.1rem;">
-                                <i class="bi bi-search me-2"></i> Pencarian
-                            </h5>
-                        </div>
-                        <div class="card-body p-4">
-                            <?php echo $this->render('_search', ['model' => $searchModel]); ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <?= $this->render('_search-sidebar', ['model' => $searchModel]) ?>
 
             <!-- Results List -->
             <div class="col-lg-9">
@@ -46,15 +32,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Peraturan'];
                         'itemOptions' => ['class' => 'item'],
                         'itemView' => '_data',
                         'summary' => false,
-                        'pager' => [
-                            'options' => ['class' => 'pagination justify-content-center mt-5'],
-                            'linkOptions' => ['class' => 'page-link'],
-                            'pageCssClass' => 'page-item',
-                            'activePageCssClass' => 'active',
-                            'disabledPageCssClass' => 'disabled',
-                            'prevPageLabel' => '<i class="bi bi-chevron-left"></i>',
-                            'nextPageLabel' => '<i class="bi bi-chevron-right"></i>',
-                        ],
+                        'pager' => require __DIR__ . '/_pager.php',
                     ]) ?>
                 </div>
             </div>

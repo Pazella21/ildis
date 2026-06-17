@@ -2,10 +2,10 @@
 
 namespace backend\models;
 
+use common\behaviors\DocumentSlugBehavior;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
-use yii\behaviors\SluggableBehavior;
 use yii\behaviors\BlameableBehavior;
 
 /**
@@ -182,6 +182,9 @@ class Artikel extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
+            'documentSlug' => [
+                'class' => DocumentSlugBehavior::class,
+            ],
             'timestamp' => [
                 'class' => 'yii\behaviors\TimestampBehavior',
                 'attributes' => [
