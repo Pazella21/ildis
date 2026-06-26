@@ -186,7 +186,16 @@
    * Animation on scroll
    */
   window.addEventListener('load', () => {
-    AOS.init({
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!prefersReducedMotion) {
+      AOS.init({
+        duration: 1000,
+        easing: 'ease-in-out',
+        once: true,
+        mirror: false
+      })
+    }
+  })
       duration: 1000,
       easing: 'ease-in-out',
       once: true,

@@ -20,7 +20,7 @@ $this->registerMetaTag([
 $this->registerMetaTag(['name' => 'robots', 'content' => 'index, follow']);
 ?>
 
-<h1 class="sr-only"><?= htmlspecialchars($pageTitle) ?></h1>
+<h1 class="visually-hidden"><?= htmlspecialchars($pageTitle) ?></h1>
 <div class="dokumen-index-wrapper" style="background-color: #f8fafc; min-height: 100vh; padding-top: 80px;">
     <div class="container py-5">
         <div class="row">

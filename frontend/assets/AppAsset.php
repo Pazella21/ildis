@@ -23,6 +23,7 @@ class AppAsset extends AssetBundle
         ['css/lazyload.css', 'appendTimestamp' => true],
         ['css/style.css', 'appendTimestamp' => true],
         ['css/mobile-menu.css', 'appendTimestamp' => true],
+        ['css/a11y.css', 'appendTimestamp' => true],
     ];
 
     public $js = [
@@ -32,6 +33,7 @@ class AppAsset extends AssetBundle
         'vendor/swiper/swiper-bundle.min.js',
         'vendor/php-email-form/validate.js',
         ['js/main.js', 'appendTimestamp' => true],
+        ['js/a11y.js', 'appendTimestamp' => true],
     ];
 
     public $jsOptions = ['defer' => true];

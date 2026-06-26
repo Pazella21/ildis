@@ -458,7 +458,6 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
 
 <div class="site-index">
 
-    <main>
         <div class="search-landing-container">
             <picture class="search-landing-media" aria-hidden="true">
                 <source srcset="<?= Html::encode($heroWebp) ?>" type="image/webp">
@@ -480,10 +479,10 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
                 <?php endif; ?>
             </h1>
 
-            <form action="<?= Url::to(['dokumen/index']) ?>" method="GET" class="w-100 hero-search-form" data-aos="fade-up" data-aos-delay="100">
+            <form action="<?= Url::to(['dokumen/index']) ?>" method="GET" class="w-100 hero-search-form" data-aos="fade-up" data-aos-delay="100" role="search">
                 <div class="search-input-wrapper">
-                    <i class="bi bi-search search-icon"></i>
-                    <input type="text" name="DokumenSearch[judul]" class="search-input" placeholder="Cari dokumen hukum, peraturan, putusan..." value="" autocomplete="off">
+                    <i class="bi bi-search search-icon" aria-hidden="true"></i>
+                    <input type="search" name="DokumenSearch[judul]" class="search-input" placeholder="Cari dokumen hukum, peraturan, putusan..." value="" autocomplete="off" aria-label="Cari dokumen hukum">
                     <button type="submit" class="btn search-btn">Cari</button>
                 </div>
             </form>
@@ -681,6 +680,5 @@ $totalTidakBerlaku  = Dokumen::find()->where(['status' => 'Tidak Berlaku', 'is_p
                 </div>
             </section>
         <?php endif; ?>
-    </main>
 
 </div>

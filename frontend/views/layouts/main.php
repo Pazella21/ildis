@@ -51,6 +51,8 @@ if (empty($this->params['description'])) {
 
     <?php $this->beginBody() ?>
 
+    <a class="visually-hidden-focusable skip-link" href="#main-content">Lewati ke konten utama</a>
+
     <!-- start main-wrapper section -->
 
     <header id="header" class="fixed-top d-flex align-items-center">
@@ -63,11 +65,11 @@ if (empty($this->params['description'])) {
               ], false), ['/'], ['class' => 'navbar-brand width-200px sm-width-180px xs-width-150px']); ?>
             </div>
 
-          <nav id="navbar" class="navbar">
+          <nav id="navbar" class="navbar" aria-label="Navigasi utama">
             <div class="navbar-menu-desktop">
               <?= $this->render('menu.php') ?>
             </div>
-            <i class="bi bi-list mobile-nav-toggle" aria-label="Buka menu"></i>
+            <button type="button" class="mobile-nav-toggle bi bi-list border-0 bg-transparent" aria-label="Buka menu" aria-expanded="false" aria-controls="mobile-nav"></button>
           </nav><!-- .navbar -->
 
         </div>
@@ -107,11 +109,16 @@ if (empty($this->params['description'])) {
       </aside>
     </div>
 
+    <main id="main-content" role="main">
+    <?= Alert::widget() ?>
     <?= $content ?>
-
-    </main><!-- End #main -->
+    </main>
 
         <?= $this->render('footer.php') ?>
+
+    <div class="a11y-toolbar" aria-label="Alat aksesibilitas">
+        <button type="button" id="a11y-read-aloud" class="a11y-toolbar__btn">Baca dengan screen reader</button>
+    </div>
 
     <!-- end main-wrapper section -->
 
