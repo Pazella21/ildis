@@ -144,6 +144,9 @@ $socialLinks = $socialSection ? $socialSection->activeLinks : [];
           <span class="analytics-num"><?= $yearVisits ?></span>
           <span class="analytics-period">tahun ini</span>
         </span>
+        <span class="analytics-title mt-2">
+          <?= Html::a('Statistik dokumen hukum', ['/statistik'], ['class' => 'footer-link']) ?>
+        </span>
       </div>
     </div>
 

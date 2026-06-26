@@ -80,6 +80,7 @@ return [
                     'dokumen-pembentukan-puu/<slug:[\w-]+>' => 'dokumen/legislation-formation',
                     '/' => 'site/index',
                     'kontak' => 'site/kontak',
+                    'statistik' => 'statistik/index',
                     'sitemap.xml' => 'sitemap/index',
                     '/rancangan' => 'rancangan/index',
                 ]
