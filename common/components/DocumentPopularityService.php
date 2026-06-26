@@ -15,7 +15,7 @@ class DocumentPopularityService
         return Dokumen::find()
             ->where(['is_publish' => 1])
             ->andWhere(['>', new Expression('COALESCE(hit_see, 0) + COALESCE(hit_download, 0)'), 0])
-            ->orderBy([new Expression('COALESCE(hit_see, 0) + COALESCE(hit_download, 0)') => SORT_DESC])
+            ->orderBy(new Expression('COALESCE(hit_see, 0) + COALESCE(hit_download, 0) DESC'))
             ->limit($limit)
             ->all();
     }
