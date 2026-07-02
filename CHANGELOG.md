@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/Pazella21/ildis/compare/v1.1.2...v1.1.3) (2026-07-02)
+
+### Maintenance
+
+* perubahan judul pada halaman ([4773103](https://github.com/Pazella21/ildis/commit/47731036887f95b4a370066722035f9f41c1302e))
+* perubahan judul pada halaman ([d0171b9](https://github.com/Pazella21/ildis/commit/d0171b9e191fe3fe2b3557621efa8e75b94eb17e))
+
 ## [1.1.2](https://github.com/Pazella21/ildis/compare/v1.1.1...v1.1.2) (2026-06-30)
 
 ### Bug Fixes
