@@ -6,7 +6,11 @@ use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use common\components\DocumentPopularityService;
+use common\models\MasterKepuasan;
 use common\models\MemberForm;
+use common\models\SurveyKepuasan;
+use frontend\models\SurveyKepuasanForm;
 use common\models\VisitorStats;
 use frontend\models\ContactForm;
 use frontend\models\DokumenSearch;
@@ -40,6 +44,7 @@ class SiteController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
+                    'survey-submit' => ['post'],
                 ],
             ],
         ];
@@ -67,7 +72,8 @@ class SiteController extends Controller
             ->all();
 
         return $this->render('index', [
-            'berita'       => $berita,
+            'berita' => $berita,
+            'popularDocuments' => DocumentPopularityService::getPopularDocuments(10),
         ]);
     }
 
@@ -109,7 +115,40 @@ class SiteController extends Controller
 
     public function actionModalikm()
     {
-        return $this->render('modal');
+        return $this->redirect(['site/survey']);
+    }
+
+    public function actionSurvey()
+    {
+        $model = new SurveyKepuasanForm();
+        $options = MasterKepuasan::optionList();
+        if (empty($options)) {
+            $options = [
+                1 => 'Satu',
+                2 => 'Dua',
+                3 => 'Tiga',
+                4 => 'Empat',
+                5 => 'Lima',
+            ];
+        }
+
+        return $this->render('survey', [
+            'model' => $model,
+            'options' => $options,
+            'aggregate' => SurveyKepuasan::getAggregateStats(),
+        ]);
+    }
+
+    public function actionSurveySubmit()
+    {
+        $model = new SurveyKepuasanForm();
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success', 'Terima kasih, survey Anda telah tersimpan.');
+        } else {
+            Yii::$app->session->setFlash('error', 'Survey gagal dikirim. ' . implode(' ', $model->getFirstErrors()));
+        }
+
+        return $this->redirect(['site/survey']);
     }
 
      public function actionVisitor()

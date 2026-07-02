@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use frontend\models\DataLampiran;
 
 $domain = yii\helpers\Url::base(true);
+$views = (int) ($model->hit_see ?? 0);
+$downloads = (int) ($model->hit_download ?? 0);
 
 ?>
 
@@ -25,20 +27,28 @@ $domain = yii\helpers\Url::base(true);
         $lampiran = DataLampiran::find()->where(['id_dokumen' => $model->id])->one();
 
         if (!empty($lampiran)) {
-            echo Html::a('<i class="bi bi-file-earmark-pdf text-danger"></i> Dokumen', ['/common/dokumen/' . $lampiran->dokumen_lampiran], [
+            echo Html::a('<i class="bi bi-file-earmark-pdf text-danger"></i> Dokumen', ['/dokumen/download', 'id' => $lampiran->dokumen_lampiran, 'docId' => $model->id], [
                 'class' => 'btn-doc-action btn-doc-primary',
-                'target' => '_blank',
                 'title' => 'Unduh/Lihat Dokumen'
             ]);
         }
 
         if (!empty($model->abstrak)) {
-            echo Html::a('<i class="bi bi-file-earmark-text text-primary"></i> Abstrak', ['/common/dokumen/' . $model->abstrak], [
+            echo Html::a('<i class="bi bi-file-earmark-text text-primary"></i> Abstrak', ['/dokumen/download', 'id' => $model->abstrak, 'docId' => $model->id], [
                 'class' => 'btn-doc-action btn-doc-outline',
-                'target' => '_blank',
                 'title' => 'Unduh/Lihat Abstrak'
             ]);
         }
         ?>
+        <span class="doc-list-stats" aria-label="Statistik dokumen">
+            <span class="doc-list-stats__item" title="Jumlah dilihat">
+                <i class="bi bi-eye" aria-hidden="true"></i>
+                <span><?= Html::encode(number_format($views, 0, ',', '.')) ?> dilihat</span>
+            </span>
+            <span class="doc-list-stats__item" title="Jumlah diunduh">
+                <i class="bi bi-download" aria-hidden="true"></i>
+                <span><?= Html::encode(number_format($downloads, 0, ',', '.')) ?> diunduh</span>
+            </span>
+        </span>
     </div>
 </div>

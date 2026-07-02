@@ -64,6 +64,7 @@ class Alert extends \yii\bootstrap\Widget
                     'options' => array_merge($this->options, [
                         'id' => $this->getId() . '-' . $type . '-' . $i,
                         'class' => $this->alertTypes[$type] . $appendClass,
+                        'role' => 'alert',
                     ]),
                 ]);
             }

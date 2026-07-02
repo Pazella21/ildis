@@ -56,6 +56,7 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                         <p class="dokumen-view-meta-date">
                             <i class="ti-calendar mr-1" aria-hidden="true"></i> Terbit: <?= Html::encode(($model->bulan ? $model->bulan . ' ' : '') . ($model->tahun_terbit ?: '')) ?: '-' ?>
                         </p>
+                        <?= $this->render('_document-stats', ['documentStats' => $documentStats]) ?>
                     </div>
 
                     <!-- Metadata Grid -->
@@ -151,7 +152,7 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                                 ?>
                                     <?= Html::a(
                                         '<i class="ti-file lampiran-link__icon" aria-hidden="true"></i><span class="lampiran-link__name">' . Html::encode($fileName) . '</span>',
-                                        ['/common/dokumen/' . $data->dokumen_lampiran],
+                                        ['/dokumen/download', 'id' => $data->dokumen_lampiran, 'docId' => $model->id],
                                         [
                                             'class' => 'lampiran-link btn btn-outline-primary font-weight-600 rounded-3 py-2 px-3',
                                             'target' => '_blank',
@@ -164,7 +165,7 @@ $this->params['breadcrumbs'][] = Html::encode($this->title);
                             <?php if (!empty($model->abstrak)): ?>
                                 <?= Html::a(
                                     '<i class="ti-book" style="font-size: 1.1rem; margin-right: 8px;"></i> <span style="font-weight: 500; font-size: 15px;">Lihat Abstrak</span>',
-                                    ['/common/dokumen/' . $model->abstrak],
+                                    ['/dokumen/download', 'id' => $model->abstrak, 'docId' => $model->id],
                                     [
                                         'class' => 'btn w-100 d-flex align-items-center justify-content-center mb-2',
                                         'style' => 'background-color: #1e264c; color: #ffffff; border-radius: 12px; padding: 12px 20px; border: none; box-shadow: none; transition: background-color 0.2s ease;',

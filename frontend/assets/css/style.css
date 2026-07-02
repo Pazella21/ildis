@@ -1255,6 +1255,7 @@ body.mobile-nav-active {
 .dokumen-index-wrapper .search-result-actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.625rem;
     margin-top: 0.75rem;
 }

@@ -17,8 +17,28 @@ class VisitorCounter extends Component implements BootstrapInterface
     {
         // Track only on web frontend requests
         if ($app instanceof \yii\web\Application && $app->id === 'app-frontend') {
+            if ($this->shouldSkipBootstrapTracking($app)) {
+                return;
+            }
             $this->trackVisit();
         }
+    }
+
+    /**
+     * Document detail and download pages are tracked in DokumenController with document_id.
+     */
+    protected function shouldSkipBootstrapTracking($app): bool
+    {
+        $path = $app->request->pathInfo;
+        if ($path === '') {
+            return false;
+        }
+
+        if (strpos($path, 'dokumen/download') === 0) {
+            return true;
+        }
+
+        return (bool) preg_match('#^dokumen/\d+#', $path);
     }
 
     public function generateFingerprint($ip, $userAgent)

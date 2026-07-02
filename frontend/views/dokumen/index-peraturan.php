@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Peraturan'];
 <div class="dokumen-index-wrapper" style="background-color: #f8fafc; min-height: 100vh; padding-top: 80px;">
     <!-- Main Content -->
     <div class="container py-5">
-        <h1 class="sr-only">Peraturan Hukum Indonesia</h1>
+        <h1 class="visually-hidden">Peraturan Hukum Indonesia</h1>
         <div class="row">
             <?= $this->render('_search-sidebar', ['model' => $searchModel]) ?>
 

@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\components\DocumentCounter;
 use common\components\DocumentGroup;
 use frontend\models\DocumentType;
 use Yii;
@@ -224,6 +225,8 @@ class DokumenController extends Controller
     public function actionView($id, $slug = null)
     {
         $model = $this->findModel($id);
+        DocumentCounter::recordView((int) $model->id);
+        $documentStats = DocumentCounter::getCounts((int) $model->id);
 
         if ($slug !== null && $slug !== $model->getUrlSlug()) {
             return $this->redirect(['/dokumen/view', 'id' => $model->id, 'slug' => $model->getUrlSlug()], 301);
@@ -244,22 +247,26 @@ class DokumenController extends Controller
             ];
         }
 
+        $viewParams = [
+            'model' => $model,
+            'title' => $title,
+            'deskripsi' => $deskripsi,
+            'documentStats' => $documentStats,
+        ];
+
         switch ($model->tipe_dokumen) {
             case Dokumen::TYPE_PERATURAN:
-                return $this->render('view-peraturan', ['model' => $model, 'title' => $title, 'deskripsi' => $deskripsi, 'keywords' => $keywords]);
-                break;
+                $viewParams['keywords'] = $keywords ?? [];
+                return $this->render('view-peraturan', $viewParams);
 
             case Dokumen::TYPE_MONOGRAFI:
-                return $this->render('view-monografi', ['model' => $model, 'title' => $title, 'deskripsi' => $deskripsi]);
-                break;
+                return $this->render('view-monografi', $viewParams);
 
             case Dokumen::TYPE_ARTIKEL:
-                return $this->render('view-artikel', ['model' => $model, 'title' => $title, 'deskripsi' => $deskripsi]);
-                break;
+                return $this->render('view-artikel', $viewParams);
 
             case Dokumen::TYPE_PUTUSAN:
-                return $this->render('view-putusan', ['model' => $model, 'title' => $title, 'deskripsi' => $deskripsi]);
-                break;
+                return $this->render('view-putusan', $viewParams);
         }
     }
 
@@ -291,8 +298,13 @@ class DokumenController extends Controller
         return $result;
     }
 
-    public function actionDownload($id)
+    public function actionDownload($id, $docId = null)
     {
+        if ($docId !== null) {
+            DocumentCounter::assertFileBelongsToDocument((int) $docId, $id);
+            DocumentCounter::recordDownload((int) $docId);
+        }
+
         return \common\components\SafeDownload::sendFile('@common/dokumen', $id);
     }
 }

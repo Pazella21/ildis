@@ -108,6 +108,15 @@ $menuItems = [
         'template' => $linkTemplate('bi-newspaper'),
     ],
    
+    [
+        'label' => 'Statistik dokumen hukum',
+        'url' => ['/statistik'],
+        'options' => ['class' => 'mobile-menu-item nav-chart-item'],
+        'template' => '<a href="{url}" class="mobile-menu-link nav-chart-link" title="Statistik dokumen hukum" aria-label="Statistik dokumen hukum">'
+            . '<span class="mobile-menu-icon" aria-hidden="true"><i class="bi bi-bar-chart-line"></i></span>'
+            . '<span class="mobile-menu-label">{label}</span>'
+            . '</a>',
+    ],
 
 ];
 

@@ -410,4 +410,28 @@
     justify-content: space-between;
     padding: 10px 0 10px 30px;
   }
+
+  .navbar .nav-chart-link {
+    padding-left: 12px;
+    padding-right: 0;
+  }
+
+  .navbar .nav-chart-link .mobile-menu-icon {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    line-height: 1;
+    margin-left: 0;
+    color: #475569;
+  }
+
+  .navbar .nav-chart-link:hover .mobile-menu-icon,
+  .navbar .nav-chart-item.current .nav-chart-link .mobile-menu-icon {
+    color: #2563eb;
+  }
+
+  .navbar .nav-chart-link .mobile-menu-label {
+    display: none !important;
+  }
 }

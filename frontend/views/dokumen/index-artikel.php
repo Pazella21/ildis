@@ -9,7 +9,7 @@ $this->registerMetaTag(['name' => 'description', 'content' => 'Koleksi artikel h
 $this->registerMetaTag(['name' => 'robots', 'content' => 'index, follow']);
 ?>
 
-<h1 class="sr-only">Artikel Hukum Indonesia</h1>
+<h1 class="visually-hidden">Artikel Hukum Indonesia</h1>
 <div class="dokumen-index-wrapper" style="background-color: #f8fafc; min-height: 100vh; padding-top: 80px;">
     <!-- Main Content -->
     <div class="container py-5">
