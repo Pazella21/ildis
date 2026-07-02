@@ -43,6 +43,7 @@ class m260527_120000_add_dokumen_pembentukan_puu_rbac extends Migration
                 'name' => $route,
                 'type' => 2,
                 'description' => 'Dokumen Penyusunan PUU: ' . $route,
+                'description' => 'Dokumen Penyusunan PUU: ' . $route,
                 'created_at' => $time,
                 'updated_at' => $time,
             ]);
@@ -149,6 +150,7 @@ class m260527_120000_add_dokumen_pembentukan_puu_rbac extends Migration
         }
 
         $this->delete('{{%menu}}', [
+            'name' => 'Dokumen Penyusunan PUU',
             'name' => 'Dokumen Penyusunan PUU',
         ]);
 

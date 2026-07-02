@@ -1,3 +1,15 @@
+## [1.1.2](https://github.com/Pazella21/ildis/compare/v1.1.1...v1.1.2) (2026-06-30)
+
+### Bug Fixes
+
+* lowercase image name untuk ghcr.io tag ([fcacf66](https://github.com/Pazella21/ildis/commit/fcacf663e39377b23b104d607a8322dbfc524fd3))
+
+## [1.1.1](https://github.com/Pazella21/ildis/compare/v1.1.0...v1.1.1) (2026-06-30)
+
+### Maintenance
+
+* revert docker compose mysql  port ([90ec1ba](https://github.com/Pazella21/ildis/commit/90ec1ba67cccdd2863ba4bd1170998959828ee62))
+
 ## [1.1.0](https://github.com/Pazella21/ildis/compare/v1.0.0...v1.1.0) (2026-06-17)
 
 ### Features
